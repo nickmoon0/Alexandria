@@ -16,7 +16,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80'
   db:
-    image: mysql
+    image: mysql:latest
     restart: always
     secrets:
       - db-password
