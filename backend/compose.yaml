@@ -1,0 +1,41 @@
+services:
+  server:
+    build:
+      context: .
+      target: development
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80'
+  db:
+    image: mysql
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=Alexandria
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - "3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
+
+secrets:
+  db-password:
+    file: password.txt
