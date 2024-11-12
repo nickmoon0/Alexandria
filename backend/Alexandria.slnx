@@ -1,0 +1,7 @@
+﻿<Solution>
+  <Project Path="src\Alexandria.Api\Alexandria.Api.csproj" Type="Classic C#" />
+  <Project Path="src\Alexandria.Application\Alexandria.Application.csproj" Type="Classic C#" />
+  <Project Path="src\Alexandria.Domain\Alexandria.Domain.csproj" Type="Classic C#" />
+  <Project Path="src\Alexandria.Infrastructure\Alexandria.Infrastructure.csproj" Type="Classic C#" />
+  <Project Path="tests\Alexandria.UnitTests\Alexandria.UnitTests.csproj" Type="Classic C#" />
+</Solution>

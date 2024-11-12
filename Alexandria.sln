@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{9A44277F-333E-498F-83C3-A58C04FB8A45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CFC72640-434C-4438-ACA6-072A71982E7E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alexandria.Api", "backend\src\Alexandria.Api\Alexandria.Api.csproj", "{79663C67-F503-4DDC-8D85-5E0F6A0A8218}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alexandria.Application", "backend\src\Alexandria.Application\Alexandria.Application.csproj", "{59ACA2C6-BFDF-4C4B-8344-DB1E53FA163C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alexandria.Domain", "backend\src\Alexandria.Domain\Alexandria.Domain.csproj", "{2483B3EF-29A4-414F-BD53-16486FB0BE52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alexandria.Infrastructure", "backend\src\Alexandria.Infrastructure\Alexandria.Infrastructure.csproj", "{DAB0C31A-3592-456C-819D-1DCB683736B3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79663C67-F503-4DDC-8D85-5E0F6A0A8218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79663C67-F503-4DDC-8D85-5E0F6A0A8218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79663C67-F503-4DDC-8D85-5E0F6A0A8218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79663C67-F503-4DDC-8D85-5E0F6A0A8218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59ACA2C6-BFDF-4C4B-8344-DB1E53FA163C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59ACA2C6-BFDF-4C4B-8344-DB1E53FA163C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59ACA2C6-BFDF-4C4B-8344-DB1E53FA163C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59ACA2C6-BFDF-4C4B-8344-DB1E53FA163C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2483B3EF-29A4-414F-BD53-16486FB0BE52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2483B3EF-29A4-414F-BD53-16486FB0BE52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2483B3EF-29A4-414F-BD53-16486FB0BE52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2483B3EF-29A4-414F-BD53-16486FB0BE52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAB0C31A-3592-456C-819D-1DCB683736B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAB0C31A-3592-456C-819D-1DCB683736B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAB0C31A-3592-456C-819D-1DCB683736B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAB0C31A-3592-456C-819D-1DCB683736B3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CFC72640-434C-4438-ACA6-072A71982E7E} = {9A44277F-333E-498F-83C3-A58C04FB8A45}
+		{79663C67-F503-4DDC-8D85-5E0F6A0A8218} = {CFC72640-434C-4438-ACA6-072A71982E7E}
+		{59ACA2C6-BFDF-4C4B-8344-DB1E53FA163C} = {CFC72640-434C-4438-ACA6-072A71982E7E}
+		{2483B3EF-29A4-414F-BD53-16486FB0BE52} = {CFC72640-434C-4438-ACA6-072A71982E7E}
+		{DAB0C31A-3592-456C-819D-1DCB683736B3} = {CFC72640-434C-4438-ACA6-072A71982E7E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7B16CECE-68F7-4CB2-8CD0-5BD970E751BD}
+	EndGlobalSection
+EndGlobal
