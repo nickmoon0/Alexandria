@@ -3,7 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-password.txt
+# Private config files
+**/appsettings.*.json
+**/DockerEnv
 
 # dotenv files
 .env

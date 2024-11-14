@@ -13,7 +13,7 @@ RUN dotnet test /source/tests/Alexandria.UnitTests
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS development
 COPY . /source
-WORKDIR /source/src/Alexandria.Api
+WORKDIR /source/Alexandria.Api
 CMD dotnet run --no-launch-profile
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
