@@ -13,7 +13,8 @@ public class GetPerson : IEndpoint
         .MapGet("/{id:guid}", Handle)
         .WithSummary("Retrieves a person with the given ID")
         .WithName(nameof(GetPerson))
-        .Produces<Ok<Person>>();
+        .Produces<Ok<Person>>()
+        .Produces<NotFound>();
 
     private static async Task<Results<Ok<GetPersonResponse>, NotFound>> Handle(
         [FromRoute] Guid id,
@@ -28,7 +29,7 @@ public class GetPerson : IEndpoint
             FirstName = person.FirstName!,
             LastName = person.LastName!,
             MiddleNames = person.MiddleNames,
-            Description = person.Description,
+            Description = person.Description
         });
         
         return TypedResults.Ok(response);

@@ -5,6 +5,7 @@ namespace Alexandria.Api.Domain;
 
 public class Person : IDomainEntity
 {
+    // Domain entity properties
     public Guid Id { get; set; }
     public string? FirstName { get; private set; }
     public string? LastName { get; private set; }
@@ -12,7 +13,11 @@ public class Person : IDomainEntity
     public string? Description { get; private set; }
     
     public List<Document>? Documents { get; private set; }
-    
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAtUtc { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+
     private Person() { }
 
     public static Result<Person> Create(
@@ -27,7 +32,9 @@ public class Person : IDomainEntity
             LastName = lastName,
             MiddleNames = middleNames,
             Description = description,
-            Documents = []
+            Documents = [],
+            IsDeleted = false,
+            CreatedAtUtc = DateTime.UtcNow
         };
 
         if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))

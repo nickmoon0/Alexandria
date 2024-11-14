@@ -11,6 +11,10 @@ public class Document : IDomainEntity
     public string? Description { get; set; } 
     public List<Person>? People { get; set; }
 
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAtUtc { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+    
     // EF Core unmapped fields
     public byte[]? Data { get; set; }
     
