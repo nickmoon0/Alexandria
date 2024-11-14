@@ -1,4 +1,4 @@
-# API Setup
+# Backend Setup
 ---
 ### Setup API
 1. Create DockerEnv folder in `backend` root
