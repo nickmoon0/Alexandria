@@ -7,12 +7,12 @@ public class Person : IDomainEntity
 {
     // Domain entity properties
     public Guid Id { get; set; }
-    public string? FirstName { get; private set; }
-    public string? LastName { get; private set; }
-    public string? MiddleNames { get; private set; }
-    public string? Description { get; private set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? MiddleNames { get; set; }
+    public string? Description { get; set; }
     
-    public List<Document>? Documents { get; private set; }
+    public List<Document>? Documents { get; set; }
 
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAtUtc { get; set; }

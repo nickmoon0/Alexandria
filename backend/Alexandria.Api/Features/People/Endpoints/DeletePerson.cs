@@ -22,11 +22,10 @@ public class DeletePerson : IEndpoint
         var person = await context.People.FindAsync(id);
         if (person is null) return TypedResults.NotFound();
 
-        await context.People.ExecuteUpdateAsync(x => x
-                .SetProperty(p => p.IsDeleted, true)
-                .SetProperty(p => p.DeletedAtUtc, DateTime.UtcNow));
+        person.IsDeleted = true;
+        person.DeletedAtUtc = DateTime.UtcNow;
+
         await context.SaveChangesAsync();
-        
         return TypedResults.Ok();
     }
 }

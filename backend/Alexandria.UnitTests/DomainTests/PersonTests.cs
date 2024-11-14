@@ -21,7 +21,7 @@ public class PersonTests
             Assert.Equal(lastName, result.Value.LastName);
             Assert.Null(result.Value.MiddleNames);
             Assert.Null(result.Value.Description);
-            Assert.Empty(result.Value.Documents);
+            Assert.Empty(result.Value.Documents!);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ public class PersonTests
             Assert.Equal(lastName, result.Value.LastName);
             Assert.Equal(middleNames, result.Value.MiddleNames);
             Assert.Null(result.Value.Description);
-            Assert.Empty(result.Value.Documents);
+            Assert.Empty(result.Value.Documents!);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ public class PersonTests
             Assert.Equal(lastName, result.Value.LastName);
             Assert.Null(result.Value.MiddleNames);
             Assert.Equal(description, result.Value.Description);
-            Assert.Empty(result.Value.Documents);
+            Assert.Empty(result.Value.Documents!);
         }
 
         [Fact]
@@ -85,7 +85,7 @@ public class PersonTests
             Assert.Equal(lastName, result.Value.LastName);
             Assert.Equal(middleNames, result.Value.MiddleNames);
             Assert.Equal(description, result.Value.Description);
-            Assert.Empty(result.Value.Documents);
+            Assert.Empty(result.Value.Documents!);
         }
 
         [Fact]

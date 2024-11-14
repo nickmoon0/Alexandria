@@ -23,7 +23,8 @@ public static class ConfigureEndpoints
         endpoints
             .MapEndpoint<CreatePerson>()
             .MapEndpoint<DeletePerson>()
-            .MapEndpoint<GetPerson>();
+            .MapEndpoint<GetPerson>()
+            .MapEndpoint<UpdatePerson>();
     }
     
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app)
