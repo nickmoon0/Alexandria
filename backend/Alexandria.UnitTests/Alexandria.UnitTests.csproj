@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
+        <PackageReference Include="Moq" Version="4.20.72" />
         <PackageReference Include="xunit" Version="2.9.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0-pre.49">
           <PrivateAssets>all</PrivateAssets>
@@ -19,6 +20,14 @@
 
     <ItemGroup>
         <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Alexandria.Api\Alexandria.Api.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="FeatureTests\PeopleTests\" />
     </ItemGroup>
 
 </Project>

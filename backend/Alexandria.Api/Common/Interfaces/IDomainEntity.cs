@@ -1,4 +1,4 @@
-namespace Alexandria.Api.Common;
+namespace Alexandria.Api.Common.Interfaces;
 
 public interface IDomainEntity
 {

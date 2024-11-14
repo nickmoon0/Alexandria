@@ -1,8 +1,7 @@
 using Alexandria.Api.Domain;
-using Alexandria.Api.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Alexandria.Api.Infrastructure;
+namespace Alexandria.Api.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {

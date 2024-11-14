@@ -1,7 +1,7 @@
 using Alexandria.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Alexandria.Api.Infrastructure.Extensions;
+namespace Alexandria.Api.Infrastructure.Data;
 
 public static class ConfigureEntityExtensions
 {
