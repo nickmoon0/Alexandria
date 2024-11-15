@@ -50,13 +50,4 @@ public class Person : IDomainEntity
         var result = Result<Person>.CreateSuccessResult(person);
         return result;
     }
-    
-    public Result<IEnumerable<Document>> AddDocument(Document document)
-    {
-        throw new NotImplementedException();
-    }
-    public Result<IEnumerable<Document>> AddDocuments(IEnumerable<Document> documents)
-    {
-        throw new NotImplementedException();
-    }
 }
