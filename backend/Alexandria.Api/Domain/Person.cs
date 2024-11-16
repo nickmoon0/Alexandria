@@ -1,5 +1,4 @@
 using Alexandria.Api.Common.Interfaces;
-using Alexandria.Api.Common.Models;
 
 namespace Alexandria.Api.Domain;
 
@@ -20,34 +19,18 @@ public class Person : IDomainEntity
 
     private Person() { }
 
-    public static Result<Person> Create(
+    public Person(
         string firstName,
         string lastName,
         string? middleNames = null,
         string? description = null)
     {
-        var person = new Person
-        {
-            FirstName = firstName,
-            LastName = lastName,
-            MiddleNames = middleNames,
-            Description = description,
-            Documents = [],
-            IsDeleted = false,
-            CreatedAtUtc = DateTime.UtcNow
-        };
-
-        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
-        {
-            var error = new Error
-            {
-                Description = "First name and last name must have values",
-                Type = ErrorType.EntityValidationFailed
-            };
-            return Result<Person>.CreateErrorResult(error);
-        }
-        
-        var result = Result<Person>.CreateSuccessResult(person);
-        return result;
+        FirstName = firstName;
+        LastName = lastName;
+        MiddleNames = middleNames;
+        Description = description;
+        Documents = [];
+        IsDeleted = false;
+        CreatedAtUtc = DateTime.UtcNow;
     }
 }

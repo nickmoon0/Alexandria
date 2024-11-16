@@ -24,10 +24,8 @@ public class CreatePerson : IEndpoint
         var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid) return TypedResults.BadRequest();
 
-        var personResult = Person.Create(request.FirstName, request.LastName, request.MiddleNames, request.Description);
-        if (!personResult.IsSuccess) return TypedResults.BadRequest();
+        var person = new Person(request.FirstName, request.LastName, request.MiddleNames, request.Description);
         
-        var person = personResult.Value!;
         await context.People.AddAsync(person);
         await context.SaveChangesAsync();
         

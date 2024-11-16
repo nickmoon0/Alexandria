@@ -27,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="DomainTests\" />
       <Folder Include="FeatureTests\PeopleTests\" />
     </ItemGroup>
 
