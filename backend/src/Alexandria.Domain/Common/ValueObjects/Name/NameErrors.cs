@@ -4,14 +4,14 @@ namespace Alexandria.Domain.Common.ValueObjects.Name;
 
 public static class NameErrors
 {
-    public readonly static Error InvalidFirstName = Error.Validation(
-        "Name.InvalidFirstName",
+    public static readonly Error InvalidFirstName = Error.Validation(
+        $"{nameof(Name)}.InvalidFirstName",
         "First name must be between specified lengths.");
 
-    public readonly static Error InvalidLastName = Error.Validation(
-        "Name.InvalidLastName",
+    public static readonly Error InvalidLastName = Error.Validation(
+        $"{nameof(Name)}.InvalidLastName",
         "Last name must between specified lengths.");
-    public readonly static Error InvalidMiddleNames = Error.Validation(
-        "Name.InvalidMiddleNames",
+    public static readonly Error InvalidMiddleNames = Error.Validation(
+        $"{nameof(Name)}.InvalidMiddleNames",
         "Middle names must be between specified lengths.");
 }

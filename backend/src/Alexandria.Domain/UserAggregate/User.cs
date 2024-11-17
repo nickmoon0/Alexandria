@@ -6,7 +6,7 @@ namespace Alexandria.Domain.UserAggregate;
 
 public class User : AggregateRoot
 {
-    private Name Name { get; } 
+    public Name Name { get; } 
 
     private User() { }
 
