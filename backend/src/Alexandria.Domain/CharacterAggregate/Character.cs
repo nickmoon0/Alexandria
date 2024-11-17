@@ -13,7 +13,7 @@ public class Character : AggregateRoot
     
     private Character() { }
 
-    private Character(Guid id, Name name, string? description, Guid? userId) : base(id)
+    private Character(Name name, string? description, Guid? userId, Guid? id = null) : base(id ?? Guid.NewGuid())
     {
         _name = name;
         _description = description;
@@ -42,6 +42,6 @@ public class Character : AggregateRoot
             return errors;
         }
         
-        return new Character(Guid.NewGuid(), name, description, userId);
+        return new Character(name, description, userId);
     }
 }

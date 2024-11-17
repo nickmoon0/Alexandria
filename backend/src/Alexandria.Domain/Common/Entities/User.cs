@@ -9,12 +9,12 @@ public class User : Entity
 
     private User() { }
 
-    private User(Guid id, Name name) : base(id)
+    private User(Name name, Guid? id = null) : base(id ?? Guid.NewGuid())
     {
         _name = name;
     }
     public static ErrorOr<User> Create(Name name)
     {
-        return new User(Guid.NewGuid(), name);
+        return new User(name);
     }
 }
