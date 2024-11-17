@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\" />
+      <Folder Include="CommonTests\" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,7 +1,7 @@
 using Alexandria.Domain.Common.ValueObjects.Name;
 using FluentAssertions;
 
-namespace Alexandria.Domain.Tests.Common.ValueObjects;
+namespace Alexandria.Domain.Tests.CommonTests.ValueObjectTests;
 
 public class NameTests
 {
