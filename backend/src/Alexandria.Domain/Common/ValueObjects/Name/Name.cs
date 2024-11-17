@@ -6,7 +6,7 @@ public class Name : ValueObject
 {
     public string FirstName { get; }
     public string LastName { get; }
-    public string MiddleNames { get; }
+    public string? MiddleNames { get; }
     public override IEnumerable<object?> GetEqualityComponents()
     {
         yield return FirstName;
@@ -14,14 +14,14 @@ public class Name : ValueObject
         yield return MiddleNames;
     }
 
-    private Name(string firstName, string lastName, string middleNames)
+    private Name(string firstName, string lastName, string? middleNames)
     {
         FirstName = firstName;
         LastName = lastName;
         MiddleNames = middleNames;
     }
 
-    public static ErrorOr<Name> Create(string firstName, string lastName, string middleNames)
+    public static ErrorOr<Name> Create(string firstName, string lastName, string? middleNames)
     {
         const int firstNameMaxLength = 15;
         const int lastNameMaxLength = 15;
@@ -40,8 +40,9 @@ public class Name : ValueObject
             errors.Add(NameErrors.InvalidLastName);
         }
 
-        if (string.IsNullOrWhiteSpace(middleNames) || string.IsNullOrEmpty(middleNames) ||
-            middleNames.Length > middleNamesMaxLength)
+
+        if (string.IsNullOrEmpty(middleNames)) middleNames = null;
+        if (!string.IsNullOrEmpty(middleNames) && middleNames.Length > middleNamesMaxLength)
         {
             errors.Add(NameErrors.InvalidMiddleNames);
         }

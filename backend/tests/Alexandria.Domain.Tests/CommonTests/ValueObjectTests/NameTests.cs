@@ -56,7 +56,7 @@ public class NameTests
     }
     
     [Fact]
-    public void Create_WithEmptyMiddleNames_ShouldReturnError()
+    public void Create_WithEmptyMiddleNames_ShouldReturnName()
     {
         // Arrange
         const string firstName = "ValidFirst";
@@ -67,8 +67,27 @@ public class NameTests
         var result = Name.Create(firstName, lastName, middleName);
     
         // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(NameErrors.InvalidMiddleNames);
+        result.IsError.Should().BeFalse();
+        result.Value.FirstName.Should().Be(firstName);
+        result.Value.LastName.Should().Be(lastName);
+        result.Value.MiddleNames.Should().Be(null); // Empty middle name gets set to null
+    }
+
+    [Fact]
+    public void Create_WithNullMiddleNames_ShouldReturnName()
+    {
+        const string firstName = "ValidFirst";
+        const string lastName = "ValidLast";
+        const string? middleName = null;
+        
+        // Act
+        var result = Name.Create(firstName, lastName, middleName);
+    
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.FirstName.Should().Be(firstName);
+        result.Value.LastName.Should().Be(lastName);
+        result.Value.MiddleNames.Should().Be(middleName);
     }
     
     [Fact]
@@ -120,7 +139,7 @@ public class NameTests
     }
     
     [Fact]
-    public void Create_WithAllEmptyFields_ShouldReturnAllErrors()
+    public void Create_WithAllEmptyFields_ShouldReturn2Errors()
     {
         // Arrange
         const string firstName = "";
@@ -134,6 +153,5 @@ public class NameTests
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(NameErrors.InvalidFirstName);
         result.Errors.Should().Contain(NameErrors.InvalidLastName);
-        result.Errors.Should().Contain(NameErrors.InvalidMiddleNames);
     }
 }
