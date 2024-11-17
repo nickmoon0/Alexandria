@@ -188,4 +188,144 @@ public class DocumentTests
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
     }
+    
+    [Fact]
+    public void UpdateDescription_WithValidDescription_ShouldUpdateDescription()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        const string newDescription = "This is a new description";
+
+        // Act
+        var result = document.UpdateDescription(newDescription);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UpdateDescription_WithNullDescription_ShouldSetDescriptionToNull()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+
+        // Act
+        var result = document.UpdateDescription(null);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UpdateDescription_WithWhitespace_ShouldSetDescriptionToNull()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        const string whitespaceDescription = "   ";
+
+        // Act
+        var result = document.UpdateDescription(whitespaceDescription);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AddCharacter_WithValidCharacterId_ShouldAddToDocument()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var characterId = Guid.NewGuid();
+
+        // Act
+        var result = document.AddCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AddCharacter_WithEmptyCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var characterId = Guid.Empty; // Invalid character ID
+
+        // Act
+        var result = document.AddCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.InvalidCharacterId);
+    }
+
+    [Fact]
+    public void AddCharacter_WithDuplicateCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var characterId = Guid.NewGuid();
+        document.AddCharacter(characterId); // Add once
+
+        // Act
+        var result = document.AddCharacter(characterId); // Attempt to add again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.CharacterIdAlreadyPresent);
+    }
+
+    [Fact]
+    public void RemoveCharacter_WithExistingCharacterId_ShouldRemoveFromDocument()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var characterId = Guid.NewGuid();
+        document.AddCharacter(characterId); // Add first
+
+        // Act
+        var result = document.RemoveCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RemoveCharacter_WithNonExistingCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var characterId = Guid.NewGuid(); // Never added
+
+        // Act
+        var result = document.RemoveCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.CharacterIdNotPresent);
+    }
+
+    [Fact]
+    public void RemoveCharacter_WithEmptyCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var characterId = Guid.Empty; // Invalid character ID
+
+        // Act
+        var result = document.RemoveCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.InvalidCharacterId);
+    }
 }

@@ -15,4 +15,16 @@ public static class DocumentErrors
     public static readonly Error InvalidOwnerId = Error.Validation(
         $"{nameof(Document)}.InvalidOwnerId",
         "OwnerId must be valid Guid");
+
+    public static readonly Error InvalidCharacterId = Error.Validation(
+        $"{nameof(Document)}.InvalidCharacterId",
+        "CharacterId must be valid Guid");
+    
+    public static readonly Error CharacterIdAlreadyPresent = Error.Conflict(
+        $"{nameof(Document)}.CharacterIdAlreadyPresent",
+        "CharacterId is already present");
+    
+    public static readonly Error CharacterIdNotPresent = Error.Conflict(
+        $"{nameof(Document)}.CharacterIdNotPresent",
+        "CharacterId is not present");
 }

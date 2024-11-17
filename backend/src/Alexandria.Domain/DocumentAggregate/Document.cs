@@ -6,7 +6,11 @@ namespace Alexandria.Domain.DocumentAggregate;
 
 public class Document : AggregateRoot
 {
-    private string? _documentName;
+    private string? _name;
+    private string? _description;
+    
+    private readonly List<Guid> _characterIds = [];
+    
     private byte[]? _data;
     private Guid? _ownerId;
     private DateTime? _createdDateUtc;
@@ -14,20 +18,27 @@ public class Document : AggregateRoot
     private Document() { }
 
     private Document(
-        string documentName,
+        string name,
         byte[] data,
         Guid ownerId,
         DateTime utcNow,
-        Guid? id) 
+        string? description = null,
+        Guid? id = null) 
         : base(id ?? Guid.NewGuid())
     {
-        _documentName = documentName;
+        _name = name;
         _data = data;
         _ownerId = ownerId;
         _createdDateUtc = utcNow;
+        _description = description;
     }
 
-    public static ErrorOr<Document> Create(string documentName, byte[] data, Guid ownerId, IDateTimeProvider dateTimeProvider)
+    public static ErrorOr<Document> Create(
+        string documentName,
+        byte[] data,
+        Guid ownerId,
+        IDateTimeProvider dateTimeProvider,
+        string? description = null)
     {
         var errorList = new List<Error>();
         
@@ -53,7 +64,7 @@ public class Document : AggregateRoot
             return errorList;
         }
         
-        return new Document(documentName, data, ownerId, dateTimeProvider.UtcNow, Guid.NewGuid());
+        return new Document(documentName, data, ownerId, dateTimeProvider.UtcNow, description);
     }
 
     public ErrorOr<Updated> Rename(string newName)
@@ -63,7 +74,47 @@ public class Document : AggregateRoot
             return DocumentErrors.InvalidDocumentName;
         }
         
-        _documentName = newName;
+        _name = newName;
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> UpdateDescription(string? newDescription)
+    {
+        if (string.IsNullOrWhiteSpace(newDescription)) newDescription = null;
+        
+        _description = newDescription;
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> AddCharacter(Guid characterId)
+    {
+        if (characterId == Guid.Empty)
+        {
+            return DocumentErrors.InvalidCharacterId;
+        }
+
+        if (_characterIds.Contains(characterId))
+        {
+            return DocumentErrors.CharacterIdAlreadyPresent;
+        }
+        
+        _characterIds.Add(characterId);
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> RemoveCharacter(Guid characterId)
+    {
+        if (characterId == Guid.Empty)
+        {
+            return DocumentErrors.InvalidCharacterId;
+        }
+
+        if (!_characterIds.Contains(characterId))
+        {
+            return DocumentErrors.CharacterIdNotPresent;
+        }
+        
+        _characterIds.Remove(characterId);
         return Result.Updated;
     }
     
