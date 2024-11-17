@@ -4,7 +4,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.DocumentAggregate;
 
-public class Document : AggregateRoot
+public class Document : TaggableAggregateRoot
 {
     private string? _name;
     private string? _description;

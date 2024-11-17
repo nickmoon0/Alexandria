@@ -3,7 +3,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.CollectionAggregate;
 
-public class Collection : AggregateRoot
+public class Collection : TaggableAggregateRoot
 {
     private string? _name;
     private readonly List<Guid>? _documentIds = [];

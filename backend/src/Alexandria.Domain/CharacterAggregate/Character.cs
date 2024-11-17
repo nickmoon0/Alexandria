@@ -4,7 +4,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.CharacterAggregate;
 
-public class Character : AggregateRoot
+public class Character : TaggableAggregateRoot
 {
     private Name? _name;
     private string? _description;
