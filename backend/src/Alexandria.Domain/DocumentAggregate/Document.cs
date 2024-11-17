@@ -6,10 +6,10 @@ namespace Alexandria.Domain.DocumentAggregate;
 
 public class Document : AggregateRoot
 {
-    public string? DocumentName { get; }
-    public byte[]? Data { get; }
-    public Guid? OwnerId { get; }
-    public DateTime? CreatedDateUtc { get; }
+    private string? _documentName;
+    private byte[]? _data;
+    private Guid? _ownerId;
+    private DateTime? _createdDateUtc;
     
     private Document() { }
 
@@ -21,10 +21,10 @@ public class Document : AggregateRoot
         Guid? id) 
         : base(id ?? Guid.NewGuid())
     {
-        DocumentName = documentName;
-        Data = data;
-        OwnerId = ownerId;
-        CreatedDateUtc = utcNow;
+        _documentName = documentName;
+        _data = data;
+        _ownerId = ownerId;
+        _createdDateUtc = utcNow;
     }
 
     public static ErrorOr<Document> Create(string documentName, byte[] data, Guid ownerId, IDateTimeProvider dateTimeProvider)

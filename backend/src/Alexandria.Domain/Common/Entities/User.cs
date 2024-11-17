@@ -5,13 +5,13 @@ namespace Alexandria.Domain.Common.Entities;
 
 public class User : Entity
 {
-    public Name? Name { get; } 
+    private Name? _name;
 
     private User() { }
 
     private User(Guid id, Name name) : base(id)
     {
-        Name = name;
+        _name = name;
     }
     public static ErrorOr<User> Create(Name name)
     {

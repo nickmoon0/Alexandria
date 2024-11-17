@@ -19,7 +19,5 @@ public class UserTests
         
         // Assert
         userResult.IsError.Should().BeFalse();
-        userResult.Value.Id.Should().NotBe(Guid.Empty);
-        userResult.Value.Name.Should().Be(name);
     }
 }

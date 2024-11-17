@@ -21,10 +21,6 @@ public class DocumentTests
 
         // Assert
         result.IsError.Should().BeFalse();
-        result.Value.DocumentName.Should().Be(documentName);
-        result.Value.Data.Should().BeEquivalentTo(data);
-        result.Value.OwnerId.Should().Be(ownerId);
-        result.Value.CreatedDateUtc.Should().Be(now);
     }
 
     [Fact]

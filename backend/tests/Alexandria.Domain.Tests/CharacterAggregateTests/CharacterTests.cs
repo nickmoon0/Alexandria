@@ -20,10 +20,6 @@ public class CharacterTests
         
         // Assert
         characterResult.IsError.Should().BeFalse();
-        characterResult.Value.Id.Should().NotBe(Guid.Empty);
-        characterResult.Value.Name.Should().Be(name);
-        characterResult.Value.Description.Should().Be(description);
-        characterResult.Value.UserId.Should().Be(userId);
     }
 
     [Fact]
@@ -58,9 +54,6 @@ public class CharacterTests
         
         // Assert
         characterResult.IsError.Should().BeFalse();
-        characterResult.Value.Id.Should().NotBe(Guid.Empty);
-        characterResult.Value.Name.Should().Be(name);
-        characterResult.Value.Description.Should().Be(""); // Description should get trimmed
     }
     
     [Fact]

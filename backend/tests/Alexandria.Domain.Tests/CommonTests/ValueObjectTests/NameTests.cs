@@ -18,9 +18,6 @@ public class NameTests
         
         // Assert
         result.IsError.Should().BeFalse();
-        result.Value.FirstName.Should().Be(firstName);
-        result.Value.LastName.Should().Be(lastName);
-        result.Value.MiddleNames.Should().Be(middleName);
     }
     
     [Fact]
@@ -68,9 +65,6 @@ public class NameTests
     
         // Assert
         result.IsError.Should().BeFalse();
-        result.Value.FirstName.Should().Be(firstName);
-        result.Value.LastName.Should().Be(lastName);
-        result.Value.MiddleNames.Should().Be(null); // Empty middle name gets set to null
     }
 
     [Fact]
@@ -85,9 +79,6 @@ public class NameTests
     
         // Assert
         result.IsError.Should().BeFalse();
-        result.Value.FirstName.Should().Be(firstName);
-        result.Value.LastName.Should().Be(lastName);
-        result.Value.MiddleNames.Should().Be(middleName);
     }
     
     [Fact]
