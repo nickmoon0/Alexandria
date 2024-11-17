@@ -6,7 +6,7 @@ namespace Alexandria.Domain.CharacterAggregate;
 
 public class Character : AggregateRoot
 {
-    public Name Name { get; }
+    public Name? Name { get; }
     public string? Description { get; }
     
     private Character() { }
