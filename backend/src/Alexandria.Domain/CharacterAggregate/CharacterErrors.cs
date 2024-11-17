@@ -7,4 +7,8 @@ public static class CharacterErrors
     public static readonly Error DescriptionTooLong = Error.Validation(
         $"{nameof(Character)}.DescriptionTooLong",
         "Description cannot exceed maximum length.");
+
+    public static readonly Error InvalidUserId = Error.Validation(
+        $"{nameof(Character)}.InvalidUserId",
+        "User ID must be valid Guid");
 }
