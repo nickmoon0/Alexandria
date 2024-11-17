@@ -7,7 +7,7 @@ namespace Alexandria.Domain.Tests.DocumentAggregateTests;
 public class DocumentTests
 {
     [Fact]
-    public void CreateDocument_WithValidInputs_ShouldReturnDocument()
+    public void Document_WithValidInputs_ShouldReturnDocument()
     {
         // Arrange
         const string documentName = "ValidDocument";
@@ -24,7 +24,7 @@ public class DocumentTests
     }
 
     [Fact]
-    public void CreateDocument_WithEmptyDocumentName_ShouldReturnError()
+    public void Document_WithEmptyDocumentName_ShouldReturnError()
     {
         // Arrange
         const string documentName = "";
@@ -41,7 +41,7 @@ public class DocumentTests
     }
 
     [Fact]
-    public void CreateDocument_WithTooLongDocumentName_ShouldReturnError()
+    public void Document_WithTooLongDocumentName_ShouldReturnError()
     {
         // Arrange
         var documentName = new string('A', 101); // 101 characters
@@ -58,7 +58,7 @@ public class DocumentTests
     }
 
     [Fact]
-    public void CreateDocument_WithEmptyData_ShouldReturnError()
+    public void Document_WithEmptyData_ShouldReturnError()
     {
         // Arrange
         const string documentName = "ValidDocument";
@@ -75,7 +75,7 @@ public class DocumentTests
     }
 
     [Fact]
-    public void CreateDocument_WithEmptyOwnerId_ShouldReturnError()
+    public void Document_WithEmptyOwnerId_ShouldReturnError()
     {
         // Arrange
         const string documentName = "ValidDocument";
@@ -92,7 +92,7 @@ public class DocumentTests
     }
 
     [Fact]
-    public void CreateDocument_WithMultipleInvalidInputs_ShouldReturnAllErrors()
+    public void Document_WithMultipleInvalidInputs_ShouldReturnAllErrors()
     {
         // Arrange
         const string documentName = ""; // Invalid
@@ -108,5 +108,84 @@ public class DocumentTests
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
         result.Errors.Should().Contain(DocumentErrors.EmptyDocumentData);
         result.Errors.Should().Contain(DocumentErrors.InvalidOwnerId);
+    }
+    
+    [Fact]
+    public void Rename_WithValidName_ShouldUpdateDocumentName()
+    {
+        // Arrange
+        const string initialName = "InitialDocument";
+        const string newName = "RenamedDocument";
+        var data = new byte[] { 0x01, 0x02, 0x03 };
+        var ownerId = Guid.NewGuid();
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+
+        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+
+        // Act
+        var result = document.Rename(newName);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Rename_WithEmptyName_ShouldReturnError()
+    {
+        // Arrange
+        const string initialName = "InitialDocument";
+        const string newName = ""; // Invalid
+        var data = new byte[] { 0x01, 0x02, 0x03 };
+        var ownerId = Guid.NewGuid();
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+
+        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+
+        // Act
+        var result = document.Rename(newName);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
+    }
+
+    [Fact]
+    public void Rename_WithTooLongName_ShouldReturnError()
+    {
+        // Arrange
+        const string initialName = "InitialDocument";
+        var newName = new string('A', 101); // 101 characters, invalid
+        var data = new byte[] { 0x01, 0x02, 0x03 };
+        var ownerId = Guid.NewGuid();
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+
+        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+
+        // Act
+        var result = document.Rename(newName);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
+    }
+
+    [Fact]
+    public void Rename_WithWhitespaceName_ShouldReturnError()
+    {
+        // Arrange
+        const string initialName = "InitialDocument";
+        const string newName = "   "; // Invalid
+        var data = new byte[] { 0x01, 0x02, 0x03 };
+        var ownerId = Guid.NewGuid();
+        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+
+        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+
+        // Act
+        var result = document.Rename(newName);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
     }
 }

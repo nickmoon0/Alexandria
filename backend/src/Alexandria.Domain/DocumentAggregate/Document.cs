@@ -32,7 +32,7 @@ public class Document : AggregateRoot
         var errorList = new List<Error>();
         
         // Validate document name
-        if (string.IsNullOrWhiteSpace(documentName) || string.IsNullOrEmpty(documentName) || documentName.Length > 100)
+        if (!DocumentNameValid(documentName))
         {
             errorList.Add(DocumentErrors.InvalidDocumentName);
         }
@@ -55,4 +55,20 @@ public class Document : AggregateRoot
         
         return new Document(documentName, data, ownerId, dateTimeProvider.UtcNow, Guid.NewGuid());
     }
+
+    public ErrorOr<Updated> Rename(string newName)
+    {
+        if (!DocumentNameValid(newName))
+        {
+            return DocumentErrors.InvalidDocumentName;
+        }
+        
+        _documentName = newName;
+        return Result.Updated;
+    }
+    
+    private static bool DocumentNameValid(string name) =>
+        !string.IsNullOrWhiteSpace(name) && 
+        !string.IsNullOrEmpty(name) && 
+        name.Length <= 100;
 }
