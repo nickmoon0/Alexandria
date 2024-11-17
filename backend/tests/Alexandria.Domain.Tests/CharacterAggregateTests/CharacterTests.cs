@@ -62,12 +62,8 @@ public class CharacterTests
         // Arrange
         var nameResult = Name.Create("First", "Last", "Middle");
         var name = nameResult.Value;
-        var description = "";
-        for (var i = 0; i < 2001; i++) // Create a description that's too long
-        {
-            description += "a";
-        }
-        
+        var description = new string('a', 2001);
+
         // Act
         var characterResult = Character.Create(name, description);
         
