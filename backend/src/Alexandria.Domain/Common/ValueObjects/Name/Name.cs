@@ -4,21 +4,21 @@ namespace Alexandria.Domain.Common.ValueObjects.Name;
 
 public class Name : ValueObject
 {
-    public string FirstName { get; }
-    public string LastName { get; }
-    public string? MiddleNames { get; }
+    private readonly string _firstName;
+    private readonly string _lastName;
+    private readonly string? _middleNames;
     public override IEnumerable<object?> GetEqualityComponents()
     {
-        yield return FirstName;
-        yield return LastName;
-        yield return MiddleNames;
+        yield return _firstName;
+        yield return _lastName;
+        yield return _middleNames;
     }
 
     private Name(string firstName, string lastName, string? middleNames)
     {
-        FirstName = firstName;
-        LastName = lastName;
-        MiddleNames = middleNames;
+        _firstName = firstName;
+        _lastName = lastName;
+        _middleNames = middleNames;
     }
 
     public static ErrorOr<Name> Create(string firstName, string lastName, string? middleNames)

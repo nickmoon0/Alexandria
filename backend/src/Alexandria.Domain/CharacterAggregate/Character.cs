@@ -6,18 +6,18 @@ namespace Alexandria.Domain.CharacterAggregate;
 
 public class Character : AggregateRoot
 {
-    public Name? Name { get; }
-    public string? Description { get; }
-    
-    public Guid? UserId { get; }
+    private Name? _name;
+    private string? _description;
+
+    private Guid? _userId;
     
     private Character() { }
 
     private Character(Guid id, Name name, string? description, Guid? userId) : base(id)
     {
-        Name = name;
-        Description = description;
-        UserId = userId;
+        _name = name;
+        _description = description;
+        _userId = userId;
     }
 
     public static ErrorOr<Character> Create(Name name, string? description = null, Guid? userId = null)
