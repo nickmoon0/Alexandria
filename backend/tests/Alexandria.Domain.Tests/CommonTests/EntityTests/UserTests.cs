@@ -1,8 +1,8 @@
+using Alexandria.Domain.Common.Entities;
 using Alexandria.Domain.Common.ValueObjects.Name;
-using Alexandria.Domain.UserAggregate;
 using FluentAssertions;
 
-namespace Alexandria.Domain.Tests.UserAggregateTests;
+namespace Alexandria.Domain.Tests.CommonTests.EntityTests;
 
 public class UserTests
 {

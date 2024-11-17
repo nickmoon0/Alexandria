@@ -1,10 +1,9 @@
-using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.ValueObjects.Name;
 using ErrorOr;
 
-namespace Alexandria.Domain.UserAggregate;
+namespace Alexandria.Domain.Common.Entities;
 
-public class User : AggregateRoot
+public class User : Entity
 {
     public Name? Name { get; } 
 
