@@ -1,0 +1,20 @@
+using Alexandria.Domain.Common.ValueObjects.Name;
+using ErrorOr;
+
+namespace Alexandria.Domain.Common.Entities;
+
+public class User : Entity
+{
+    private Name? _name;
+
+    private User() { }
+
+    private User(Guid id, Name name) : base(id)
+    {
+        _name = name;
+    }
+    public static ErrorOr<User> Create(Name name)
+    {
+        return new User(Guid.NewGuid(), name);
+    }
+}

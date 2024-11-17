@@ -5,6 +5,10 @@ services:
     build:
       context: .
       target: development
+    develop:
+      watch:
+        - action: rebuild
+          path: .
     ports:
       - "8080:80"
     depends_on:
