@@ -1,5 +1,7 @@
 using Alexandria.Domain.DocumentAggregate;
+using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.Tests.TestUtils.Services;
+using ErrorOr;
 using FluentAssertions;
 
 namespace Alexandria.Domain.Tests.DocumentAggregateTests;
@@ -12,12 +14,13 @@ public class DocumentTests
         // Arrange
         const string documentName = "ValidDocument";
         var data = new byte[] { 0x01, 0x02, 0x03 };
+        var imagePath = "test/image.jpg";
         var ownerId = Guid.NewGuid();
         var now = DateTime.UtcNow;
         var dateTimeProvider = new TestDateTimeProvider(now);
         
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = Document.Create(documentName, data, imagePath, ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -28,12 +31,9 @@ public class DocumentTests
     {
         // Arrange
         const string documentName = "";
-        var data = new byte[] { 0x01, 0x02, 0x03 };
-        var ownerId = Guid.NewGuid();
-        var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = DocumentFactory.CreateDocument(name: documentName);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -45,12 +45,9 @@ public class DocumentTests
     {
         // Arrange
         var documentName = new string('A', 101); // 101 characters
-        var data = new byte[] { 0x01, 0x02, 0x03 };
-        var ownerId = Guid.NewGuid();
-        var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = DocumentFactory.CreateDocument(name: documentName);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -61,34 +58,28 @@ public class DocumentTests
     public void Document_WithEmptyData_ShouldReturnError()
     {
         // Arrange
-        const string documentName = "ValidDocument";
         var data = Array.Empty<byte>();
-        var ownerId = Guid.NewGuid();
-        var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = DocumentFactory.CreateDocument(data: data);
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.EmptyDocumentData);
+        result.Errors.Should().Contain(DocumentErrors.EmptyData);
     }
 
     [Fact]
     public void Document_WithEmptyOwnerId_ShouldReturnError()
     {
         // Arrange
-        const string documentName = "ValidDocument";
-        var data = new byte[] { 0x01, 0x02, 0x03 };
-        var ownerId = Guid.Empty;
-        var dateTimeProvider = new TestDateTimeProvider();
+        var createdById = Guid.Empty;
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = DocumentFactory.CreateDocument(createdById: createdById);
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.InvalidOwnerId);
+        result.Errors.Should().Contain(DocumentErrors.InvalidUserId);
     }
 
     [Fact]
@@ -97,17 +88,16 @@ public class DocumentTests
         // Arrange
         const string documentName = ""; // Invalid
         var data = Array.Empty<byte>(); // Invalid
-        var ownerId = Guid.Empty; // Invalid
-        var dateTimeProvider = new TestDateTimeProvider();
+        var createdById = Guid.Empty; // Invalid
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = DocumentFactory.CreateDocument(name: documentName, data: data, createdById: createdById);
 
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
-        result.Errors.Should().Contain(DocumentErrors.EmptyDocumentData);
-        result.Errors.Should().Contain(DocumentErrors.InvalidOwnerId);
+        result.Errors.Should().Contain(DocumentErrors.EmptyData);
+        result.Errors.Should().Contain(DocumentErrors.InvalidUserId);
     }
     
     [Fact]
@@ -116,11 +106,8 @@ public class DocumentTests
         // Arrange
         const string initialName = "InitialDocument";
         const string newName = "RenamedDocument";
-        var data = new byte[] { 0x01, 0x02, 0x03 };
-        var ownerId = Guid.NewGuid();
-        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = DocumentFactory.CreateDocument(name: initialName).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -135,11 +122,8 @@ public class DocumentTests
         // Arrange
         const string initialName = "InitialDocument";
         const string newName = ""; // Invalid
-        var data = new byte[] { 0x01, 0x02, 0x03 };
-        var ownerId = Guid.NewGuid();
-        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = DocumentFactory.CreateDocument(name: initialName).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -155,11 +139,8 @@ public class DocumentTests
         // Arrange
         const string initialName = "InitialDocument";
         var newName = new string('A', 101); // 101 characters, invalid
-        var data = new byte[] { 0x01, 0x02, 0x03 };
-        var ownerId = Guid.NewGuid();
-        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = DocumentFactory.CreateDocument(name: initialName).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -175,11 +156,8 @@ public class DocumentTests
         // Arrange
         const string initialName = "InitialDocument";
         const string newName = "   "; // Invalid
-        var data = new byte[] { 0x01, 0x02, 0x03 };
-        var ownerId = Guid.NewGuid();
-        var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = DocumentFactory.CreateDocument(name: initialName).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -187,5 +165,271 @@ public class DocumentTests
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
+    }
+    
+    [Fact]
+    public void UpdateDescription_WithValidDescription_ShouldUpdateDescription()
+    {
+        // Arrange
+        const string initialDescription = "InitialDescription";
+        const string newDescription = "This is a new description";
+        var document = DocumentFactory.CreateDocument(description: initialDescription).Value;
+
+        // Act
+        var result = document.UpdateDescription(newDescription);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UpdateDescription_WithNullDescription_ShouldSetDescriptionToNull()
+    {
+        // Arrange
+        const string initialDescription = "InitialDescription";
+        var document = DocumentFactory.CreateDocument(description: initialDescription).Value;
+        
+        // Act
+        var result = document.UpdateDescription(null);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UpdateDescription_WithWhitespace_ShouldSetDescriptionToNull()
+    {
+        // Arrange
+        const string initialDescription = "InitialDescription";
+        const string whitespaceDescription = "   ";
+
+        var document = DocumentFactory.CreateDocument(description: initialDescription).Value;
+
+        // Act
+        var result = document.UpdateDescription(whitespaceDescription);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AddCharacter_WithValidCharacterId_ShouldAddToDocument()
+    {
+        // Arrange
+        var characterId = Guid.NewGuid();
+        var document = DocumentFactory.CreateDocument().Value;
+
+        // Act
+        var result = document.AddCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AddCharacter_WithEmptyCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var characterId = Guid.Empty; // Invalid character ID
+        var document = DocumentFactory.CreateDocument().Value;
+
+        // Act
+        var result = document.AddCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.InvalidCharacterId);
+    }
+
+    [Fact]
+    public void AddCharacter_WithDuplicateCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var characterId = Guid.NewGuid();
+        var document = DocumentFactory.CreateDocument().Value;
+        document.AddCharacter(characterId); // Add once
+
+        // Act
+        var result = document.AddCharacter(characterId); // Attempt to add again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.CharacterIdAlreadyPresent);
+    }
+
+    [Fact]
+    public void RemoveCharacter_WithExistingCharacterId_ShouldRemoveFromDocument()
+    {
+        // Arrange
+        var characterId = Guid.NewGuid();
+        var document = DocumentFactory.CreateDocument().Value;
+        document.AddCharacter(characterId); // Add first
+
+        // Act
+        var result = document.RemoveCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RemoveCharacter_WithNonExistingCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var characterId = Guid.NewGuid(); // Never added
+
+        // Act
+        var result = document.RemoveCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.CharacterIdNotPresent);
+    }
+
+    [Fact]
+    public void RemoveCharacter_WithEmptyCharacterId_ShouldReturnError()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var characterId = Guid.Empty; // Invalid character ID
+
+        // Act
+        var result = document.RemoveCharacter(characterId);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(DocumentErrors.InvalidCharacterId);
+    }
+    
+    [Fact]
+    public void Delete_NotAlreadyDeletedDocument_ShouldReturnDeleted()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var document = DocumentFactory.CreateDocument(dateTimeProvider: mockDateTimeProvider).Value;
+
+        // Act
+        var result = document.Delete(mockDateTimeProvider);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        document.DeletedAtUtc.Should().Be(now);
+    }
+
+    [Fact]
+    public void Delete_WhenAlreadyDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var document = DocumentFactory.CreateDocument(dateTimeProvider: mockDateTimeProvider).Value;
+
+        // Act
+        document.Delete(mockDateTimeProvider); // Initial delete
+        var result = document.Delete(mockDateTimeProvider); // Attempt to delete again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.Failure());
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenDeleted_ShouldReturnSuccess()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var document = DocumentFactory.CreateDocument(dateTimeProvider: mockDateTimeProvider).Value;
+
+        document.Delete(mockDateTimeProvider); // Mark as deleted
+
+        // Act
+        var result = document.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        document.DeletedAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenNotDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var mockDateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+        var document = DocumentFactory.CreateDocument(dateTimeProvider: mockDateTimeProvider).Value;
+
+        // Act
+        var result = document.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        document.DeletedAtUtc.Should().BeNull();
+    }
+    
+    [Fact]
+    public void AddComment_WithValidComment_ShouldReturnUpdated()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        // Act
+        var result = document.AddComment(comment);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AddComment_WithDuplicateComment_ShouldReturnError()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        document.AddComment(comment); // Add the comment once
+
+        // Act
+        var result = document.AddComment(comment); // Attempt to add again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.Conflict());
+    }
+
+    [Fact]
+    public void RemoveComment_WithExistingComment_ShouldReturnUpdated()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        document.AddComment(comment); // Add the comment
+
+        // Act
+        var result = document.RemoveComment(comment);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RemoveComment_WithNonExistingComment_ShouldReturnError()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        // Act
+        var result = document.RemoveComment(comment);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.NotFound());
     }
 }

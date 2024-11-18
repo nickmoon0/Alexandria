@@ -8,6 +8,10 @@ public static class CollectionErrors
         $"{nameof(Collection)}.InvalidName",
         "Collection name must be between specified length");
 
+    public static readonly Error InvalidUserId = Error.Validation(
+        $"{nameof(Collection)}.InvalidUserId",
+        "User Id must be valid Guid");
+    
     public static readonly Error InvalidDocumentId = Error.Validation(
         $"{nameof(Collection)}.InvalidDocumentId",
         "Document Id must be a valid Guid");

@@ -1,27 +1,42 @@
 using Alexandria.Domain.Common;
+using Alexandria.Domain.Common.Interfaces;
 using ErrorOr;
 
 namespace Alexandria.Domain.CollectionAggregate;
 
-public class Collection : Entity
+public class Collection : TaggableAggregateRoot, IAuditable, ISoftDeletable
 {
-    private string? _name;
-    private readonly List<Guid>? _documentIds = [];
+    private string? Name { get; set; }
+    private List<Guid>? DocumentIds { get; init; } = [];
     
+    public Guid CreatedById { get; }
+    public DateTime CreatedAtUtc { get; }
+    
+    public DateTime? DeletedAtUtc { get; private set; }
+
     private Collection() { }
 
-    private Collection(string name, Guid? id = null) : base(id ?? Guid.NewGuid())
+    private Collection(string name, Guid createdById, DateTime createdAtUtc, Guid? id = null) : base(id ?? Guid.NewGuid())
     {
-        _name = name;
+        Name = name;
+        
+        CreatedById = createdById;
+        CreatedAtUtc = createdAtUtc;
     }
 
-    public static ErrorOr<Collection> Create(string name)
+    public static ErrorOr<Collection> Create(string name, Guid createdById, IDateTimeProvider dateTimeProvider)
     {
         if (!CollectionNameValid(name))
         {
             return CollectionErrors.InvalidName;
         }
-        return new Collection(name);
+
+        if (createdById == Guid.Empty)
+        {
+            return CollectionErrors.InvalidUserId;
+        }
+        
+        return new Collection(name, createdById, dateTimeProvider.UtcNow);
     }
 
     public ErrorOr<Updated> Rename(string name)
@@ -30,7 +45,7 @@ public class Collection : Entity
         {
             return CollectionErrors.InvalidName;
         }
-        _name = name;
+        Name = name;
         return Result.Updated;
     }
 
@@ -41,19 +56,41 @@ public class Collection : Entity
             return CollectionErrors.InvalidDocumentId;
         }
         
-        _documentIds!.Add(documentId);
+        DocumentIds!.Add(documentId);
         return Result.Updated;
     }
 
     public ErrorOr<Updated> RemoveDocument(Guid documentId)
     {
-        if (!_documentIds!.Contains(documentId))
+        if (!DocumentIds!.Contains(documentId))
         {
             return CollectionErrors.DocumentIdNotFound;
         }
         
-        _documentIds!.Remove(documentId);
+        DocumentIds!.Remove(documentId);
         return Result.Updated;
+    }
+    
+    public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
+    {
+        if (DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = dateTimeProvider.UtcNow;
+        return Result.Deleted;
+    }
+
+    public ErrorOr<Success> RecoverDeleted()
+    {
+        if (!DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = null;
+        return Result.Success;
     }
     
     private static bool CollectionNameValid(string name) => 

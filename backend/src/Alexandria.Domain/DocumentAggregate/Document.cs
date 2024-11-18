@@ -4,30 +4,51 @@ using ErrorOr;
 
 namespace Alexandria.Domain.DocumentAggregate;
 
-public class Document : AggregateRoot
+public class Document : TaggableAggregateRoot, IAuditable, ISoftDeletable
 {
-    private string? _documentName;
-    private byte[]? _data;
-    private Guid? _ownerId;
-    private DateTime? _createdDateUtc;
+    private string? Name { get; set; }
+    private string? Description {get; set;}
+
+    private List<Guid> CharacterIds { get; init; } = [];
+    private List<Comment> Comments { get; init; } = [];
     
+    private string? ImagePath { get; set; }
+    private byte[]? Data { get; set; }
+    
+    public Guid CreatedById { get; }
+    public DateTime CreatedAtUtc { get; }
+    
+    public DateTime? DeletedAtUtc { get; private set; }
+
     private Document() { }
 
     private Document(
-        string documentName,
+        string name,
         byte[] data,
-        Guid ownerId,
+        string imagePath,
+        Guid createdById,
         DateTime utcNow,
-        Guid? id) 
+        string? description = null,
+        Guid? id = null)
         : base(id ?? Guid.NewGuid())
     {
-        _documentName = documentName;
-        _data = data;
-        _ownerId = ownerId;
-        _createdDateUtc = utcNow;
+        Name = name;
+        Data = data;
+        ImagePath = imagePath;
+        CreatedById = createdById;
+        CreatedAtUtc = utcNow;
+        Description = description;
+        
+        DeletedAtUtc = null;
     }
 
-    public static ErrorOr<Document> Create(string documentName, byte[] data, Guid ownerId, IDateTimeProvider dateTimeProvider)
+    public static ErrorOr<Document> Create(
+        string documentName,
+        byte[] data,
+        string imagePath,
+        Guid createdById,
+        IDateTimeProvider dateTimeProvider,
+        string? description = null)
     {
         var errorList = new List<Error>();
         
@@ -40,12 +61,12 @@ public class Document : AggregateRoot
         // Validate array isn't empty
         if (data.Length <= 0)
         {
-            errorList.Add(DocumentErrors.EmptyDocumentData);
+            errorList.Add(DocumentErrors.EmptyData);
         }
 
-        if (ownerId == Guid.Empty)
+        if (createdById == Guid.Empty)
         {
-            errorList.Add(DocumentErrors.InvalidOwnerId);
+            errorList.Add(DocumentErrors.InvalidUserId);
         }
 
         if (errorList.Count != 0)
@@ -53,7 +74,7 @@ public class Document : AggregateRoot
             return errorList;
         }
         
-        return new Document(documentName, data, ownerId, dateTimeProvider.UtcNow, Guid.NewGuid());
+        return new Document(documentName, data, imagePath, createdById, dateTimeProvider.UtcNow, description);
     }
 
     public ErrorOr<Updated> Rename(string newName)
@@ -63,8 +84,92 @@ public class Document : AggregateRoot
             return DocumentErrors.InvalidDocumentName;
         }
         
-        _documentName = newName;
+        Name = newName;
         return Result.Updated;
+    }
+
+    public ErrorOr<Updated> UpdateDescription(string? newDescription)
+    {
+        if (string.IsNullOrWhiteSpace(newDescription)) newDescription = null;
+        
+        Description = newDescription;
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> AddCharacter(Guid characterId)
+    {
+        if (characterId == Guid.Empty)
+        {
+            return DocumentErrors.InvalidCharacterId;
+        }
+
+        if (CharacterIds.Contains(characterId))
+        {
+            return DocumentErrors.CharacterIdAlreadyPresent;
+        }
+        
+        CharacterIds.Add(characterId);
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> RemoveCharacter(Guid characterId)
+    {
+        if (characterId == Guid.Empty)
+        {
+            return DocumentErrors.InvalidCharacterId;
+        }
+
+        if (!CharacterIds.Contains(characterId))
+        {
+            return DocumentErrors.CharacterIdNotPresent;
+        }
+        
+        CharacterIds.Remove(characterId);
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> AddComment(Comment comment)
+    {
+        if (Comments.Contains(comment))
+        {
+            return Error.Conflict();
+        }
+        
+        Comments.Add(comment);
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> RemoveComment(Comment comment)
+    {
+        if (!Comments.Contains(comment))
+        {
+            return Error.NotFound();
+        }
+
+        Comments.Remove(comment);
+        return Result.Updated;
+    }
+    
+    public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
+    {
+        if (DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = dateTimeProvider.UtcNow;
+        return Result.Deleted;
+    }
+
+    public ErrorOr<Success> RecoverDeleted()
+    {
+        if (!DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = null;
+        return Result.Success;
     }
     
     private static bool DocumentNameValid(string name) =>

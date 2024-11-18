@@ -1,4 +1,7 @@
 using Alexandria.Domain.CollectionAggregate;
+using Alexandria.Domain.Tests.TestUtils.Factories;
+using Alexandria.Domain.Tests.TestUtils.Services;
+using ErrorOr;
 using FluentAssertions;
 
 namespace Alexandria.Domain.Tests.CollectionAggregateTests;
@@ -6,13 +9,15 @@ namespace Alexandria.Domain.Tests.CollectionAggregateTests;
 public class CollectionTests
 {
     [Fact]
-    public void Create_WithValidName_ShouldReturnCollection()
+    public void Create_WithValidParameters_ShouldReturnCollection()
     {
         // Arrange
         var name = new string('A', 100); // Valid name with exactly 100 characters
-
+        var createdById = Guid.NewGuid();
+        var dateTimeProvider = new TestDateTimeProvider();
+        
         // Act
-        var result = Collection.Create(name);
+        var result = Collection.Create(name, createdById, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -26,7 +31,7 @@ public class CollectionTests
         const string name = ""; // Invalid name
 
         // Act
-        var result = Collection.Create(name);
+        var result = CollectionFactory.CreateCollection(name: name);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -40,7 +45,7 @@ public class CollectionTests
         var name = new string('A', 101);
 
         // Act
-        var result = Collection.Create(name);
+        var result = CollectionFactory.CreateCollection(name: name);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -53,7 +58,7 @@ public class CollectionTests
         // Arrange
         var initialName = new string('A', 100);
         var newName = new string('B', 100);
-        var collection = Collection.Create(initialName).Value;
+        var collection = CollectionFactory.CreateCollection(name: initialName).Value;
 
         // Act
         var result = collection.Rename(newName);
@@ -68,7 +73,7 @@ public class CollectionTests
         // Arrange
         var initialName = new string('A', 100);
         const string newName = ""; // Invalid name
-        var collection = Collection.Create(initialName).Value;
+        var collection = CollectionFactory.CreateCollection(name: initialName).Value;
 
         // Act
         var result = collection.Rename(newName);
@@ -82,8 +87,7 @@ public class CollectionTests
     public void AddDocument_WithValidDocumentId_ShouldAddToCollection()
     {
         // Arrange
-        var name = new string('A', 100);
-        var collection = Collection.Create(name).Value;
+        var collection = CollectionFactory.CreateCollection().Value;
         var documentId = Guid.NewGuid();
 
         // Act
@@ -97,8 +101,7 @@ public class CollectionTests
     public void AddDocument_WithEmptyDocumentId_ShouldReturnError()
     {
         // Arrange
-        var name = new string('A', 100);
-        var collection = Collection.Create(name).Value;
+        var collection = CollectionFactory.CreateCollection().Value;
         var documentId = Guid.Empty; // Invalid document ID
 
         // Act
@@ -113,8 +116,7 @@ public class CollectionTests
     public void RemoveDocument_WithExistingDocumentId_ShouldRemoveFromCollection()
     {
         // Arrange
-        var name = new string('A', 100);
-        var collection = Collection.Create(name).Value;
+        var collection = CollectionFactory.CreateCollection().Value;
         var documentId = Guid.NewGuid();
         collection.AddDocument(documentId);
 
@@ -129,8 +131,7 @@ public class CollectionTests
     public void RemoveDocument_WithNonExistingDocumentId_ShouldReturnError()
     {
         // Arrange
-        var name = new string('A', 100);
-        var collection = Collection.Create(name).Value;
+        var collection = CollectionFactory.CreateCollection().Value;
         var documentId = Guid.NewGuid();
 
         // Act
@@ -139,5 +140,73 @@ public class CollectionTests
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(CollectionErrors.DocumentIdNotFound);
+    }
+    
+        [Fact]
+    public void Delete_NotAlreadyDeletedCollection_ShouldReturnDeleted()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var collection = CollectionFactory.CreateCollection().Value;
+
+        // Act
+        var result = collection.Delete(mockDateTimeProvider);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        collection.DeletedAtUtc.Should().Be(now);
+    }
+
+    [Fact]
+    public void Delete_WhenAlreadyDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var collection = CollectionFactory.CreateCollection().Value;
+
+        // Act
+        collection.Delete(mockDateTimeProvider); // Initial delete
+        var result = collection.Delete(mockDateTimeProvider); // Attempt to delete again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.Failure());
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenDeleted_ShouldReturnSuccess()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var collection = CollectionFactory.CreateCollection().Value;
+
+        collection.Delete(mockDateTimeProvider); // Mark as deleted
+
+        // Act
+        var result = collection.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        collection.DeletedAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenNotDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var collection = CollectionFactory.CreateCollection().Value;
+
+        // Act
+        var result = collection.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        collection.DeletedAtUtc.Should().BeNull();
     }
 }
