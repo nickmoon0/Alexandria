@@ -17,7 +17,7 @@ public class DocumentTests
         var dateTimeProvider = new TestDateTimeProvider(now);
         
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = Document.Create(documentName, data, "", ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -33,7 +33,7 @@ public class DocumentTests
         var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = Document.Create(documentName, data, "", ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -50,7 +50,7 @@ public class DocumentTests
         var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = Document.Create(documentName, data, "", ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -67,7 +67,7 @@ public class DocumentTests
         var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = Document.Create(documentName, data, "", ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -84,7 +84,7 @@ public class DocumentTests
         var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = Document.Create(documentName, data, "", ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -101,7 +101,7 @@ public class DocumentTests
         var dateTimeProvider = new TestDateTimeProvider();
 
         // Act
-        var result = Document.Create(documentName, data, ownerId, dateTimeProvider);
+        var result = Document.Create(documentName, data, "", ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -120,7 +120,7 @@ public class DocumentTests
         var ownerId = Guid.NewGuid();
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = Document.Create(initialName, data, "", ownerId, dateTimeProvider).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -139,7 +139,7 @@ public class DocumentTests
         var ownerId = Guid.NewGuid();
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = Document.Create(initialName, data, "", ownerId, dateTimeProvider).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -159,7 +159,7 @@ public class DocumentTests
         var ownerId = Guid.NewGuid();
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = Document.Create(initialName, data, "", ownerId, dateTimeProvider).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -179,7 +179,7 @@ public class DocumentTests
         var ownerId = Guid.NewGuid();
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
-        var document = Document.Create(initialName, data, ownerId, dateTimeProvider).Value;
+        var document = Document.Create(initialName, data, "", ownerId, dateTimeProvider).Value;
 
         // Act
         var result = document.Rename(newName);
@@ -194,7 +194,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         const string newDescription = "This is a new description";
 
         // Act
@@ -209,7 +209,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
 
         // Act
         var result = document.UpdateDescription(null);
@@ -223,7 +223,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         const string whitespaceDescription = "   ";
 
         // Act
@@ -238,7 +238,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         var characterId = Guid.NewGuid();
 
         // Act
@@ -253,7 +253,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         var characterId = Guid.Empty; // Invalid character ID
 
         // Act
@@ -269,7 +269,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         var characterId = Guid.NewGuid();
         document.AddCharacter(characterId); // Add once
 
@@ -286,7 +286,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         var characterId = Guid.NewGuid();
         document.AddCharacter(characterId); // Add first
 
@@ -302,7 +302,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         var characterId = Guid.NewGuid(); // Never added
 
         // Act
@@ -318,7 +318,7 @@ public class DocumentTests
     {
         // Arrange
         var dateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-        var document = Document.Create("ValidDocument", [0x01], Guid.NewGuid(), dateTimeProvider).Value;
+        var document = Document.Create("ValidDocument", [0x01], "", Guid.NewGuid(), dateTimeProvider).Value;
         var characterId = Guid.Empty; // Invalid character ID
 
         // Act

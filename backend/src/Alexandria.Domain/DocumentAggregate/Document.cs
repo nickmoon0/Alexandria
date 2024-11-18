@@ -11,7 +11,9 @@ public class Document : TaggableAggregateRoot
     
     private readonly List<Guid> _characterIds = [];
     
+    private string? _imagePath;
     private byte[]? _data;
+    
     private Guid? _ownerId;
     private DateTime? _createdDateUtc;
     
@@ -20,14 +22,16 @@ public class Document : TaggableAggregateRoot
     private Document(
         string name,
         byte[] data,
+        string imagePath,
         Guid ownerId,
         DateTime utcNow,
         string? description = null,
-        Guid? id = null) 
+        Guid? id = null)
         : base(id ?? Guid.NewGuid())
     {
         _name = name;
         _data = data;
+        _imagePath = imagePath;
         _ownerId = ownerId;
         _createdDateUtc = utcNow;
         _description = description;
@@ -36,6 +40,7 @@ public class Document : TaggableAggregateRoot
     public static ErrorOr<Document> Create(
         string documentName,
         byte[] data,
+        string imagePath,
         Guid ownerId,
         IDateTimeProvider dateTimeProvider,
         string? description = null)
@@ -64,7 +69,7 @@ public class Document : TaggableAggregateRoot
             return errorList;
         }
         
-        return new Document(documentName, data, ownerId, dateTimeProvider.UtcNow, description);
+        return new Document(documentName, data, imagePath, ownerId, dateTimeProvider.UtcNow, description);
     }
 
     public ErrorOr<Updated> Rename(string newName)
