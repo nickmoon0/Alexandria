@@ -4,7 +4,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.DocumentAggregate;
 
-public class Document : TaggableAggregateRoot, ISoftDeletable
+public class Document : TaggableAggregateRoot, IAuditable, ISoftDeletable
 {
     private string? Name { get; set; }
     private string? Description {get; set;}
@@ -13,10 +13,10 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
 
     private string? ImagePath { get; set; }
     private byte[]? Data { get; set; }
-
-    private Guid? OwnerId { get; set; }
-    private DateTime? CreatedDateUtc { get; set; }
-
+    
+    public Guid CreatedById { get; }
+    public DateTime CreatedAtUtc { get; }
+    
     public DateTime? DeletedAtUtc { get; private set; }
 
     private Document() { }
@@ -25,7 +25,7 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
         string name,
         byte[] data,
         string imagePath,
-        Guid ownerId,
+        Guid createdById,
         DateTime utcNow,
         string? description = null,
         Guid? id = null)
@@ -34,8 +34,8 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
         Name = name;
         Data = data;
         ImagePath = imagePath;
-        OwnerId = ownerId;
-        CreatedDateUtc = utcNow;
+        CreatedById = createdById;
+        CreatedAtUtc = utcNow;
         Description = description;
         
         DeletedAtUtc = null;
@@ -45,7 +45,7 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
         string documentName,
         byte[] data,
         string imagePath,
-        Guid ownerId,
+        Guid createdById,
         IDateTimeProvider dateTimeProvider,
         string? description = null)
     {
@@ -63,7 +63,7 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
             errorList.Add(DocumentErrors.EmptyDocumentData);
         }
 
-        if (ownerId == Guid.Empty)
+        if (createdById == Guid.Empty)
         {
             errorList.Add(DocumentErrors.InvalidOwnerId);
         }
@@ -73,7 +73,7 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
             return errorList;
         }
         
-        return new Document(documentName, data, imagePath, ownerId, dateTimeProvider.UtcNow, description);
+        return new Document(documentName, data, imagePath, createdById, dateTimeProvider.UtcNow, description);
     }
 
     public ErrorOr<Updated> Rename(string newName)
@@ -153,5 +153,4 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
         !string.IsNullOrWhiteSpace(name) && 
         !string.IsNullOrEmpty(name) && 
         name.Length <= 100;
-
 }

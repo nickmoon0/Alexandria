@@ -1,5 +1,6 @@
 using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common.ValueObjects.Name;
+using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.Tests.TestUtils.Services;
 using ErrorOr;
 using FluentAssertions;
@@ -12,14 +13,15 @@ public class CharacterTests
     public void Create_WithValidParameters_ShouldReturnCharacter()
     {
         // Arrange
-        var nameResult = Name.Create("First", "Last", "Middle");
-        var name = nameResult.Value;
+        var name = Name.Create("First", "Last", "Middle").Value;
+        var createdById = Guid.NewGuid();
+        var dateTimeProvider = new TestDateTimeProvider();
         const string description = "This is a test description";
         var userId = Guid.NewGuid();
         
         // Act
-        var characterResult = Character.Create(name, description, userId);
-        
+        var characterResult = Character.Create(name, createdById, dateTimeProvider, description, userId);
+
         // Assert
         characterResult.IsError.Should().BeFalse();
     }
@@ -28,13 +30,10 @@ public class CharacterTests
     public void Create_WithInvalidUserId_ShouldReturnError()
     {
         // Arrange
-        var nameResult = Name.Create("First", "Last", "Middle");
-        var name = nameResult.Value;
-        const string description = "This is a test description";
         var userId = Guid.Empty;
         
         // Act
-        var characterResult = Character.Create(name, description, userId);
+        var characterResult = CharacterFactory.CreateCharacter(userId: userId);
         
         // Assert
         characterResult.IsError.Should().BeTrue();
@@ -45,14 +44,12 @@ public class CharacterTests
     public void Create_WithWhiteSpaceDescription_ShouldReturnCharacter()
     {
         // Arrange
-        var nameResult = Name.Create("First", "Last", "Middle");
-        var name = nameResult.Value;
         var description = "";
         description += "  "; // Two spaces
         description += "    "; // One tab
         
         // Act
-        var characterResult = Character.Create(name, description);
+        var characterResult = CharacterFactory.CreateCharacter(description: description);
         
         // Assert
         characterResult.IsError.Should().BeFalse();
@@ -62,30 +59,24 @@ public class CharacterTests
     public void Create_WithTooLongDescription_ShouldReturnError()
     {
         // Arrange
-        var nameResult = Name.Create("First", "Last", "Middle");
-        var name = nameResult.Value;
         var description = new string('a', 2001);
 
         // Act
-        var characterResult = Character.Create(name, description);
+        var characterResult = CharacterFactory.CreateCharacter(description: description);
         
         // Assert
         characterResult.IsError.Should().BeTrue();
         characterResult.Errors.Should().Contain(CharacterErrors.DescriptionTooLong);
     }
     
-        [Fact]
+    [Fact]
     public void Delete_NotAlreadyDeletedCharacter_ShouldReturnDeleted()
     {
         // Arrange
         var now = DateTime.UtcNow;
         var mockDateTimeProvider = new TestDateTimeProvider(now);
 
-        var character = Character.Create(
-            Name.Create("Test Character", "Last Name").Value,
-            "Test Description",
-            Guid.NewGuid()
-        ).Value;
+        var character = CharacterFactory.CreateCharacter().Value;
 
         // Act
         var result = character.Delete(mockDateTimeProvider);
@@ -102,11 +93,7 @@ public class CharacterTests
         var now = DateTime.UtcNow;
         var mockDateTimeProvider = new TestDateTimeProvider(now);
 
-        var character = Character.Create(
-            Name.Create("Test Character", "Last Name").Value,
-            "Test Description",
-            Guid.NewGuid()
-        ).Value;
+        var character = CharacterFactory.CreateCharacter().Value;
 
         // Act
         character.Delete(mockDateTimeProvider); // Initial delete
@@ -124,12 +111,7 @@ public class CharacterTests
         var now = DateTime.UtcNow;
         var mockDateTimeProvider = new TestDateTimeProvider(now);
 
-        var character = Character.Create(
-            Name.Create("Test Character", "Last Name").Value,
-            "Test Description",
-            Guid.NewGuid()
-        ).Value;
-
+        var character = CharacterFactory.CreateCharacter().Value;
         character.Delete(mockDateTimeProvider); // Mark as deleted
 
         // Act
@@ -144,13 +126,7 @@ public class CharacterTests
     public void RecoverDeleted_WhenNotDeleted_ShouldReturnError()
     {
         // Arrange
-        var mockDateTimeProvider = new TestDateTimeProvider(DateTime.Now);
-
-        var character = Character.Create(
-            Name.Create("Test Character", "Last Name").Value,
-            "Test Description",
-            Guid.NewGuid()
-        ).Value;
+        var character = CharacterFactory.CreateCharacter().Value;
 
         // Act
         var result = character.RecoverDeleted();

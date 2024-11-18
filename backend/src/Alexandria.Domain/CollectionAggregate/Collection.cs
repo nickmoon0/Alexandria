@@ -4,27 +4,39 @@ using ErrorOr;
 
 namespace Alexandria.Domain.CollectionAggregate;
 
-public class Collection : TaggableAggregateRoot, ISoftDeletable
+public class Collection : TaggableAggregateRoot, IAuditable, ISoftDeletable
 {
     private string? Name { get; set; }
     private List<Guid>? DocumentIds { get; init; } = [];
+    
+    public Guid CreatedById { get; }
+    public DateTime CreatedAtUtc { get; }
     
     public DateTime? DeletedAtUtc { get; private set; }
 
     private Collection() { }
 
-    private Collection(string name, Guid? id = null) : base(id ?? Guid.NewGuid())
+    private Collection(string name, Guid createdById, DateTime createdAtUtc, Guid? id = null) : base(id ?? Guid.NewGuid())
     {
         Name = name;
+        
+        CreatedById = createdById;
+        CreatedAtUtc = createdAtUtc;
     }
 
-    public static ErrorOr<Collection> Create(string name)
+    public static ErrorOr<Collection> Create(string name, Guid createdById, IDateTimeProvider dateTimeProvider)
     {
         if (!CollectionNameValid(name))
         {
             return CollectionErrors.InvalidName;
         }
-        return new Collection(name);
+
+        if (createdById == Guid.Empty)
+        {
+            return CollectionErrors.InvalidUserId;
+        }
+        
+        return new Collection(name, createdById, dateTimeProvider.UtcNow);
     }
 
     public ErrorOr<Updated> Rename(string name)
