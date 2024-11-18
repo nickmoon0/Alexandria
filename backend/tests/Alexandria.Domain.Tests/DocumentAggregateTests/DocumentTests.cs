@@ -65,7 +65,7 @@ public class DocumentTests
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.EmptyDocumentData);
+        result.Errors.Should().Contain(DocumentErrors.EmptyData);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class DocumentTests
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.InvalidOwnerId);
+        result.Errors.Should().Contain(DocumentErrors.InvalidUserId);
     }
 
     [Fact]
@@ -96,8 +96,8 @@ public class DocumentTests
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
-        result.Errors.Should().Contain(DocumentErrors.EmptyDocumentData);
-        result.Errors.Should().Contain(DocumentErrors.InvalidOwnerId);
+        result.Errors.Should().Contain(DocumentErrors.EmptyData);
+        result.Errors.Should().Contain(DocumentErrors.InvalidUserId);
     }
     
     [Fact]
@@ -369,5 +369,67 @@ public class DocumentTests
         // Assert
         result.IsError.Should().BeTrue();
         document.DeletedAtUtc.Should().BeNull();
+    }
+    
+    [Fact]
+    public void AddComment_WithValidComment_ShouldReturnUpdated()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        // Act
+        var result = document.AddComment(comment);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AddComment_WithDuplicateComment_ShouldReturnError()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        document.AddComment(comment); // Add the comment once
+
+        // Act
+        var result = document.AddComment(comment); // Attempt to add again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.Conflict());
+    }
+
+    [Fact]
+    public void RemoveComment_WithExistingComment_ShouldReturnUpdated()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        document.AddComment(comment); // Add the comment
+
+        // Act
+        var result = document.RemoveComment(comment);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RemoveComment_WithNonExistingComment_ShouldReturnError()
+    {
+        // Arrange
+        var document = DocumentFactory.CreateDocument().Value;
+        var comment = CommentFactory.CreateComment().Value;
+
+        // Act
+        var result = document.RemoveComment(comment);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.NotFound());
     }
 }

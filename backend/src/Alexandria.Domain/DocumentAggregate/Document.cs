@@ -10,7 +10,8 @@ public class Document : TaggableAggregateRoot, IAuditable, ISoftDeletable
     private string? Description {get; set;}
 
     private List<Guid> CharacterIds { get; init; } = [];
-
+    private List<Comment> Comments { get; init; } = [];
+    
     private string? ImagePath { get; set; }
     private byte[]? Data { get; set; }
     
@@ -60,12 +61,12 @@ public class Document : TaggableAggregateRoot, IAuditable, ISoftDeletable
         // Validate array isn't empty
         if (data.Length <= 0)
         {
-            errorList.Add(DocumentErrors.EmptyDocumentData);
+            errorList.Add(DocumentErrors.EmptyData);
         }
 
         if (createdById == Guid.Empty)
         {
-            errorList.Add(DocumentErrors.InvalidOwnerId);
+            errorList.Add(DocumentErrors.InvalidUserId);
         }
 
         if (errorList.Count != 0)
@@ -124,6 +125,28 @@ public class Document : TaggableAggregateRoot, IAuditable, ISoftDeletable
         }
         
         CharacterIds.Remove(characterId);
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> AddComment(Comment comment)
+    {
+        if (Comments.Contains(comment))
+        {
+            return Error.Conflict();
+        }
+        
+        Comments.Add(comment);
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> RemoveComment(Comment comment)
+    {
+        if (!Comments.Contains(comment))
+        {
+            return Error.NotFound();
+        }
+
+        Comments.Remove(comment);
         return Result.Updated;
     }
     
