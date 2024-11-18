@@ -1,5 +1,7 @@
 using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common.ValueObjects.Name;
+using Alexandria.Domain.Tests.TestUtils.Services;
+using ErrorOr;
 using FluentAssertions;
 
 namespace Alexandria.Domain.Tests.CharacterAggregateTests;
@@ -70,5 +72,91 @@ public class CharacterTests
         // Assert
         characterResult.IsError.Should().BeTrue();
         characterResult.Errors.Should().Contain(CharacterErrors.DescriptionTooLong);
+    }
+    
+        [Fact]
+    public void Delete_NotAlreadyDeletedCharacter_ShouldReturnDeleted()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var character = Character.Create(
+            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            "Test Description",
+            Guid.NewGuid()
+        ).Value;
+
+        // Act
+        var result = character.Delete(mockDateTimeProvider);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        character.DeletedAtUtc.Should().Be(now);
+    }
+
+    [Fact]
+    public void Delete_WhenAlreadyDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var character = Character.Create(
+            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            "Test Description",
+            Guid.NewGuid()
+        ).Value;
+
+        // Act
+        character.Delete(mockDateTimeProvider); // Initial delete
+        var result = character.Delete(mockDateTimeProvider); // Attempt to delete again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.Failure());
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenDeleted_ShouldReturnSuccess()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var character = Character.Create(
+            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            "Test Description",
+            Guid.NewGuid()
+        ).Value;
+
+        character.Delete(mockDateTimeProvider); // Mark as deleted
+
+        // Act
+        var result = character.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        character.DeletedAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenNotDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var mockDateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+
+        var character = Character.Create(
+            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            "Test Description",
+            Guid.NewGuid()
+        ).Value;
+
+        // Act
+        var result = character.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        character.DeletedAtUtc.Should().BeNull();
     }
 }

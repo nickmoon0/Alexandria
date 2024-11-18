@@ -1,4 +1,6 @@
 using Alexandria.Domain.CollectionAggregate;
+using Alexandria.Domain.Tests.TestUtils.Services;
+using ErrorOr;
 using FluentAssertions;
 
 namespace Alexandria.Domain.Tests.CollectionAggregateTests;
@@ -139,5 +141,75 @@ public class CollectionTests
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(CollectionErrors.DocumentIdNotFound);
+    }
+    
+        [Fact]
+    public void Delete_NotAlreadyDeletedCollection_ShouldReturnDeleted()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var collection = Collection.Create("Test Collection").Value;
+
+        // Act
+        var result = collection.Delete(mockDateTimeProvider);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        collection.DeletedAtUtc.Should().Be(now);
+    }
+
+    [Fact]
+    public void Delete_WhenAlreadyDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var collection = Collection.Create("Test Collection").Value;
+
+        // Act
+        collection.Delete(mockDateTimeProvider); // Initial delete
+        var result = collection.Delete(mockDateTimeProvider); // Attempt to delete again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.Failure());
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenDeleted_ShouldReturnSuccess()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var collection = Collection.Create("Test Collection").Value;
+
+        collection.Delete(mockDateTimeProvider); // Mark as deleted
+
+        // Act
+        var result = collection.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        collection.DeletedAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenNotDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var mockDateTimeProvider = new TestDateTimeProvider(DateTime.UtcNow);
+
+        var collection = Collection.Create("Test Collection").Value;
+
+        // Act
+        var result = collection.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        collection.DeletedAtUtc.Should().BeNull();
     }
 }

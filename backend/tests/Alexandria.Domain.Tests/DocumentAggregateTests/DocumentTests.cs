@@ -1,5 +1,6 @@
 using Alexandria.Domain.DocumentAggregate;
 using Alexandria.Domain.Tests.TestUtils.Services;
+using ErrorOr;
 using FluentAssertions;
 
 namespace Alexandria.Domain.Tests.DocumentAggregateTests;
@@ -327,5 +328,99 @@ public class DocumentTests
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidCharacterId);
+    }
+    
+    [Fact]
+    public void Delete_NotAlreadyDeletedDocument_ShouldReturnDeleted()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var document = Document.Create(
+            "Test Document",
+            [1, 2, 3],
+            "image/path",
+            Guid.NewGuid(),
+            mockDateTimeProvider
+        ).Value;
+
+        // Act
+        var result = document.Delete(mockDateTimeProvider);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        document.DeletedAtUtc.Should().Be(now);
+    }
+
+    [Fact]
+    public void Delete_WhenAlreadyDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var document = Document.Create(
+            "Test Document",
+            new byte[] { 1, 2, 3 },
+            "image/path",
+            Guid.NewGuid(),
+            mockDateTimeProvider
+        ).Value;
+
+        // Act
+        document.Delete(mockDateTimeProvider); // Initial delete
+        var result = document.Delete(mockDateTimeProvider); // Attempt to delete again
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(Error.Failure());
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenDeleted_ShouldReturnSuccess()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+
+        var document = Document.Create(
+            "Test Document",
+            [1, 2, 3],
+            "image/path",
+            Guid.NewGuid(),
+            mockDateTimeProvider
+        ).Value;
+
+        document.Delete(mockDateTimeProvider); // Mark as deleted
+
+        // Act
+        var result = document.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        document.DeletedAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecoverDeleted_WhenNotDeleted_ShouldReturnError()
+    {
+        // Arrange
+        var mockDateTimeProvider = new TestDateTimeProvider(DateTime.Now);
+
+        var document = Document.Create(
+            "Test Document",
+            [1, 2, 3],
+            "image/path",
+            Guid.NewGuid(),
+            mockDateTimeProvider
+        ).Value;
+
+        // Act
+        var result = document.RecoverDeleted();
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        document.DeletedAtUtc.Should().BeNull();
     }
 }

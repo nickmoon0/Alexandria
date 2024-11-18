@@ -1,15 +1,18 @@
 using Alexandria.Domain.Common;
+using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Domain.Common.ValueObjects.Name;
 using ErrorOr;
 
 namespace Alexandria.Domain.CharacterAggregate;
 
-public class Character : TaggableAggregateRoot
+public class Character : TaggableAggregateRoot, ISoftDeletable
 {
     private Name? _name;
     private string? _description;
 
     private Guid? _userId;
+    
+    public DateTime? DeletedAtUtc { get; private set; }
     
     private Character() { }
 
@@ -43,5 +46,27 @@ public class Character : TaggableAggregateRoot
         }
         
         return new Character(name, description, userId);
+    }
+
+    public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
+    {
+        if (DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = dateTimeProvider.UtcNow;
+        return Result.Deleted;
+    }
+
+    public ErrorOr<Success> RecoverDeleted()
+    {
+        if (!DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = null;
+        return Result.Success;
     }
 }

@@ -4,7 +4,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.DocumentAggregate;
 
-public class Document : TaggableAggregateRoot
+public class Document : TaggableAggregateRoot, ISoftDeletable
 {
     private string? _name;
     private string? _description;
@@ -16,7 +16,9 @@ public class Document : TaggableAggregateRoot
     
     private Guid? _ownerId;
     private DateTime? _createdDateUtc;
-    
+
+    public DateTime? DeletedAtUtc { get; private set; }
+
     private Document() { }
 
     private Document(
@@ -35,6 +37,8 @@ public class Document : TaggableAggregateRoot
         _ownerId = ownerId;
         _createdDateUtc = utcNow;
         _description = description;
+        
+        DeletedAtUtc = null;
     }
 
     public static ErrorOr<Document> Create(
@@ -123,8 +127,31 @@ public class Document : TaggableAggregateRoot
         return Result.Updated;
     }
     
+    public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
+    {
+        if (DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = dateTimeProvider.UtcNow;
+        return Result.Deleted;
+    }
+
+    public ErrorOr<Success> RecoverDeleted()
+    {
+        if (!DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = null;
+        return Result.Success;
+    }
+    
     private static bool DocumentNameValid(string name) =>
         !string.IsNullOrWhiteSpace(name) && 
         !string.IsNullOrEmpty(name) && 
         name.Length <= 100;
+
 }

@@ -1,13 +1,16 @@
 using Alexandria.Domain.Common;
+using Alexandria.Domain.Common.Interfaces;
 using ErrorOr;
 
 namespace Alexandria.Domain.CollectionAggregate;
 
-public class Collection : TaggableAggregateRoot
+public class Collection : TaggableAggregateRoot, ISoftDeletable
 {
     private string? _name;
     private readonly List<Guid>? _documentIds = [];
     
+    public DateTime? DeletedAtUtc { get; private set; }
+
     private Collection() { }
 
     private Collection(string name, Guid? id = null) : base(id ?? Guid.NewGuid())
@@ -54,6 +57,28 @@ public class Collection : TaggableAggregateRoot
         
         _documentIds!.Remove(documentId);
         return Result.Updated;
+    }
+    
+    public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
+    {
+        if (DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = dateTimeProvider.UtcNow;
+        return Result.Deleted;
+    }
+
+    public ErrorOr<Success> RecoverDeleted()
+    {
+        if (!DeletedAtUtc.HasValue)
+        {
+            return Error.Failure();
+        }
+        
+        DeletedAtUtc = null;
+        return Result.Success;
     }
     
     private static bool CollectionNameValid(string name) => 
