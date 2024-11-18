@@ -6,8 +6,8 @@ namespace Alexandria.Domain.CollectionAggregate;
 
 public class Collection : TaggableAggregateRoot, ISoftDeletable
 {
-    private string? _name;
-    private readonly List<Guid>? _documentIds = [];
+    private string? Name { get; set; }
+    private List<Guid>? DocumentIds { get; init; } = [];
     
     public DateTime? DeletedAtUtc { get; private set; }
 
@@ -15,7 +15,7 @@ public class Collection : TaggableAggregateRoot, ISoftDeletable
 
     private Collection(string name, Guid? id = null) : base(id ?? Guid.NewGuid())
     {
-        _name = name;
+        Name = name;
     }
 
     public static ErrorOr<Collection> Create(string name)
@@ -33,7 +33,7 @@ public class Collection : TaggableAggregateRoot, ISoftDeletable
         {
             return CollectionErrors.InvalidName;
         }
-        _name = name;
+        Name = name;
         return Result.Updated;
     }
 
@@ -44,18 +44,18 @@ public class Collection : TaggableAggregateRoot, ISoftDeletable
             return CollectionErrors.InvalidDocumentId;
         }
         
-        _documentIds!.Add(documentId);
+        DocumentIds!.Add(documentId);
         return Result.Updated;
     }
 
     public ErrorOr<Updated> RemoveDocument(Guid documentId)
     {
-        if (!_documentIds!.Contains(documentId))
+        if (!DocumentIds!.Contains(documentId))
         {
             return CollectionErrors.DocumentIdNotFound;
         }
         
-        _documentIds!.Remove(documentId);
+        DocumentIds!.Remove(documentId);
         return Result.Updated;
     }
     

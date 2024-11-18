@@ -6,16 +6,16 @@ namespace Alexandria.Domain.DocumentAggregate;
 
 public class Document : TaggableAggregateRoot, ISoftDeletable
 {
-    private string? _name;
-    private string? _description;
-    
-    private readonly List<Guid> _characterIds = [];
-    
-    private string? _imagePath;
-    private byte[]? _data;
-    
-    private Guid? _ownerId;
-    private DateTime? _createdDateUtc;
+    private string? Name { get; set; }
+    private string? Description {get; set;}
+
+    private List<Guid> CharacterIds { get; init; } = [];
+
+    private string? ImagePath { get; set; }
+    private byte[]? Data { get; set; }
+
+    private Guid? OwnerId { get; set; }
+    private DateTime? CreatedDateUtc { get; set; }
 
     public DateTime? DeletedAtUtc { get; private set; }
 
@@ -31,12 +31,12 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
         Guid? id = null)
         : base(id ?? Guid.NewGuid())
     {
-        _name = name;
-        _data = data;
-        _imagePath = imagePath;
-        _ownerId = ownerId;
-        _createdDateUtc = utcNow;
-        _description = description;
+        Name = name;
+        Data = data;
+        ImagePath = imagePath;
+        OwnerId = ownerId;
+        CreatedDateUtc = utcNow;
+        Description = description;
         
         DeletedAtUtc = null;
     }
@@ -83,7 +83,7 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
             return DocumentErrors.InvalidDocumentName;
         }
         
-        _name = newName;
+        Name = newName;
         return Result.Updated;
     }
 
@@ -91,7 +91,7 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
     {
         if (string.IsNullOrWhiteSpace(newDescription)) newDescription = null;
         
-        _description = newDescription;
+        Description = newDescription;
         return Result.Updated;
     }
 
@@ -102,12 +102,12 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
             return DocumentErrors.InvalidCharacterId;
         }
 
-        if (_characterIds.Contains(characterId))
+        if (CharacterIds.Contains(characterId))
         {
             return DocumentErrors.CharacterIdAlreadyPresent;
         }
         
-        _characterIds.Add(characterId);
+        CharacterIds.Add(characterId);
         return Result.Updated;
     }
 
@@ -118,12 +118,12 @@ public class Document : TaggableAggregateRoot, ISoftDeletable
             return DocumentErrors.InvalidCharacterId;
         }
 
-        if (!_characterIds.Contains(characterId))
+        if (!CharacterIds.Contains(characterId))
         {
             return DocumentErrors.CharacterIdNotPresent;
         }
         
-        _characterIds.Remove(characterId);
+        CharacterIds.Remove(characterId);
         return Result.Updated;
     }
     

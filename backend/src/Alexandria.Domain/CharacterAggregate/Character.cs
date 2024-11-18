@@ -7,20 +7,20 @@ namespace Alexandria.Domain.CharacterAggregate;
 
 public class Character : TaggableAggregateRoot, ISoftDeletable
 {
-    private Name? _name;
-    private string? _description;
+    private Name? Name { get; set; }
+    private string? Description { get; set; }
 
-    private Guid? _userId;
-    
+    private Guid? UserId { get; set; }
+
     public DateTime? DeletedAtUtc { get; private set; }
     
     private Character() { }
 
     private Character(Name name, string? description, Guid? userId, Guid? id = null) : base(id ?? Guid.NewGuid())
     {
-        _name = name;
-        _description = description;
-        _userId = userId;
+        Name = name;
+        Description = description;
+        UserId = userId;
     }
 
     public static ErrorOr<Character> Create(Name name, string? description = null, Guid? userId = null)

@@ -4,13 +4,13 @@ namespace Alexandria.Domain.Common.Entities.Tag;
 
 public class Tag : Entity
 {
-    private string? _name;
-    
+    private string? Name { get; set; }
+
     private Tag() { }
 
     private Tag(string name, Guid? id = null) : base(id ?? Guid.NewGuid())
     {
-        _name = name;
+        Name = name;
     }
 
     public static ErrorOr<Tag> Create(string name)
