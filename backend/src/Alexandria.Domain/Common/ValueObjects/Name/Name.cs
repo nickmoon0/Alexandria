@@ -21,7 +21,7 @@ public class Name : ValueObject
         MiddleNames = middleNames;
     }
 
-    public static ErrorOr<Name> Create(string firstName, string lastName, string? middleNames)
+    public static ErrorOr<Name> Create(string firstName, string lastName, string? middleNames = null)
     {
         const int firstNameMaxLength = 15;
         const int lastNameMaxLength = 15;

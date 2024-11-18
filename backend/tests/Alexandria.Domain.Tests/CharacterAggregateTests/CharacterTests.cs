@@ -82,7 +82,7 @@ public class CharacterTests
         var mockDateTimeProvider = new TestDateTimeProvider(now);
 
         var character = Character.Create(
-            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            Name.Create("Test Character", "Last Name").Value,
             "Test Description",
             Guid.NewGuid()
         ).Value;
@@ -103,7 +103,7 @@ public class CharacterTests
         var mockDateTimeProvider = new TestDateTimeProvider(now);
 
         var character = Character.Create(
-            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            Name.Create("Test Character", "Last Name").Value,
             "Test Description",
             Guid.NewGuid()
         ).Value;
@@ -125,7 +125,7 @@ public class CharacterTests
         var mockDateTimeProvider = new TestDateTimeProvider(now);
 
         var character = Character.Create(
-            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            Name.Create("Test Character", "Last Name").Value,
             "Test Description",
             Guid.NewGuid()
         ).Value;
@@ -147,7 +147,7 @@ public class CharacterTests
         var mockDateTimeProvider = new TestDateTimeProvider(DateTime.Now);
 
         var character = Character.Create(
-            Name.Create("Test Character", "Last Name", "Middle Name").Value,
+            Name.Create("Test Character", "Last Name").Value,
             "Test Description",
             Guid.NewGuid()
         ).Value;

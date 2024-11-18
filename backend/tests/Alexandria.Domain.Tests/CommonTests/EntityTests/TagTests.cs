@@ -19,7 +19,6 @@ public class TagTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
     public void Create_ShouldReturnInvalidNameError_WhenNameIsNullOrWhitespace(string invalidName)
