@@ -16,7 +16,7 @@ public static class CharacterFactory
         Guid? userId = null)
     {
         return Character.Create(
-            name ?? Constants.Character.Name,
+            name ?? NameFactory.CreateName().Value,
             createdById ?? Constants.Character.CreatedById,
             dateTimeProvider ?? Constants.Character.DateTimeProvider,
             description ?? Constants.Character.Description,

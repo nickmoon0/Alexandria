@@ -1,4 +1,5 @@
 using Alexandria.Domain.Common.ValueObjects.Name;
+using Alexandria.Domain.Tests.TestUtils.Factories;
 using FluentAssertions;
 
 namespace Alexandria.Domain.Tests.CommonTests.ValueObjectTests;
@@ -25,11 +26,9 @@ public class NameTests
     {
         // Arrange
         const string firstName = "";
-        const string lastName = "ValidLast";
-        const string middleName = "ValidMiddle";
-    
+        
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = NameFactory.CreateName(firstName: firstName);
     
         // Assert
         result.IsError.Should().BeTrue();
@@ -40,12 +39,10 @@ public class NameTests
     public void Create_WithEmptyLastName_ShouldReturnError()
     {
         // Arrange
-        const string firstName = "ValidFirst";
         const string lastName = "";
-        const string middleName = "ValidMiddle";
     
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = NameFactory.CreateName(lastName: lastName);
     
         // Assert
         result.IsError.Should().BeTrue();
@@ -56,12 +53,10 @@ public class NameTests
     public void Create_WithEmptyMiddleNames_ShouldReturnName()
     {
         // Arrange
-        const string firstName = "ValidFirst";
-        const string lastName = "ValidLast";
         const string middleName = "";
     
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = NameFactory.CreateName(middleName: middleName);
     
         // Assert
         result.IsError.Should().BeFalse();
@@ -72,10 +67,9 @@ public class NameTests
     {
         const string firstName = "ValidFirst";
         const string lastName = "ValidLast";
-        const string? middleName = null;
         
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = Name.Create(firstName, lastName);
     
         // Assert
         result.IsError.Should().BeFalse();
@@ -86,11 +80,9 @@ public class NameTests
     {
         // Arrange
         const string firstName = "ThisFirstNameIsWayTooLong";
-        const string lastName = "ValidLast";
-        const string middleName = "ValidMiddle";
     
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = NameFactory.CreateName(firstName: firstName);
     
         // Assert
         result.IsError.Should().BeTrue();
@@ -101,12 +93,10 @@ public class NameTests
     public void Create_WithTooLongLastName_ShouldReturnError()
     {
         // Arrange
-        const string firstName = "ValidFirst";
         const string lastName = "ThisLastNameIsWayTooLong";
-        const string middleName = "ValidMiddle";
     
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = NameFactory.CreateName(lastName: lastName);
     
         // Assert
         result.IsError.Should().BeTrue();
@@ -117,12 +107,10 @@ public class NameTests
     public void Create_WithTooLongMiddleNames_ShouldReturnError()
     {
         // Arrange
-        const string firstName = "ValidFirst";
-        const string lastName = "ValidLast";
         const string middleName = "TheseMiddleNamesAreDefinitelyWayTooLong";
     
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = NameFactory.CreateName(middleName: middleName);
     
         // Assert
         result.IsError.Should().BeTrue();
@@ -138,7 +126,7 @@ public class NameTests
         const string middleName = "";
     
         // Act
-        var result = Name.Create(firstName, lastName, middleName);
+        var result = NameFactory.CreateName(firstName, lastName, middleName);
     
         // Assert
         result.IsError.Should().BeTrue();

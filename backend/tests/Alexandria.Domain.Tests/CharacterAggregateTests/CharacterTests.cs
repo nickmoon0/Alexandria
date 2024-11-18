@@ -13,7 +13,7 @@ public class CharacterTests
     public void Create_WithValidParameters_ShouldReturnCharacter()
     {
         // Arrange
-        var name = Name.Create("First", "Last", "Middle").Value;
+        var name = NameFactory.CreateName().Value;
         var createdById = Guid.NewGuid();
         var dateTimeProvider = new TestDateTimeProvider();
         const string description = "This is a test description";
