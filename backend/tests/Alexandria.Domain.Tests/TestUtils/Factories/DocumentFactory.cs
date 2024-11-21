@@ -1,5 +1,5 @@
 using Alexandria.Domain.Common.Interfaces;
-using Alexandria.Domain.DocumentAggregate;
+using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.Tests.TestConstants;
 using ErrorOr;
 

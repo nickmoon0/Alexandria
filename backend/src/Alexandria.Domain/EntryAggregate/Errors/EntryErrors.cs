@@ -1,0 +1,14 @@
+using ErrorOr;
+
+namespace Alexandria.Domain.EntryAggregate.Errors;
+
+public static class EntryErrors
+{
+    public static readonly Error InvalidName = Error.Validation(
+        $"{nameof(Entry)}.InvalidName",
+        "Name provided is invalid.");
+    
+    public static readonly Error InvalidId = Error.Validation(
+        $"{nameof(Entry)}.InvalidId",
+        "Id provided is invalid.");
+}

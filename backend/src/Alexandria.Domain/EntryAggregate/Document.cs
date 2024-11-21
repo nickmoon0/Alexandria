@@ -1,16 +1,14 @@
 using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.Interfaces;
+using Alexandria.Domain.EntryAggregate.Errors;
 using ErrorOr;
 
-namespace Alexandria.Domain.DocumentAggregate;
+namespace Alexandria.Domain.EntryAggregate;
 
-public class Document : TaggableAggregateRoot, IAuditable, ISoftDeletable
+public class Document : Entity, IAuditable, ISoftDeletable
 {
     private string? Name { get; set; }
     private string? Description {get; set;}
-
-    private List<Guid> CharacterIds { get; init; } = [];
-    private List<Comment> Comments { get; init; } = [];
     
     private string? ImagePath { get; set; }
     private byte[]? Data { get; set; }
@@ -93,60 +91,6 @@ public class Document : TaggableAggregateRoot, IAuditable, ISoftDeletable
         if (string.IsNullOrWhiteSpace(newDescription)) newDescription = null;
         
         Description = newDescription;
-        return Result.Updated;
-    }
-
-    public ErrorOr<Updated> AddCharacter(Guid characterId)
-    {
-        if (characterId == Guid.Empty)
-        {
-            return DocumentErrors.InvalidCharacterId;
-        }
-
-        if (CharacterIds.Contains(characterId))
-        {
-            return DocumentErrors.CharacterIdAlreadyPresent;
-        }
-        
-        CharacterIds.Add(characterId);
-        return Result.Updated;
-    }
-
-    public ErrorOr<Updated> RemoveCharacter(Guid characterId)
-    {
-        if (characterId == Guid.Empty)
-        {
-            return DocumentErrors.InvalidCharacterId;
-        }
-
-        if (!CharacterIds.Contains(characterId))
-        {
-            return DocumentErrors.CharacterIdNotPresent;
-        }
-        
-        CharacterIds.Remove(characterId);
-        return Result.Updated;
-    }
-
-    public ErrorOr<Updated> AddComment(Comment comment)
-    {
-        if (Comments.Contains(comment))
-        {
-            return Error.Conflict();
-        }
-        
-        Comments.Add(comment);
-        return Result.Updated;
-    }
-
-    public ErrorOr<Updated> RemoveComment(Comment comment)
-    {
-        if (!Comments.Contains(comment))
-        {
-            return Error.NotFound();
-        }
-
-        Comments.Remove(comment);
         return Result.Updated;
     }
     

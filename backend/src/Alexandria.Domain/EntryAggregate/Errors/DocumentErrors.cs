@@ -1,6 +1,6 @@
 using ErrorOr;
 
-namespace Alexandria.Domain.DocumentAggregate;
+namespace Alexandria.Domain.EntryAggregate.Errors;
 
 public static class DocumentErrors
 {
