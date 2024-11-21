@@ -12,11 +12,11 @@ public static class CollectionErrors
         $"{nameof(Collection)}.InvalidUserId",
         "User Id must be valid Guid");
     
-    public static readonly Error InvalidDocumentId = Error.Validation(
+    public static readonly Error InvalidEntryId = Error.Validation(
         $"{nameof(Collection)}.InvalidDocumentId",
         "Document Id must be a valid Guid");
     
-    public static readonly Error DocumentIdNotFound = Error.Validation(
+    public static readonly Error EntryIdNotFound = Error.Validation(
         $"{nameof(Collection)}.DocumentIdNotFound",
         "Document Id not found");
 }
