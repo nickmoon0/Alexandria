@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Infrastructure",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.WebApi", "src\Alexandria.WebApi\Alexandria.WebApi.csproj", "{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{33179F10-CF95-4DDF-B98E-38C08ABC5950}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33179F10-CF95-4DDF-B98E-38C08ABC5950}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33179F10-CF95-4DDF-B98E-38C08ABC5950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C7E091DA-C86E-435C-B3EB-D109FD9EF637} = {08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}
