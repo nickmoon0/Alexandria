@@ -7,7 +7,7 @@ namespace Alexandria.Domain.CollectionAggregate;
 public class Collection : TaggableAggregateRoot, IAuditable, ISoftDeletable
 {
     private string? Name { get; set; }
-    private List<Guid>? DocumentIds { get; init; } = [];
+    private List<Guid>? EntryIds { get; init; } = [];
     
     public Guid CreatedById { get; }
     public DateTime CreatedAtUtc { get; }
@@ -49,25 +49,25 @@ public class Collection : TaggableAggregateRoot, IAuditable, ISoftDeletable
         return Result.Updated;
     }
 
-    public ErrorOr<Updated> AddDocument(Guid documentId)
+    public ErrorOr<Updated> AddEntry(Guid entryId)
     {
-        if (documentId == Guid.Empty)
+        if (entryId == Guid.Empty)
         {
-            return CollectionErrors.InvalidDocumentId;
+            return CollectionErrors.InvalidEntryId;
         }
         
-        DocumentIds!.Add(documentId);
+        EntryIds!.Add(entryId);
         return Result.Updated;
     }
 
-    public ErrorOr<Updated> RemoveDocument(Guid documentId)
+    public ErrorOr<Updated> RemoveEntry(Guid entryId)
     {
-        if (!DocumentIds!.Contains(documentId))
+        if (!EntryIds!.Contains(entryId))
         {
-            return CollectionErrors.DocumentIdNotFound;
+            return CollectionErrors.EntryIdNotFound;
         }
         
-        DocumentIds!.Remove(documentId);
+        EntryIds!.Remove(entryId);
         return Result.Updated;
     }
     

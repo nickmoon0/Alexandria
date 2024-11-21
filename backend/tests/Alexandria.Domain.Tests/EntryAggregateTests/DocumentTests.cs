@@ -1,10 +1,11 @@
-using Alexandria.Domain.DocumentAggregate;
+using Alexandria.Domain.EntryAggregate;
+using Alexandria.Domain.EntryAggregate.Errors;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.Tests.TestUtils.Services;
 using ErrorOr;
 using FluentAssertions;
 
-namespace Alexandria.Domain.Tests.DocumentAggregateTests;
+namespace Alexandria.Domain.Tests.EntryAggregateTests;
 
 public class DocumentTests
 {
@@ -211,96 +212,6 @@ public class DocumentTests
         // Assert
         result.IsError.Should().BeFalse();
     }
-
-    [Fact]
-    public void AddCharacter_WithValidCharacterId_ShouldAddToDocument()
-    {
-        // Arrange
-        var characterId = Guid.NewGuid();
-        var document = DocumentFactory.CreateDocument().Value;
-
-        // Act
-        var result = document.AddCharacter(characterId);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-    }
-
-    [Fact]
-    public void AddCharacter_WithEmptyCharacterId_ShouldReturnError()
-    {
-        // Arrange
-        var characterId = Guid.Empty; // Invalid character ID
-        var document = DocumentFactory.CreateDocument().Value;
-
-        // Act
-        var result = document.AddCharacter(characterId);
-
-        // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.InvalidCharacterId);
-    }
-
-    [Fact]
-    public void AddCharacter_WithDuplicateCharacterId_ShouldReturnError()
-    {
-        // Arrange
-        var characterId = Guid.NewGuid();
-        var document = DocumentFactory.CreateDocument().Value;
-        document.AddCharacter(characterId); // Add once
-
-        // Act
-        var result = document.AddCharacter(characterId); // Attempt to add again
-
-        // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.CharacterIdAlreadyPresent);
-    }
-
-    [Fact]
-    public void RemoveCharacter_WithExistingCharacterId_ShouldRemoveFromDocument()
-    {
-        // Arrange
-        var characterId = Guid.NewGuid();
-        var document = DocumentFactory.CreateDocument().Value;
-        document.AddCharacter(characterId); // Add first
-
-        // Act
-        var result = document.RemoveCharacter(characterId);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-    }
-
-    [Fact]
-    public void RemoveCharacter_WithNonExistingCharacterId_ShouldReturnError()
-    {
-        // Arrange
-        var document = DocumentFactory.CreateDocument().Value;
-        var characterId = Guid.NewGuid(); // Never added
-
-        // Act
-        var result = document.RemoveCharacter(characterId);
-
-        // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.CharacterIdNotPresent);
-    }
-
-    [Fact]
-    public void RemoveCharacter_WithEmptyCharacterId_ShouldReturnError()
-    {
-        // Arrange
-        var document = DocumentFactory.CreateDocument().Value;
-        var characterId = Guid.Empty; // Invalid character ID
-
-        // Act
-        var result = document.RemoveCharacter(characterId);
-
-        // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.InvalidCharacterId);
-    }
     
     [Fact]
     public void Delete_NotAlreadyDeletedDocument_ShouldReturnDeleted()
@@ -369,67 +280,5 @@ public class DocumentTests
         // Assert
         result.IsError.Should().BeTrue();
         document.DeletedAtUtc.Should().BeNull();
-    }
-    
-    [Fact]
-    public void AddComment_WithValidComment_ShouldReturnUpdated()
-    {
-        // Arrange
-        var document = DocumentFactory.CreateDocument().Value;
-        var comment = CommentFactory.CreateComment().Value;
-
-        // Act
-        var result = document.AddComment(comment);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-    }
-
-    [Fact]
-    public void AddComment_WithDuplicateComment_ShouldReturnError()
-    {
-        // Arrange
-        var document = DocumentFactory.CreateDocument().Value;
-        var comment = CommentFactory.CreateComment().Value;
-
-        document.AddComment(comment); // Add the comment once
-
-        // Act
-        var result = document.AddComment(comment); // Attempt to add again
-
-        // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(Error.Conflict());
-    }
-
-    [Fact]
-    public void RemoveComment_WithExistingComment_ShouldReturnUpdated()
-    {
-        // Arrange
-        var document = DocumentFactory.CreateDocument().Value;
-        var comment = CommentFactory.CreateComment().Value;
-
-        document.AddComment(comment); // Add the comment
-
-        // Act
-        var result = document.RemoveComment(comment);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-    }
-
-    [Fact]
-    public void RemoveComment_WithNonExistingComment_ShouldReturnError()
-    {
-        // Arrange
-        var document = DocumentFactory.CreateDocument().Value;
-        var comment = CommentFactory.CreateComment().Value;
-
-        // Act
-        var result = document.RemoveComment(comment);
-
-        // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(Error.NotFound());
     }
 }

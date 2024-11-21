@@ -91,7 +91,7 @@ public class CollectionTests
         var documentId = Guid.NewGuid();
 
         // Act
-        var result = collection.AddDocument(documentId);
+        var result = collection.AddEntry(documentId);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -105,11 +105,11 @@ public class CollectionTests
         var documentId = Guid.Empty; // Invalid document ID
 
         // Act
-        var result = collection.AddDocument(documentId);
+        var result = collection.AddEntry(documentId);
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(CollectionErrors.InvalidDocumentId);
+        result.Errors.Should().Contain(CollectionErrors.InvalidEntryId);
     }
 
     [Fact]
@@ -118,10 +118,10 @@ public class CollectionTests
         // Arrange
         var collection = CollectionFactory.CreateCollection().Value;
         var documentId = Guid.NewGuid();
-        collection.AddDocument(documentId);
+        collection.AddEntry(documentId);
 
         // Act
-        var result = collection.RemoveDocument(documentId);
+        var result = collection.RemoveEntry(documentId);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -135,11 +135,11 @@ public class CollectionTests
         var documentId = Guid.NewGuid();
 
         // Act
-        var result = collection.RemoveDocument(documentId);
+        var result = collection.RemoveEntry(documentId);
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(CollectionErrors.DocumentIdNotFound);
+        result.Errors.Should().Contain(CollectionErrors.EntryIdNotFound);
     }
     
         [Fact]
