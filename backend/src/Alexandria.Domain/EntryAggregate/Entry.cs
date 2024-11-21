@@ -115,11 +115,23 @@ public class Entry : TaggableAggregateRoot, IAuditable, ISoftDeletable
     
     public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
     {
-        throw new NotImplementedException();
+        if (DeletedAtUtc is not null)
+        {
+            return EntryErrors.AlreadyDeleted;
+        }
+
+        DeletedAtUtc = dateTimeProvider.UtcNow;
+        return Result.Deleted;
     }
 
     public ErrorOr<Success> RecoverDeleted()
     {
-        throw new NotImplementedException();
+        if (DeletedAtUtc is null)
+        {
+            return EntryErrors.NotDeleted;
+        }
+
+        DeletedAtUtc = null;
+        return Result.Success;
     }
 }

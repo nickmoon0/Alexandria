@@ -1,6 +1,7 @@
 using Alexandria.Domain.EntryAggregate.Errors;
 using Alexandria.Domain.Tests.TestConstants;
 using Alexandria.Domain.Tests.TestUtils.Factories;
+using Alexandria.Domain.Tests.TestUtils.Services;
 using ErrorOr;
 using FluentAssertions;
 
@@ -187,5 +188,67 @@ public class EntryTests
             // Assert
             result.IsError.Should().BeTrue();
             result.FirstError.Type.Should().Be(ErrorType.NotFound);
+        }
+        
+        [Fact]
+        public void Delete_ValidState_ShouldMarkEntryAsDeleted()
+        {
+            // Arrange
+            var entry = EntryFactory.CreateEntry().Value;
+            var deletionTime = DateTime.UtcNow;
+            var mockDateTimeProvider = new TestDateTimeProvider(deletionTime);
+
+            // Act
+            var result = entry.Delete(mockDateTimeProvider);
+
+            // Assert
+            result.IsError.Should().BeFalse();
+            entry.DeletedAtUtc.Should().Be(deletionTime);
+        }
+
+        [Fact]
+        public void Delete_AlreadyDeleted_ShouldReturnAlreadyDeletedError()
+        {
+            // Arrange
+            var entry = EntryFactory.CreateEntry().Value;
+            var mockDateTimeProvider = new TestDateTimeProvider();
+            entry.Delete(mockDateTimeProvider);
+
+            // Act
+            var result = entry.Delete(mockDateTimeProvider);
+
+            // Assert
+            result.IsError.Should().BeTrue();
+            result.FirstError.Should().Be(EntryErrors.AlreadyDeleted);
+        }
+
+        [Fact]
+        public void RecoverDeleted_ValidState_ShouldRecoverEntry()
+        {
+            // Arrange
+            var entry = EntryFactory.CreateEntry().Value;
+            var mockDateTimeProvider = new TestDateTimeProvider();
+            entry.Delete(mockDateTimeProvider);
+
+            // Act
+            var result = entry.RecoverDeleted();
+
+            // Assert
+            result.IsError.Should().BeFalse();
+            entry.DeletedAtUtc.Should().BeNull();
+        }
+
+        [Fact]
+        public void RecoverDeleted_NotDeleted_ShouldReturnNotDeletedError()
+        {
+            // Arrange
+            var entry = EntryFactory.CreateEntry().Value;
+
+            // Act
+            var result = entry.RecoverDeleted();
+
+            // Assert
+            result.IsError.Should().BeTrue();
+            result.FirstError.Should().Be(EntryErrors.NotDeleted);
         }
 }
