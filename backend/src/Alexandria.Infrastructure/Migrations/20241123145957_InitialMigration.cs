@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Alexandria.Infrastructure.Persistence.Migrations
+namespace Alexandria.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialMigration : Migration

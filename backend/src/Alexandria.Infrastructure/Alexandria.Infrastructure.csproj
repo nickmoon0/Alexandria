@@ -20,8 +20,4 @@
       <ProjectReference Include="..\Alexandria.Domain\Alexandria.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Persistence\Migrations\" />
-    </ItemGroup>
-
 </Project>
