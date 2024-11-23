@@ -18,4 +18,9 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Alexandria.Application\Alexandria.Application.csproj" />
+      <ProjectReference Include="..\Alexandria.Domain.Tests\Alexandria.Domain.Tests.csproj" />
+    </ItemGroup>
+
 </Project>

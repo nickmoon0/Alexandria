@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Domain.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Application.Tests", "tests\Alexandria.Application.Tests\Alexandria.Application.Tests.csproj", "{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Infrastructure.Tests", "tests\Alexandria.Infrastructure.Tests\Alexandria.Infrastructure.Tests.csproj", "{C7E091DA-C86E-435C-B3EB-D109FD9EF637}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Application", "src\Alexandria.Application\Alexandria.Application.csproj", "{40DAF134-FEAA-4C08-9687-8CE068D9E38D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Infrastructure", "src\Alexandria.Infrastructure\Alexandria.Infrastructure.csproj", "{33179F10-CF95-4DDF-B98E-38C08ABC5950}"
@@ -34,10 +32,6 @@ Global
 		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7E091DA-C86E-435C-B3EB-D109FD9EF637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C7E091DA-C86E-435C-B3EB-D109FD9EF637}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7E091DA-C86E-435C-B3EB-D109FD9EF637}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C7E091DA-C86E-435C-B3EB-D109FD9EF637}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40DAF134-FEAA-4C08-9687-8CE068D9E38D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{40DAF134-FEAA-4C08-9687-8CE068D9E38D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40DAF134-FEAA-4C08-9687-8CE068D9E38D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,7 +46,6 @@ Global
 		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C7E091DA-C86E-435C-B3EB-D109FD9EF637} = {08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}
 		{1697C390-9758-4DC8-B8E9-257963491ACC} = {08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}
 		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD} = {08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}
 	EndGlobalSection

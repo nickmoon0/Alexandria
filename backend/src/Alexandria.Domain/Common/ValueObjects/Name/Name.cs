@@ -4,9 +4,9 @@ namespace Alexandria.Domain.Common.ValueObjects.Name;
 
 public class Name : ValueObject
 {
-    private string FirstName { get; }
-    private string LastName { get; }
-    private string? MiddleNames { get; }
+    public string FirstName { get; }
+    public string LastName { get; }
+    public string? MiddleNames { get; }
     public override IEnumerable<object?> GetEqualityComponents()
     {
         yield return FirstName;
