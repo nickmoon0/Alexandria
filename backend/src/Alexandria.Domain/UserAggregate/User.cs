@@ -7,7 +7,7 @@ namespace Alexandria.Domain.UserAggregate;
 
 public class User : AggregateRoot, ISoftDeletable
 {
-    private Name? Name { get; set; }
+    public Name Name { get; private set; } = null!;
     public DateTime? DeletedAtUtc { get; private set; }
 
     private User() { }

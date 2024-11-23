@@ -1,10 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Api", "Alexandria.Api\Alexandria.Api.csproj", "{BDE8187F-C2BD-4FC7-9696-C5E230864FB5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Domain", "src\Alexandria.Domain\Alexandria.Domain.csproj", "{F1E8F101-519E-416D-A86A-308C3776925C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Domain.Tests", "tests\Alexandria.Domain.Tests\Alexandria.Domain.Tests.csproj", "{1697C390-9758-4DC8-B8E9-257963491ACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Application.Tests", "tests\Alexandria.Application.Tests\Alexandria.Application.Tests.csproj", "{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Application", "src\Alexandria.Application\Alexandria.Application.csproj", "{40DAF134-FEAA-4C08-9687-8CE068D9E38D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Infrastructure", "src\Alexandria.Infrastructure\Alexandria.Infrastructure.csproj", "{33179F10-CF95-4DDF-B98E-38C08ABC5950}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alexandria.Api", "src\Alexandria.Api\Alexandria.Api.csproj", "{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,10 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BDE8187F-C2BD-4FC7-9696-C5E230864FB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BDE8187F-C2BD-4FC7-9696-C5E230864FB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BDE8187F-C2BD-4FC7-9696-C5E230864FB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BDE8187F-C2BD-4FC7-9696-C5E230864FB5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F1E8F101-519E-416D-A86A-308C3776925C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F1E8F101-519E-416D-A86A-308C3776925C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1E8F101-519E-416D-A86A-308C3776925C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -24,5 +28,25 @@ Global
 		{1697C390-9758-4DC8-B8E9-257963491ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1697C390-9758-4DC8-B8E9-257963491ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1697C390-9758-4DC8-B8E9-257963491ACC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40DAF134-FEAA-4C08-9687-8CE068D9E38D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40DAF134-FEAA-4C08-9687-8CE068D9E38D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40DAF134-FEAA-4C08-9687-8CE068D9E38D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40DAF134-FEAA-4C08-9687-8CE068D9E38D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33179F10-CF95-4DDF-B98E-38C08ABC5950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33179F10-CF95-4DDF-B98E-38C08ABC5950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33179F10-CF95-4DDF-B98E-38C08ABC5950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33179F10-CF95-4DDF-B98E-38C08ABC5950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04668DB8-0701-4D66-BDDC-1DBEDAFE542E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1697C390-9758-4DC8-B8E9-257963491ACC} = {08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}
+		{8026ABB3-D0EC-40A2-9D3C-E50E06D68BBD} = {08E4B8C3-6EEE-4579-BFF5-082AD31D7BFC}
 	EndGlobalSection
 EndGlobal
