@@ -1,4 +1,5 @@
 using Alexandria.Api.Common.Interfaces;
+using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Users.DTOs;
 using Alexandria.Application.Users.Queries.GetUser;
 using MediatR;
@@ -12,7 +13,8 @@ public class GetUser : IEndpoint
     public static void Map(IEndpointRouteBuilder app) => app
         .MapGet("/{id:guid}", Handle)
         .WithSummary("Retrieves a new user")
-        .WithName(nameof(GetUser));
+        .WithName(nameof(GetUser))
+        .RequireAuthorization(nameof(User));
 
     private record Response(UserDto User);
     

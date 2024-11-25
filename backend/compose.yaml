@@ -12,17 +12,27 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      db:
+      database:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
     env_file: "DockerEnv/Api.env"
-  db:
+  idp:
+    image: quay.io/keycloak/keycloak:26.0.6
+    command: start-dev
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+  database:
     image: mysql:latest
     restart: always
     volumes:
-      - db-data:/var/lib/mysql
+      - database-data:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=Alexandria
       - MYSQL_USER=standard_user
@@ -36,4 +46,5 @@ services:
       retries: 5
 
 volumes:
-  db-data:
+  database-data:
+  keycloak-data:
