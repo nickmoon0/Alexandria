@@ -9,6 +9,7 @@ public static class ConfigureEndpoints
     public static void AddEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup("/api")
+            .RequireAuthorization()
             .WithOpenApi();
         
         endpoints.MapUserEndpoints();
