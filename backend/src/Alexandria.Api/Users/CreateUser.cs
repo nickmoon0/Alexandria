@@ -1,4 +1,5 @@
 using Alexandria.Api.Common.Interfaces;
+using Alexandria.Api.Common.Roles;
 using Alexandria.Application.Users.Commands.CreateUser;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -10,7 +11,8 @@ public class CreateUser : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapPost("/", Handle)
-        .WithSummary("Creates a new user in the database");
+        .WithSummary("Creates a new user in the database")
+        .RequireAuthorization(nameof(Admin));
     
     private record Request(string FirstName, string LastName, string? MiddleNames);
     private record Response(Guid Id);
