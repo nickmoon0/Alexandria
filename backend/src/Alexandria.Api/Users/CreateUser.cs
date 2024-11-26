@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Users;
 
-public class CreateUser : IEndpoint
+public abstract class CreateUser : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapPost("/", Handle)
@@ -16,7 +16,7 @@ public class CreateUser : IEndpoint
     
     private record Request(string FirstName, string LastName, string? MiddleNames);
     private record Response(Guid Id);
-
+    
     private static async Task<Results<CreatedAtRoute<Response>, BadRequest>> Handle(
         [FromBody] Request request,
         [FromServices] IMediator mediator)
