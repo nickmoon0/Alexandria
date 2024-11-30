@@ -1,0 +1,42 @@
+plugins {
+    id("java")
+    id("com.github.johnrengelman.shadow") version "7.1.2" // Shadow plugin for fat JAR
+}
+
+group = "alexandria"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Test dependencies
+    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+
+    // RabbitMQ
+    implementation("com.rabbitmq:amqp-client:5.23.0")
+
+    // Logging
+    compileOnly("org.slf4j:slf4j-api:2.0.16")
+    compileOnly("org.slf4j:slf4j-simple:2.0.16")
+
+    // JSON Manipulation
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.1")
+
+    // Keycloak SPI
+    compileOnly("org.keycloak:keycloak-server-spi-private:26.0.6")
+    compileOnly("org.keycloak:keycloak-server-spi:26.0.6")
+    compileOnly("org.keycloak:keycloak-core:26.0.6")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+// Shadow plugin configuration
+tasks.shadowJar {
+    archiveClassifier.set("") // Replace default classifier with no suffix
+    mergeServiceFiles() // Merge META-INF files if needed
+}
