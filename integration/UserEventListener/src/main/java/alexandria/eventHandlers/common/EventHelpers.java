@@ -1,4 +1,4 @@
-package alexandria.eventHandlers;
+package alexandria.eventHandlers.common;
 
 public class EventHelpers {
     public static String getUserId(String resourcePath) {

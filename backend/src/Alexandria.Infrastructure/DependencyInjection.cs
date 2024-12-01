@@ -1,4 +1,5 @@
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Infrastructure.Persistence;
 using Alexandria.Infrastructure.Persistence.Repositories;
 using Alexandria.Infrastructure.Services;
@@ -41,6 +42,9 @@ public static class DependencyInjection
     {
         services.AddHostedService<RabbitMqConsumerService>();
         services.AddScoped<MessageProcessorService>();
+        
+        services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
+        
         return services;
     }
 }

@@ -24,4 +24,10 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
         return user;
     }
+    
+    public async Task<ErrorOr<Success>> UpdateAsync(CancellationToken cancellationToken)
+    {
+        await context.SaveChangesAsync(cancellationToken);
+        return Result.Success;
+    }
 }

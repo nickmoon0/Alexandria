@@ -1,4 +1,4 @@
-package alexandria.eventHandlers;
+package alexandria.eventHandlers.common;
 
 import alexandria.services.MessageService;
 import alexandria.services.RabbitMqService;

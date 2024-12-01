@@ -5,5 +5,6 @@ public static class MessageConstants
     public static class OperationType
     {
         public const string Create = "CREATE";
+        public const string Delete = "DELETE";
     }
 }

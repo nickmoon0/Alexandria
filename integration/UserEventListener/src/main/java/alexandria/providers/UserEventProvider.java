@@ -1,6 +1,7 @@
 package alexandria.providers;
 
 import alexandria.eventHandlers.UserCreatedHandler;
+import alexandria.eventHandlers.UserDeletedEvent;
 import alexandria.services.EventHandlerService;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
@@ -32,6 +33,7 @@ public class UserEventProvider implements EventListenerProvider {
 
         switch (eventType) {
             case CREATE -> EventHandlerService.ExecuteEventHandler(UserCreatedHandler.class, adminEvent);
+            case DELETE -> EventHandlerService.ExecuteEventHandler(UserDeletedEvent.class, adminEvent);
             default -> logger.warn("No handler implemented for user event: {}", eventType);
         }
 

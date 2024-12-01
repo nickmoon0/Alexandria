@@ -1,6 +1,6 @@
 package alexandria.services;
 
-import alexandria.eventHandlers.EventHandler;
+import alexandria.eventHandlers.common.EventHandler;
 import org.keycloak.events.admin.AdminEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
