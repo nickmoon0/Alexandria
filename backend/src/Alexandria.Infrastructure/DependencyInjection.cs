@@ -34,6 +34,7 @@ public static class DependencyInjection
                 mysqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name)));
         
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICharacterRepository, CharacterRepository>();
         
         return services;
     }

@@ -71,6 +71,18 @@ public class Character : TaggableAggregateRoot, IAuditable, ISoftDeletable
         return new Character(name, createdById, dateTimeProvider.UtcNow, description, userId);
     }
 
+    public ErrorOr<Updated> SetUserId(Guid? userId)
+    {
+        UserId = userId;
+        return Result.Updated;
+    }
+
+    public ErrorOr<Updated> SetName(Name name)
+    {
+        Name = name;
+        return Result.Updated;
+    }
+    
     public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
     {
         if (DeletedAtUtc.HasValue)
