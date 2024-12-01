@@ -13,7 +13,7 @@ public class UserCreatedHandler extends EventHandler{
         super();
     }
 
-    public void Execute(AdminEvent event) {
+    public void execute(AdminEvent event) {
         var representation = event.getRepresentation();
         var id = EventHelpers.getUserId(event.getResourcePath());
 
