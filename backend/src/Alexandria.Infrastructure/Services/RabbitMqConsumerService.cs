@@ -1,5 +1,11 @@
 using System.Text;
+using System.Text.Json;
+using Alexandria.Application.Users.Commands.CreateUser;
+using Alexandria.Infrastructure.Common;
+using Alexandria.Infrastructure.Common.Contracts;
 using Alexandria.Infrastructure.Common.Options;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,7 +16,8 @@ namespace Alexandria.Infrastructure.Services;
 
 public class RabbitMqConsumerService(
     ILogger<RabbitMqConsumerService> logger,
-    IOptions<RabbitMqOptions> optionsInterface) : BackgroundService
+    IOptions<RabbitMqOptions> optionsInterface,
+    IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
     private IConnection _connection = null!;
     private IChannel _channel = null!;
@@ -45,6 +52,17 @@ public class RabbitMqConsumerService(
             
             // Process the message here
             logger.LogInformation("Received: {message}", message);
+            try
+            {
+                using var scope = serviceScopeFactory.CreateScope();
+                var scopedProcessingService = scope.ServiceProvider.GetRequiredService<MessageProcessorService>();
+                await scopedProcessingService.HandleMessage(message);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured");
+                return;
+            }
             
             // Acknowledge message
             await _channel.BasicAckAsync(ea.DeliveryTag, false, stoppingToken);

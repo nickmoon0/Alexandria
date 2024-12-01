@@ -40,6 +40,7 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddHostedService<RabbitMqConsumerService>();
+        services.AddScoped<MessageProcessorService>();
         return services;
     }
 }
