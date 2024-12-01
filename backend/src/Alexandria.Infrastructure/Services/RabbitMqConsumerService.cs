@@ -1,10 +1,5 @@
 using System.Text;
-using System.Text.Json;
-using Alexandria.Application.Users.Commands.CreateUser;
-using Alexandria.Infrastructure.Common;
-using Alexandria.Infrastructure.Common.Contracts;
 using Alexandria.Infrastructure.Common.Options;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
