@@ -21,8 +21,7 @@ public static class ConfigureEndpoints
             .WithTags(nameof(User));
 
         endpoints
-            .MapEndpoint<GetUser>()
-            .MapEndpoint<CreateUser>();
+            .MapEndpoint<GetUser>();
     }
 
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app)
