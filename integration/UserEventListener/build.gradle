@@ -5,6 +5,7 @@ plugins {
 
 group = "alexandria"
 version = "1.0-SNAPSHOT"
+def keycloakProvidersDir = "$projectDir/../../orchestration/Providers"
 
 repositories {
     mavenCentral()
@@ -35,8 +36,14 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.register('copyJar', Copy) {
+    from tasks.shadowJar.archiveFile.get().asFile
+    into keycloakProvidersDir
+}
+
 // Shadow plugin configuration
 tasks.shadowJar {
     archiveClassifier.set("") // Replace default classifier with no suffix
     mergeServiceFiles() // Merge META-INF files if needed
+    finalizedBy(tasks.copyJar)
 }
