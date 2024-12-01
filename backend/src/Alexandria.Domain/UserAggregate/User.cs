@@ -16,9 +16,9 @@ public class User : AggregateRoot, ISoftDeletable
     {
         Name = name;
     }
-    public static ErrorOr<User> Create(Name name)
+    public static ErrorOr<User> Create(Guid id, Name name)
     {
-        return new User(name);
+        return new User(name, id);
     }
 
     public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)

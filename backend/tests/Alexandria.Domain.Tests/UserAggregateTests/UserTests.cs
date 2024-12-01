@@ -17,7 +17,7 @@ public class UserTests
         var name = NameFactory.CreateName().Value;
         
         // Act
-        var userResult = User.Create(name);
+        var userResult = User.Create(Guid.NewGuid(), name);
         
         // Assert
         userResult.IsError.Should().BeFalse();

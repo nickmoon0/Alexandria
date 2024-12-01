@@ -17,24 +17,24 @@ public class MessageProcessorService(
         {
             PropertyNameCaseInsensitive = true
         };
-        var baseMessage = JsonSerializer.Deserialize<BaseMessage>(message, options);
-        if (baseMessage == null)
+        var messageObj = JsonSerializer.Deserialize<Message<UserDto>>(message, options);
+        if (messageObj == null)
         {
             logger.LogError("Received unknown message");
             logger.LogError("Message: {Message}", message);
             throw new Exception("Failed to deserialize message");
         }
         
-        switch (baseMessage.Type)
+        var user = messageObj.Data;
+        
+        switch (messageObj.Type)
         {
             case MessageConstants.OperationType.Create:
-                var messageObj = JsonSerializer.Deserialize<Message<UserDto>>(message, options) 
-                                 ?? throw new Exception("Failed to deserialize message");
-                var command = new CreateUserCommand(messageObj.Data.FirstName!, messageObj.Data.LastName!);
+                var command = new CreateUserCommand(user.Id, user.FirstName!, user.LastName!);
                 await mediator.Send(command);
                 break;
             default:
-                logger.LogError("Received unsupported message type: {Type}", baseMessage.Type);
+                logger.LogError("Received unsupported message type: {Type}", messageObj.Type);
                 break;
         }
     }
