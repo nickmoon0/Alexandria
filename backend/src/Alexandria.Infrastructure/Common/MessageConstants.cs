@@ -6,5 +6,6 @@ public static class MessageConstants
     {
         public const string Create = "CREATE";
         public const string Delete = "DELETE";
+        public const string Update = "UPDATE";
     }
 }

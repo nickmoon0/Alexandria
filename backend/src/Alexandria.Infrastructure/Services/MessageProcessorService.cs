@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Alexandria.Application.Users.Commands.CreateUser;
 using Alexandria.Application.Users.Commands.DeleteUser;
+using Alexandria.Application.Users.Commands.UpdateUser;
 using Alexandria.Infrastructure.Common;
 using Alexandria.Infrastructure.Common.Contracts;
 using MediatR;
@@ -37,6 +38,10 @@ public class MessageProcessorService(
             case MessageConstants.OperationType.Delete:
                 var deleteUserCommand = new DeleteUserCommand(user.Id);
                 await mediator.Send(deleteUserCommand);
+                break;
+            case MessageConstants.OperationType.Update:
+                var updateUserCommand = new UpdateUserCommand(user.Id, user.FirstName!, user.LastName!);
+                await mediator.Send(updateUserCommand);
                 break;
             default:
                 logger.LogError("Received unsupported message type: {Type}", messageObj.Type);

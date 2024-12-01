@@ -21,6 +21,12 @@ public class User : AggregateRoot, ISoftDeletable
         return new User(name, id);
     }
 
+    public ErrorOr<Updated> UpdateName(Name name)
+    {
+        Name = name;
+        return Result.Updated;
+    }
+    
     public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
     {
         if (DeletedAtUtc.HasValue)
