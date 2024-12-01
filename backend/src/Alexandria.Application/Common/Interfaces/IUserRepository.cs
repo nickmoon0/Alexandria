@@ -7,4 +7,5 @@ public interface IUserRepository
 {
     public Task<ErrorOr<Success>> AddAsync(User user, CancellationToken cancellationToken);
     public Task<ErrorOr<User>> FindByIdAsync(Guid userId, CancellationToken cancellationToken);
+    public Task<ErrorOr<Success>> UpdateAsync(CancellationToken cancellationToken);
 }

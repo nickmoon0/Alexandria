@@ -9,11 +9,11 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     dotnet publish -a ${TARGETARCH/amd64/x64} --use-current-runtime --self-contained false -o /app
 
 # Run tests
-RUN dotnet test /source/tests/Alexandria.UnitTests
+RUN dotnet test /source/Alexandria.sln
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS development
 COPY . /source
-WORKDIR /source/Alexandria.Api
+WORKDIR /source/src/Alexandria.Api
 CMD dotnet run --no-launch-profile
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final

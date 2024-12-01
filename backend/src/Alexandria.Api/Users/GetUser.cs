@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Users;
 
-public class GetUser : IEndpoint
+public abstract class GetUser : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapGet("/{id:guid}", Handle)

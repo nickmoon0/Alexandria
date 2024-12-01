@@ -27,4 +27,9 @@ public class TestUserRepository : IUserRepository
             Task.FromResult<ErrorOr<User>>(Error.NotFound()) : 
             Task.FromResult<ErrorOr<User>>(userEntity);
     }
+
+    public Task<ErrorOr<Success>> UpdateAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

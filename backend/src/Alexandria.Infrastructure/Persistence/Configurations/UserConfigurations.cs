@@ -11,6 +11,8 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
     {
         builder.ToTable(nameof(User));
         
+        builder.HasQueryFilter(x => x.DeletedAtUtc == null); // Only get objects that haven't been deleted
+        
         builder.HasKey(user => user.Id);
         builder.Property(user => user.Id).ValueGeneratedNever();
         

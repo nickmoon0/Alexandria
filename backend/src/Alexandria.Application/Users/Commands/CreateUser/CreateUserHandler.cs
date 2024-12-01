@@ -22,7 +22,7 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, ErrorOr<Crea
             return nameResult.Errors;
         }
         
-        var userResult = User.Create(nameResult.Value);
+        var userResult = User.Create(request.Id, nameResult.Value);
         if (userResult.IsError)
         {
             return userResult.Errors;
