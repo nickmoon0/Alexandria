@@ -7,13 +7,13 @@ namespace Alexandria.Domain.CharacterAggregate;
 
 public class Character : TaggableAggregateRoot, IAuditable, ISoftDeletable
 {
-    private Name? Name { get; set; }
-    private string? Description { get; set; }
+    public Name Name { get; private set; } = null!;
+    public string? Description { get; private set; }
 
-    private Guid? UserId { get; set; }
+    public Guid? UserId { get; private set; }
 
-    public Guid CreatedById { get; }
-    public DateTime CreatedAtUtc { get; }
+    public Guid CreatedById { get; private set; }
+    public DateTime CreatedAtUtc { get; private set; }
     
     public DateTime? DeletedAtUtc { get; private set; }
     
