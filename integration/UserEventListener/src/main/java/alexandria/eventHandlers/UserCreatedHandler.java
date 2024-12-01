@@ -2,6 +2,7 @@ package alexandria.eventHandlers;
 
 import alexandria.dtos.UserDto;
 import org.keycloak.events.admin.AdminEvent;
+import org.keycloak.events.admin.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,10 @@ public class UserCreatedHandler extends EventHandler{
 
         logger.info("User created event: {}", id);
 
-        var payload = jsonService.createJson(representation, id, UserDto.class);
+        var userObj = messageService.mapObject(representation, id, UserDto.class);
+        var messageObj = new Message<>(OperationType.CREATE.name(), userObj);
+
+        var payload = messageService.createJson(messageObj);
 
         if(payload != null && rabbitMqService.publish(payload)) {
             logger.info("Published user creation message");
