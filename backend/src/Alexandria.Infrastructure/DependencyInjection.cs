@@ -1,6 +1,7 @@
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Infrastructure.Persistence;
 using Alexandria.Infrastructure.Persistence.Repositories;
+using Alexandria.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,8 @@ public static class DependencyInjection
         services
             .AddMediatR(options => 
                 options.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection)))
-            .AddPersistence(configuration);
+            .AddPersistence(configuration)
+            .AddServices();
 
         return services;
     }
@@ -32,6 +34,12 @@ public static class DependencyInjection
         
         services.AddScoped<IUserRepository, UserRepository>();
         
+        return services;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddHostedService<RabbitMqConsumerService>();
         return services;
     }
 }

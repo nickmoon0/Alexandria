@@ -29,6 +29,8 @@ public static class ConfigureAuth
         // Get configuration parameters
         var authority = configuration["IDP:Authority"] 
                         ?? throw new Exception("Authority cannot be null");
+        var issuer = configuration["IDP:Issuer"] 
+                     ?? throw new Exception("Issuer cannot be null");
         var audience = configuration["IDP:Audience"] 
                        ?? throw new Exception("Audience cannot be null");
         var requireHttpsMetadata = Convert.ToBoolean(configuration["IDP:RequireHttpsMetadata"] ?? false.ToString());
@@ -43,6 +45,7 @@ public static class ConfigureAuth
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
+                    ValidIssuer = issuer,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
