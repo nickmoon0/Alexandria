@@ -4,7 +4,12 @@ using Alexandria.Domain.UserAggregate;
 using ErrorOr;
 using MediatR;
 
-namespace Alexandria.Application.Users.Commands.CreateUser;
+namespace Alexandria.Application.Users.Commands;
+
+public record CreateUserCommand(Guid Id, string FirstName, string LastName, string? MiddleNames = null)
+    : IRequest<ErrorOr<CreateUserResult>>;
+
+public record CreateUserResult(Guid UserId);
 
 public class CreateUserHandler : IRequestHandler<CreateUserCommand, ErrorOr<CreateUserResult>>
 {

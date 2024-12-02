@@ -1,5 +1,5 @@
 using Alexandria.Application.Tests.TestUtils.Repositories;
-using Alexandria.Application.Users.Commands.CreateUser;
+using Alexandria.Application.Users.Commands;
 using Alexandria.Domain.Common.ValueObjects.Name;
 using FluentAssertions;
 

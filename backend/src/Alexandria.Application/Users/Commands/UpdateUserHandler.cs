@@ -4,7 +4,10 @@ using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Alexandria.Application.Users.Commands.UpdateUser;
+namespace Alexandria.Application.Users.Commands;
+
+public record UpdateUserCommand(Guid Id, string FirstName, string LastName, string? MiddleNames = null) 
+    : IRequest<ErrorOr<Updated>>;
 
 public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, ErrorOr<Updated>>
 {

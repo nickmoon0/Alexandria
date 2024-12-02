@@ -1,5 +1,5 @@
 using Alexandria.Application.Tests.TestUtils.Repositories;
-using Alexandria.Application.Users.Queries.GetUser;
+using Alexandria.Application.Users.Queries;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.UserAggregate;
 using ErrorOr;
@@ -36,7 +36,7 @@ public class GetUserHandlerTests
     {
         // Arrange
         var existingUser = _testUserRepository.Users.First().Value;
-        var query = new GetUserQuery { UserId = existingUser.Id };
+        var query = new GetUserQuery(existingUser.Id);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -52,7 +52,7 @@ public class GetUserHandlerTests
     {
         // Arrange
         var nonExistentUserId = Guid.NewGuid();
-        var query = new GetUserQuery { UserId = nonExistentUserId };
+        var query = new GetUserQuery(nonExistentUserId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);

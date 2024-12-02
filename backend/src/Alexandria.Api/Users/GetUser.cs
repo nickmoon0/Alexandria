@@ -2,7 +2,7 @@ using Alexandria.Api.Common;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Users.DTOs;
-using Alexandria.Application.Users.Queries.GetUser;
+using Alexandria.Application.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,7 @@ public abstract class GetUser : EndpointBase, IEndpoint
         [FromRoute] Guid id,
         [FromServices] IMediator mediator)
     {
-        var query = new GetUserQuery { UserId = id };
+        var query = new GetUserQuery(id);
         var result = await mediator.Send(query);
 
         if (result.IsError)

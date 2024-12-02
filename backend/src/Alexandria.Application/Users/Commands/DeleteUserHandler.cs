@@ -3,7 +3,9 @@ using Alexandria.Domain.Common.Interfaces;
 using ErrorOr;
 using MediatR;
 
-namespace Alexandria.Application.Users.Commands.DeleteUser;
+namespace Alexandria.Application.Users.Commands;
+
+public record DeleteUserCommand(Guid Id) : IRequest<ErrorOr<Success>>;
 
 public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, ErrorOr<Success>>
 {

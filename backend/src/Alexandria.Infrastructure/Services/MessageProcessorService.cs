@@ -1,7 +1,5 @@
 using System.Text.Json;
-using Alexandria.Application.Users.Commands.CreateUser;
-using Alexandria.Application.Users.Commands.DeleteUser;
-using Alexandria.Application.Users.Commands.UpdateUser;
+using Alexandria.Application.Users.Commands;
 using Alexandria.Infrastructure.Common;
 using Alexandria.Infrastructure.Common.Contracts;
 using MediatR;

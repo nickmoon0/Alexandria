@@ -2,7 +2,10 @@ using Alexandria.Application.Common.Interfaces;
 using ErrorOr;
 using MediatR;
 
-namespace Alexandria.Application.Users.Queries.GetUser;
+namespace Alexandria.Application.Users.Queries;
+
+public record GetUserQuery(Guid UserId) : IRequest<ErrorOr<GetUserResult>>;
+public record GetUserResult(Guid Id, string FirstName, string LastName, string? MiddleNames);
 
 public class GetUserHandler : IRequestHandler<GetUserQuery, ErrorOr<GetUserResult>>
 {
@@ -23,13 +26,12 @@ public class GetUserHandler : IRequestHandler<GetUserQuery, ErrorOr<GetUserResul
         }
 
         var user = userResult.Value;
-        var response = new GetUserResult
-        {
-            Id = user.Id,
-            FirstName = user.Name.FirstName,
-            LastName = user.Name.LastName,
-            MiddleNames = user.Name.MiddleNames
-        };
+        var response = new GetUserResult(
+            user.Id,
+            user.Name.FirstName,
+            user.Name.LastName,
+            user.Name.MiddleNames
+        );
         
         return response;
     }
