@@ -47,10 +47,11 @@ public class Character : TaggableAggregateRoot, IAuditable, ISoftDeletable
         
         // Check description is in valid state
         description = description?.Trim();
-        if (!string.IsNullOrEmpty(description) && description.Length > 2000)
+        if (!DescriptionValid(description))
         {
             errors.Add(CharacterErrors.DescriptionTooLong);
         }
+        description = string.IsNullOrEmpty(description) ? null : description;
         
         // Check if createdById is in valid state
         if (createdById == Guid.Empty)
@@ -83,6 +84,17 @@ public class Character : TaggableAggregateRoot, IAuditable, ISoftDeletable
         Name = name;
         return Result.Updated;
     }
+
+    public ErrorOr<Updated> SetDescription(string? description)
+    {
+        if (!DescriptionValid(description))
+        {
+            return CharacterErrors.DescriptionTooLong;
+        }
+        
+        Description = description;
+        return Result.Updated;
+    }
     
     public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
     {
@@ -112,4 +124,7 @@ public class Character : TaggableAggregateRoot, IAuditable, ISoftDeletable
         DeletedAtUtc = null;
         return Result.Success;
     }
+
+    private static bool DescriptionValid(string? description) =>
+        string.IsNullOrEmpty(description) || (!string.IsNullOrEmpty(description) && description.Length <= 2000);
 }

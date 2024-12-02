@@ -40,14 +40,13 @@ public class CharacterTests
         characterResult.Errors.Should().Contain(CharacterErrors.InvalidUserId);
     }
 
-    [Fact]
-    public void Create_WithWhiteSpaceDescription_ShouldReturnCharacter()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("  ")] // Two spaces
+    [InlineData("\t")] // One tab
+    [InlineData("   ")] // Three spaces
+    public void Create_WithWhiteSpaceDescription_ShouldReturnCharacter(string? description)
     {
-        // Arrange
-        var description = "";
-        description += "  "; // Two spaces
-        description += "    "; // One tab
-        
         // Act
         var characterResult = CharacterFactory.CreateCharacter(description: description);
         
