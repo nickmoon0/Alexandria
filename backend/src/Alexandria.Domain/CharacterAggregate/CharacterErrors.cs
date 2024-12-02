@@ -11,4 +11,8 @@ public static class CharacterErrors
     public static readonly Error InvalidUserId = Error.Validation(
         $"{nameof(Character)}.InvalidUserId",
         "User ID must be valid Guid");
+
+    public static readonly Error CannotDeleteUsersCharacter = Error.Forbidden(
+        $"{nameof(Character)}.CannotDeleteUsersCharacter",
+        "Cannot delete a character that belongs to a user");
 }

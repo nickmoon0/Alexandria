@@ -135,4 +135,22 @@ public class CharacterTests
         result.IsError.Should().BeTrue();
         character.DeletedAtUtc.Should().BeNull();
     }
+    
+    [Fact]
+    public void Delete_WithUserId_ShouldReturnError()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+        var userId = Guid.NewGuid();
+        var character = CharacterFactory.CreateCharacter(userId: userId).Value;
+
+        // Act
+        var result = character.Delete(mockDateTimeProvider);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(CharacterErrors.CannotDeleteUsersCharacter);
+        character.DeletedAtUtc.Should().BeNull();
+    }
 }

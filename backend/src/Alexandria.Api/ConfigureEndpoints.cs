@@ -26,6 +26,7 @@ public static class ConfigureEndpoints
 
         endpoints
             .MapEndpoint<CreateCharacter>()
+            .MapEndpoint<DeleteCharacter>()
             .MapEndpoint<GetCharacter>();
         
         return app;

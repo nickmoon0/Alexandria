@@ -1,3 +1,4 @@
+using Alexandria.Domain.CharacterAggregate.Events;
 using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Domain.Common.ValueObjects.Name;
@@ -85,12 +86,19 @@ public class Character : TaggableAggregateRoot, IAuditable, ISoftDeletable
     
     public ErrorOr<Deleted> Delete(IDateTimeProvider dateTimeProvider)
     {
+        if (UserId != null && UserId != Guid.Empty)
+        {
+            return CharacterErrors.CannotDeleteUsersCharacter;
+        }
+        
         if (DeletedAtUtc.HasValue)
         {
             return Error.Failure();
         }
         
         DeletedAtUtc = dateTimeProvider.UtcNow;
+        DomainEvents.Add(new CharacterDeletedEvent(Id));
+        
         return Result.Deleted;
     }
 
