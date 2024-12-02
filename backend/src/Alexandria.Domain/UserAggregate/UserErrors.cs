@@ -11,4 +11,8 @@ public static class UserErrors
     public static readonly Error NotDeleted = Error.Validation(
         $"{nameof(User)}.NotDeleted",
         "User is not deleted.");
+
+    public static readonly Error NotFound = Error.NotFound(
+        $"{nameof(User)}.NotFound",
+        "User cannot be found.");
 }

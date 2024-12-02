@@ -1,10 +1,10 @@
 using Alexandria.Api.Characters.DTOs;
 using Alexandria.Api.Common;
+using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Application.Characters.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Characters;
@@ -19,7 +19,7 @@ public abstract class GetCharacter : EndpointBase, IEndpoint
 
     private record Response(CharacterDto Character);
     
-    private static async Task<Results<Ok<Response>, NotFound>> Handle(
+    private static async Task<IResult> Handle(
         [FromRoute] Guid id,
         [FromServices] IMediator mediator)
     {
@@ -28,7 +28,7 @@ public abstract class GetCharacter : EndpointBase, IEndpoint
 
         if (result.IsError)
         {
-            return TypedResults.NotFound();
+            return result.ToHttpResponse();
         }
         
         var character = result.Value;
@@ -44,6 +44,6 @@ public abstract class GetCharacter : EndpointBase, IEndpoint
             CreatedOnUtc = character.CreatedAtUtc
         });
         
-        return TypedResults.Ok(response);
+        return Results.Ok(response);
     }
 }

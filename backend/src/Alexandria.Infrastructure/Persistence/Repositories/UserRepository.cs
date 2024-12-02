@@ -20,7 +20,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
         var user = await context.Users.FindAsync([userId], cancellationToken);
         if (user == null)
         {
-            return Error.NotFound();
+            return UserErrors.NotFound;
         }
 
         return user;

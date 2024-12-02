@@ -1,4 +1,5 @@
 using Alexandria.Api.Common;
+using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Application.Characters.Commands;
@@ -24,7 +25,7 @@ public abstract class CreateCharacter : EndpointBase, IEndpoint
 
     private record Response(Guid Id);
 
-    private static async Task<Results<CreatedAtRoute<Response>, BadRequest>> Handle(
+    private static async Task<IResult> Handle(
         [FromBody] Request request,
         [FromServices] IMediator mediator)
     {
@@ -39,10 +40,10 @@ public abstract class CreateCharacter : EndpointBase, IEndpoint
         var result = await mediator.Send(command);
         if (result.IsError)
         {
-            return TypedResults.BadRequest();
+            return result.ToHttpResponse();
         }
         
         var response = new Response(result.Value.Id);
-        return TypedResults.CreatedAtRoute(response, nameof(GetCharacter), response);
+        return Results.CreatedAtRoute(nameof(GetCharacter), response, response);
     }
 }

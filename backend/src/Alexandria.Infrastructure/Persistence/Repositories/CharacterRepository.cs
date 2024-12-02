@@ -20,7 +20,7 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
         var character = await context.Characters.FindAsync([characterId], cancellationToken);
         if (character == null)
         {
-            return Error.NotFound();
+            return CharacterErrors.NotFound;
         }
 
         return character;
@@ -32,7 +32,7 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
             .SingleOrDefaultAsync(x => x.UserId == userId, cancellationToken);
         if (character == null)
         {
-            return Error.NotFound();
+            return CharacterErrors.NotFound;
         }
 
         return character;

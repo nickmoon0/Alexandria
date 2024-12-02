@@ -1,10 +1,10 @@
 using Alexandria.Api.Common;
+using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Users.DTOs;
 using Alexandria.Application.Users.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Users;
@@ -19,7 +19,7 @@ public abstract class GetUser : EndpointBase, IEndpoint
 
     private record Response(UserDto User);
     
-    private static async Task<Results<Ok<Response>, NotFound>> Handle(
+    private static async Task<IResult> Handle(
         [FromRoute] Guid id,
         [FromServices] IMediator mediator)
     {
@@ -28,7 +28,7 @@ public abstract class GetUser : EndpointBase, IEndpoint
 
         if (result.IsError)
         {
-            return TypedResults.NotFound();
+            return result.ToHttpResponse();
         }
 
         var userResult = result.Value;
@@ -40,6 +40,6 @@ public abstract class GetUser : EndpointBase, IEndpoint
             MiddleNames = userResult.MiddleNames,
         });
         
-        return TypedResults.Ok(response);
+        return Results.Ok(response);
     }
 }
