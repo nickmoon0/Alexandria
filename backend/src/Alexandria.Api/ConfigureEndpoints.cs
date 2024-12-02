@@ -25,6 +25,7 @@ public static class ConfigureEndpoints
             .WithTags(nameof(Character));
 
         endpoints
+            .MapEndpoint<CreateCharacter>()
             .MapEndpoint<GetCharacter>();
         
         return app;

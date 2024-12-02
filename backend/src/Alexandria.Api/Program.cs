@@ -1,4 +1,5 @@
 using Alexandria.Api;
+using Alexandria.Api.Common.Middleware;
 using Alexandria.Application;
 using Alexandria.Infrastructure;
 using Alexandria.Infrastructure.Common.Options;
@@ -29,6 +30,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<EndpointInitializationMiddleware>();
 
 app.UseHttpsRedirection();
 app.Run();

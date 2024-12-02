@@ -1,3 +1,4 @@
+using Alexandria.Api.Common;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Users.DTOs;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Users;
 
-public abstract class GetUser : IEndpoint
+public abstract class GetUser : EndpointBase, IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapGet("/{id:guid}", Handle)

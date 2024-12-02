@@ -1,4 +1,5 @@
 using Alexandria.Api.Characters.DTOs;
+using Alexandria.Api.Common;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Application.Characters.Queries;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Characters;
 
-public abstract class GetCharacter : IEndpoint
+public abstract class GetCharacter : EndpointBase, IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapGet("/{id:guid}", Handle)

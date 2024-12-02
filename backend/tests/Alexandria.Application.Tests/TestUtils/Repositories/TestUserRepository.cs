@@ -32,4 +32,9 @@ public class TestUserRepository : IUserRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }
