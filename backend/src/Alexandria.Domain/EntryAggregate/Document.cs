@@ -7,11 +7,11 @@ namespace Alexandria.Domain.EntryAggregate;
 
 public class Document : Entity, IAuditable, ISoftDeletable
 {
-    private string? Name { get; set; }
-    private string? Description {get; set;}
+    public string? Name { get; private set; }
+    public string? Description { get; private set;}
     
-    private string? ImagePath { get; set; }
-    private byte[]? Data { get; set; }
+    public string? ImagePath { get; private set; }
+    public byte[]? Data { get; private set; } // Data ignored by EF Core
     
     public Guid CreatedById { get; }
     public DateTime CreatedAtUtc { get; }

@@ -1,6 +1,7 @@
 using System.Reflection;
 using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common;
+using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.UserAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ public class AppDbContext(
 {
     public virtual DbSet<User> Users { get; init; }
     public virtual DbSet<Character> Characters { get; init; }
+    public virtual DbSet<Document> Documents { get; init; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
