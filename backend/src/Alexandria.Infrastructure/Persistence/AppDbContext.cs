@@ -12,9 +12,12 @@ public class AppDbContext(
     DbContextOptions<AppDbContext> options,
     IPublisher publisher) : DbContext(options)
 {
-    public virtual DbSet<User> Users { get; init; }
     public virtual DbSet<Character> Characters { get; init; }
+    public virtual DbSet<Comment> Comments { get; init; } 
     public virtual DbSet<Document> Documents { get; init; }
+    public virtual DbSet<Entry> Entries { get; init; }
+    public virtual DbSet<User> Users { get; init; }
+
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

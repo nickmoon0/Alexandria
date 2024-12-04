@@ -7,8 +7,8 @@ namespace Alexandria.Domain.EntryAggregate;
 
 public class Comment : Entity, IAuditable, ISoftDeletable
 {
-    private string? Content { get; set; }
-    public Entry? Entry { get; set; }
+    public string? Content { get; private set; }
+    public Entry? Entry { get; private set; }
     
     public Guid CreatedById { get; }
     public DateTime CreatedAtUtc { get; }

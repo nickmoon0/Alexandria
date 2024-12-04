@@ -7,11 +7,12 @@ namespace Alexandria.Domain.EntryAggregate;
 
 public class Entry : TaggableAggregateRoot, IAuditable, ISoftDeletable
 {
-    private string? Name { get; set; }
-    private string? Description { get; set; }
+    public string? Name { get; private set; }
+    public string? Description { get; private set; }
 
     private Document? Document { get; set; }
-    private List<Comment> Comments { get; set; } = [];
+    public List<Comment> Comments { get; private set; } = [];
+
     private List<Guid> CharacterIds { get; set; } = [];
     
     public Guid CreatedById { get; }
