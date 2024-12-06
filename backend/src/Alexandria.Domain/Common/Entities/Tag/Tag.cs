@@ -4,7 +4,9 @@ namespace Alexandria.Domain.Common.Entities.Tag;
 
 public class Tag : Entity
 {
-    private string? Name { get; set; }
+    public string? Name { get; private set; }
+    private List<Guid> _taggingIds = [];
+    public IReadOnlyList<Guid> TaggingIds => _taggingIds;
 
     private Tag() { }
 

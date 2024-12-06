@@ -6,7 +6,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.CharacterAggregate;
 
-public class Character : TaggableAggregateRoot, IAuditable, ISoftDeletable
+public class Character : AggregateRoot, IAuditable, ISoftDeletable
 {
     public Name Name { get; private set; } = null!;
     public string? Description { get; private set; }
