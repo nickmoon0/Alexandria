@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Alexandria.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedTag : Migration
+    public partial class AddTag : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,9 +31,10 @@ namespace Alexandria.Infrastructure.Migrations
                 {
                     TaggingId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     TagId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    EntityType = table.Column<string>(type: "varchar(255)", nullable: false)
+                    EntityType = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    EntityId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    EntityId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    DeletedAtUtc = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -53,14 +54,10 @@ namespace Alexandria.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tagging_EntityType_EntityId",
+                name: "IX_Tagging_TagId_EntityId",
                 table: "Tagging",
-                columns: new[] { "EntityType", "EntityId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tagging_TagId",
-                table: "Tagging",
-                column: "TagId");
+                columns: new[] { "TagId", "EntityId" },
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -17,7 +17,7 @@ public class Tag : Entity
 
     public static ErrorOr<Tag> Create(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name) || name.Length >= 20)
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name) || name.Length >= 50)
         {
             return TagErrors.InvalidName;
         }

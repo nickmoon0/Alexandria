@@ -45,6 +45,8 @@ public static class DependencyInjection
         services.AddScoped<MessageProcessorService>();
         
         services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
+
+        services.AddScoped<ITaggingService, TaggingService>();
         
         return services;
     }

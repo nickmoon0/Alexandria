@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Alexandria.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241206101808_AddedTag")]
-    partial class AddedTag
+    [Migration("20241207143123_AddTag")]
+    partial class AddTag
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,21 +174,23 @@ namespace Alexandria.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<Guid>("EntityId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("EntityType")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("TagId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("TaggingId");
 
-                    b.HasIndex("TagId");
-
-                    b.HasIndex("EntityType", "EntityId");
+                    b.HasIndex("TagId", "EntityId")
+                        .IsUnique();
 
                     b.ToTable("Tagging", (string)null);
                 });

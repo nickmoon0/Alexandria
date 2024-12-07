@@ -171,21 +171,23 @@ namespace Alexandria.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<Guid>("EntityId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("EntityType")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("TagId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("TaggingId");
 
-                    b.HasIndex("TagId");
-
-                    b.HasIndex("EntityType", "EntityId");
+                    b.HasIndex("TagId", "EntityId")
+                        .IsUnique();
 
                     b.ToTable("Tagging", (string)null);
                 });

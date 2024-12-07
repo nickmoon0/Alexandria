@@ -11,6 +11,8 @@ public class TaggingConfigurations : IEntityTypeConfiguration<Tagging>
     {
         builder.ToTable(nameof(Tagging));
 
+        builder.HasQueryFilter(tg => tg.DeletedAtUtc == null);
+        
         // Primary Key
         builder.HasKey(tg => tg.TaggingId);
 
@@ -31,6 +33,8 @@ public class TaggingConfigurations : IEntityTypeConfiguration<Tagging>
             .OnDelete(DeleteBehavior.NoAction);
 
         // Composite Index for fast lookups
-        builder.HasIndex(tg => new { tg.EntityType, tg.EntityId });
+        builder
+            .HasIndex(tg => new { tg.TagId, tg.EntityId })
+            .IsUnique();
     }
 }
