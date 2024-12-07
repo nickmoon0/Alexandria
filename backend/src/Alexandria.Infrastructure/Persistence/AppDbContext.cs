@@ -1,8 +1,10 @@
 using System.Reflection;
 using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common;
+using Alexandria.Domain.Common.Entities.Tag;
 using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.UserAggregate;
+using Alexandria.Infrastructure.Persistence.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +18,8 @@ public class AppDbContext(
     public virtual DbSet<Comment> Comments { get; init; } 
     public virtual DbSet<Document> Documents { get; init; }
     public virtual DbSet<Entry> Entries { get; init; }
+    public virtual DbSet<Tag> Tags { get; init; }
+    public virtual DbSet<Tagging> Taggings { get; init; }
     public virtual DbSet<User> Users { get; init; }
 
     

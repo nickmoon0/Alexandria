@@ -4,7 +4,9 @@ namespace Alexandria.Domain.Common.Entities.Tag;
 
 public class Tag : Entity
 {
-    private string? Name { get; set; }
+    public string? Name { get; private set; }
+    private List<Guid> _taggingIds = [];
+    public IReadOnlyList<Guid> TaggingIds => _taggingIds;
 
     private Tag() { }
 
@@ -15,7 +17,7 @@ public class Tag : Entity
 
     public static ErrorOr<Tag> Create(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name) || name.Length >= 20)
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name) || name.Length >= 50)
         {
             return TagErrors.InvalidName;
         }

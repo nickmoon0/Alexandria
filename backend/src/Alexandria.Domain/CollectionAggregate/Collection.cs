@@ -4,7 +4,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.CollectionAggregate;
 
-public class Collection : TaggableAggregateRoot, IAuditable, ISoftDeletable
+public class Collection : AggregateRoot, IAuditable, ISoftDeletable
 {
     private string? Name { get; set; }
     private List<Guid>? EntryIds { get; init; } = [];

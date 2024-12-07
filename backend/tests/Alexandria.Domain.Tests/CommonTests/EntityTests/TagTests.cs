@@ -35,7 +35,7 @@ public class TagTests
     public void Create_ShouldReturnInvalidNameError_WhenNameExceedsMaxLength()
     {
         // Arrange
-        var longName = new string('a', 21);
+        var longName = new string('a', 51);
 
         // Act
         var result = Tag.Create(longName);

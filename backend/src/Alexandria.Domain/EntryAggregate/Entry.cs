@@ -5,7 +5,7 @@ using ErrorOr;
 
 namespace Alexandria.Domain.EntryAggregate;
 
-public class Entry : TaggableAggregateRoot, IAuditable, ISoftDeletable
+public class Entry : AggregateRoot, IAuditable, ISoftDeletable
 {
     public string? Name { get; private set; }
     public string? Description { get; private set; }
