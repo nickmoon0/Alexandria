@@ -13,6 +13,7 @@ public class Document : Entity, IAuditable, ISoftDeletable
     public string? ImagePath { get; private set; }
     public byte[]? Data { get; private set; } // Data ignored by EF Core
     
+    public Entry? Entry { get; private set; }
     public Guid CreatedById { get; }
     public DateTime CreatedAtUtc { get; }
     

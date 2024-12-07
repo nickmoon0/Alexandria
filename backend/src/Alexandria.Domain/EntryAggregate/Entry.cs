@@ -10,7 +10,7 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
     public string? Name { get; private set; }
     public string? Description { get; private set; }
 
-    private Document? Document { get; set; }
+    public Document? Document { get; private set; }
     public List<Comment> Comments { get; private set; } = [];
 
     private List<Guid> CharacterIds { get; set; } = [];

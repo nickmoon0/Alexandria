@@ -25,5 +25,12 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .IsRequired();
         
         builder.Ignore(x => x.Data); // Data retrieved using Image path
+        
+        // One-to-One Relationship with Entry
+        builder.HasOne(d => d.Entry)
+            .WithOne(e => e.Document)
+            .HasForeignKey<Document>("EntryId")
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired();
     }
 }
