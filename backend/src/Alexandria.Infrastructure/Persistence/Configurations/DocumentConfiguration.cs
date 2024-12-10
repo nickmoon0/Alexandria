@@ -17,6 +17,8 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 
         builder.Property(x => x.Name)
             .IsRequired();
+        builder.Property(x => x.FileExtension)
+            .IsRequired();
         builder.Property(x => x.ImagePath)
             .IsRequired();
         builder.Property(x => x.CreatedById)
@@ -24,13 +26,13 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
         builder.Property(x => x.CreatedAtUtc)
             .IsRequired();
         
-        builder.Ignore(x => x.Data); // Data retrieved using Image path
+        builder.Property(x => x.EntryId)
+            .IsRequired();
         
         // One-to-One Relationship with Entry
-        builder.HasOne(d => d.Entry)
+        builder.HasOne<Entry>()
             .WithOne(e => e.Document)
-            .HasForeignKey<Document>("EntryId")
-            .OnDelete(DeleteBehavior.NoAction)
-            .IsRequired();
+            .HasForeignKey<Document>(d => d.EntryId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

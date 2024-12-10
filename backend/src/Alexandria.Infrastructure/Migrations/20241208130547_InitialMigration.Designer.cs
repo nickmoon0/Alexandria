@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Alexandria.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241203042331_CreateDocument")]
-    partial class CreateDocument
+    [Migration("20241208130547_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,51 @@ namespace Alexandria.Infrastructure.Migrations
                     b.ToTable("Character", (string)null);
                 });
 
+            modelBuilder.Entity("Alexandria.Domain.Common.Entities.Tag.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Tag", (string)null);
+                });
+
+            modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("EntryId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntryId");
+
+                    b.ToTable("Comment", (string)null);
+                });
+
             modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Document", b =>
                 {
                     b.Property<Guid>("Id")
@@ -71,6 +116,9 @@ namespace Alexandria.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
+                    b.Property<Guid>("EntryId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -81,7 +129,36 @@ namespace Alexandria.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EntryId")
+                        .IsUnique();
+
                     b.ToTable("Document", (string)null);
+                });
+
+            modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Entry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Entry", (string)null);
                 });
 
             modelBuilder.Entity("Alexandria.Domain.UserAggregate.User", b =>
@@ -95,6 +172,33 @@ namespace Alexandria.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.Tagging", b =>
+                {
+                    b.Property<Guid>("TaggingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("TaggingId");
+
+                    b.HasIndex("TagId", "EntityId")
+                        .IsUnique();
+
+                    b.ToTable("Tagging", (string)null);
                 });
 
             modelBuilder.Entity("Alexandria.Domain.CharacterAggregate.Character", b =>
@@ -140,6 +244,28 @@ namespace Alexandria.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Comment", b =>
+                {
+                    b.HasOne("Alexandria.Domain.EntryAggregate.Entry", "Entry")
+                        .WithMany("Comments")
+                        .HasForeignKey("EntryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Entry");
+                });
+
+            modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Document", b =>
+                {
+                    b.HasOne("Alexandria.Domain.EntryAggregate.Entry", "Entry")
+                        .WithOne("Document")
+                        .HasForeignKey("Alexandria.Domain.EntryAggregate.Document", "EntryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Entry");
+                });
+
             modelBuilder.Entity("Alexandria.Domain.UserAggregate.User", b =>
                 {
                     b.OwnsOne("Alexandria.Domain.Common.ValueObjects.Name.Name", "Name", b1 =>
@@ -171,6 +297,22 @@ namespace Alexandria.Infrastructure.Migrations
 
                     b.Navigation("Name")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.Tagging", b =>
+                {
+                    b.HasOne("Alexandria.Domain.Common.Entities.Tag.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Entry", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Document");
                 });
 #pragma warning restore 612, 618
         }

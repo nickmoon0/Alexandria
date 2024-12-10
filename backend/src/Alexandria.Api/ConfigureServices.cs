@@ -1,12 +1,61 @@
 using Alexandria.Api.Common.Roles;
+using Alexandria.Application;
+using Alexandria.Infrastructure;
+using Alexandria.Infrastructure.Common.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Alexandria.Api;
 
-public static class ConfigureAuth
+public static class ConfigureServices
 {
-    public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+    public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddOpenApi();
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            // Set max request body size for all endpoints
+            options.Limits.MaxRequestBodySize = 16106127360; // 15 GB
+        });
+        
+        builder.Services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 16106127360; // 15 GB
+        });
+        
+        builder.Services.AddAntiforgery();
+        
+        builder.Services.AddAuth(builder.Configuration);
+
+        builder.Services.AddApplication();
+        builder.Services.AddInfrastructure(builder.Configuration);
+        
+        builder.AddOptions();
+        
+        return builder;
+    }
+
+    /**
+     * Options
+     */
+    
+    private static WebApplicationBuilder AddOptions(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<RabbitMqOptions>(
+            builder.Configuration.GetSection(nameof(RabbitMqOptions)));
+        
+        builder.Services.Configure<FileStorageOptions>(
+            builder.Configuration.GetSection(nameof(FileStorageOptions)));
+        
+        return builder;
+    }
+    
+    /**
+     * Auth
+     */
+    
+    private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
         return services
             .SetupAuthentication(configuration)

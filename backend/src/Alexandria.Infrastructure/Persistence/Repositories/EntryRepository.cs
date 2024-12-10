@@ -7,12 +7,14 @@ namespace Alexandria.Infrastructure.Persistence.Repositories;
 
 public class EntryRepository(AppDbContext context) : IEntryRepository
 {
-    public async Task<ErrorOr<Success>> AddAsync(Entry entry, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Success>> AddAsync(Entry entry, Document document, CancellationToken cancellationToken)
     {
         await context.Entries.AddAsync(entry, cancellationToken);
+        await context.Documents.AddAsync(document, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return Result.Success;
     }
-
+    
     public async Task<ErrorOr<Entry>> FindByIdAsync(Guid entryId, CancellationToken cancellationToken)
     {
         var entry = await context.Entries.FindAsync([entryId], cancellationToken);

@@ -35,6 +35,7 @@ public static class DependencyInjection
         
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICharacterRepository, CharacterRepository>();
+        services.AddScoped<IEntryRepository, EntryRepository>();
         
         return services;
     }
@@ -42,11 +43,11 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddHostedService<RabbitMqConsumerService>();
-        services.AddScoped<MessageProcessorService>();
         
+        services.AddScoped<MessageProcessorService>();
         services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
-
         services.AddScoped<ITaggingService, TaggingService>();
+        services.AddScoped<IFileService, FileService>();
         
         return services;
     }

@@ -8,19 +8,19 @@ namespace Alexandria.Domain.Tests.TestUtils.Factories;
 public static class DocumentFactory
 {
     public static ErrorOr<Document> CreateDocument(
+        Guid? entryId = null,
         string? name = null,
-        byte[]? data = null,
+        string? fileExtension = null,
         string? imagePath = null,
         Guid? createdById = null,
-        IDateTimeProvider? dateTimeProvider = null,
-        string? description = null)
+        IDateTimeProvider? dateTimeProvider = null)
     {
         return Document.Create(
+            entryId ?? Constants.Document.EntryId,
             name ?? Constants.Document.Name,
-            data ?? Constants.Document.Data,
+            fileExtension ?? Constants.Document.FileExtension,
             imagePath ?? Constants.Document.ImagePath,
             createdById ?? Constants.Document.CreatedById,
-            dateTimeProvider ?? Constants.Document.DateTimeProvider,
-            description ?? Constants.Document.Description);
+            dateTimeProvider ?? Constants.Document.DateTimeProvider);
     }
 }

@@ -3,6 +3,8 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+**/files/
+
 # Private config files
 **/appsettings.*.json
 **/DockerEnv

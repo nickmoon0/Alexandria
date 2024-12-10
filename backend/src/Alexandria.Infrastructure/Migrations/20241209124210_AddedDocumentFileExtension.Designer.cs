@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Alexandria.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241207160411_AddEntryDocumentRelationship")]
-    partial class AddEntryDocumentRelationship
+    [Migration("20241209124210_AddedDocumentFileExtension")]
+    partial class AddedDocumentFileExtension
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -113,11 +113,12 @@ namespace Alexandria.Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAtUtc")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext");
-
                     b.Property<Guid>("EntryId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
@@ -257,13 +258,11 @@ namespace Alexandria.Infrastructure.Migrations
 
             modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Document", b =>
                 {
-                    b.HasOne("Alexandria.Domain.EntryAggregate.Entry", "Entry")
+                    b.HasOne("Alexandria.Domain.EntryAggregate.Entry", null)
                         .WithOne("Document")
                         .HasForeignKey("Alexandria.Domain.EntryAggregate.Document", "EntryId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Entry");
                 });
 
             modelBuilder.Entity("Alexandria.Domain.UserAggregate.User", b =>

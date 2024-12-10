@@ -9,7 +9,10 @@ public class TestLogger<T> : ILogger<T>
 
     public IEnumerable<string> LogMessages => _logMessages;
 
-    public IDisposable BeginScope<TState>(TState state) => null!;
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull
+    {
+        return NullScope.Instance;
+    }
 
     public bool IsEnabled(LogLevel logLevel) => true;
 
@@ -19,4 +22,13 @@ public class TestLogger<T> : ILogger<T>
         var message = formatter(state, exception);
         _logMessages.Enqueue($"{logLevel}: {message}");
     }
+}
+
+internal sealed class NullScope : IDisposable
+{
+    public static readonly NullScope Instance = new NullScope();
+
+    private NullScope() { }
+
+    public void Dispose() { }
 }

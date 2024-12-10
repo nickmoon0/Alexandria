@@ -28,5 +28,10 @@ public class EntryConfiguration : IEntityTypeConfiguration<Entry>
         builder.HasMany(e => e.Comments)
             .WithOne(c => c.Entry)
             .OnDelete(DeleteBehavior.NoAction);
+        
+        // One-to-One Relationship with Document
+        builder.HasOne(e => e.Document)
+            .WithOne()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

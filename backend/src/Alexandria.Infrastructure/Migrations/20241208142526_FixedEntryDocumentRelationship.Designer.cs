@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Alexandria.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241207143123_AddTag")]
-    partial class AddTag
+    [Migration("20241208142526_FixedEntryDocumentRelationship")]
+    partial class FixedEntryDocumentRelationship
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,6 +116,9 @@ namespace Alexandria.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
+                    b.Property<Guid>("EntryId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -125,6 +128,9 @@ namespace Alexandria.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntryId")
+                        .IsUnique();
 
                     b.ToTable("Document", (string)null);
                 });
@@ -249,6 +255,15 @@ namespace Alexandria.Infrastructure.Migrations
                     b.Navigation("Entry");
                 });
 
+            modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Document", b =>
+                {
+                    b.HasOne("Alexandria.Domain.EntryAggregate.Entry", null)
+                        .WithOne("Document")
+                        .HasForeignKey("Alexandria.Domain.EntryAggregate.Document", "EntryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Alexandria.Domain.UserAggregate.User", b =>
                 {
                     b.OwnsOne("Alexandria.Domain.Common.ValueObjects.Name.Name", "Name", b1 =>
@@ -294,6 +309,8 @@ namespace Alexandria.Infrastructure.Migrations
             modelBuilder.Entity("Alexandria.Domain.EntryAggregate.Entry", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Document");
                 });
 #pragma warning restore 612, 618
         }

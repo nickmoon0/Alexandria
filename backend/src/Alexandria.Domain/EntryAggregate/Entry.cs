@@ -24,14 +24,12 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
     private Entry(
         string name,
         string? description,
-        Document? document,
         Guid createdById,
         DateTime createdAtUtc,
         Guid? id = null) : base(id ?? Guid.NewGuid())
     {
         Name = name;
         Description = description;
-        Document = document;
         
         CreatedById = createdById;
         CreatedAtUtc = createdAtUtc;
@@ -41,8 +39,7 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
         string name,
         Guid createdById,
         IDateTimeProvider dateTimeProvider,
-        string? description = null,
-        Document? document = null)
+        string? description = null)
     {
         name = name.Trim();
         if (string.IsNullOrEmpty(name))
@@ -57,7 +54,7 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
 
         if (description is { Length: 0 }) description = null;
         
-        return new Entry(name, description, document, createdById, dateTimeProvider.UtcNow);
+        return new Entry(name, description, createdById, dateTimeProvider.UtcNow);
     }
     
     public ErrorOr<Updated> AddCharacter(Guid characterId)
