@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Characters;
 
-public class DeleteCharacter : EndpointBase, IEndpoint
+public abstract class DeleteCharacter : EndpointBase, IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapDelete("/{id:guid}", Handle)

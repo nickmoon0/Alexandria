@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Entries;
 
-public class CreateEntry : EndpointBase, IEndpoint
+public abstract class CreateEntry : EndpointBase, IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapPost("", Handle)

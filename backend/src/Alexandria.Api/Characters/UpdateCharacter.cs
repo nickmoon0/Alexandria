@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.Api.Characters;
 
-public class UpdateCharacter : EndpointBase, IEndpoint
+public abstract class UpdateCharacter : EndpointBase, IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapPatch("/{id:guid}", Handle)
