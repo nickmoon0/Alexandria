@@ -12,15 +12,18 @@ public class TagEntryHandler : IRequestHandler<TagEntryCommand, ErrorOr<Success>
     private readonly ILogger<TagEntryHandler> _logger;
     private readonly IEntryRepository _entryRepository;
     private readonly ITagRepository _tagRepository;
-
+    private readonly ITaggingService _taggingService;
+    
     public TagEntryHandler(
         ILogger<TagEntryHandler> logger,
         IEntryRepository entryRepository,
-        ITagRepository tagRepository)
+        ITagRepository tagRepository,
+        ITaggingService taggingService)
     {
         _logger = logger;
         _entryRepository = entryRepository;
         _tagRepository = tagRepository;
+        _taggingService = taggingService;
     }
 
     public async Task<ErrorOr<Success>> Handle(TagEntryCommand request, CancellationToken cancellationToken)
@@ -41,7 +44,7 @@ public class TagEntryHandler : IRequestHandler<TagEntryCommand, ErrorOr<Success>
         }
         var tag = tagResult.Value;
 
-        var taggingResult = await _tagRepository.AddEntityTag(entry, tag, cancellationToken);
+        var taggingResult = await _taggingService.TagEntity(entry, tag);
         if (taggingResult.IsError)
         {
             _logger.LogError("Tagging not successful with Entry ID {EntryId} and Tag ID {TagId}", 

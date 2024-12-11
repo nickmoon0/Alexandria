@@ -14,15 +14,16 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
 {
     private readonly ILogger<GetEntryHandler> _logger;
     private readonly IEntryRepository _entryRepository;
-    private readonly ITagRepository _tagRepository;
-
+    private readonly ITaggingService _taggingService;
+    
     public GetEntryHandler(
         ILogger<GetEntryHandler> logger,
-        IEntryRepository entryRepository, ITagRepository tagRepository)
+        IEntryRepository entryRepository, ITagRepository tagRepository,
+        ITaggingService taggingService)
     {
         _logger = logger;
         _entryRepository = entryRepository;
-        _tagRepository = tagRepository;
+        _taggingService = taggingService;
     }
 
     public async Task<ErrorOr<GetEntryResponse>> Handle(GetEntryQuery request, CancellationToken cancellationToken)
@@ -38,7 +39,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         
         var entry = entryResult.Value;
 
-        var tags = await _tagRepository.GetEntityTags(entry, cancellationToken);
+        var tags = await _taggingService.GetEntityTags(entry, cancellationToken);
         var entryResponse = EntryResponse.FromEntry(entry);
         
         // Append tags to response

@@ -35,6 +35,14 @@ public class TaggingService : ITaggingService
 
         var tagging = Tagging.Create(tag.Id, typeName, entity.Id);
 
+        var existingTags = await _dbContext.Taggings
+            .Where(t => t.EntityType == typeName && t.EntityId == entity.Id)
+            .ToListAsync();
+        if (existingTags.Count != 0)
+        {
+            return TaggingErrors.TaggingExists;
+        }
+        
         await _dbContext.Taggings.AddAsync(tagging);
         await _dbContext.SaveChangesAsync();
 
@@ -59,5 +67,22 @@ public class TaggingService : ITaggingService
         await _dbContext.SaveChangesAsync();
         
         return Result.Deleted;
+    }
+    
+    public async Task<ErrorOr<IReadOnlyList<Tag>>> GetEntityTags<TEntity>(TEntity entity, CancellationToken cancellationToken) 
+        where TEntity : Entity
+    {
+        var entityName = typeof(TEntity).Name;
+
+        var tagIds = await _dbContext.Taggings
+            .Where(x => x.EntityType == entityName && x.EntityId == entity.Id)
+            .Select(x => x.TagId)
+            .ToListAsync(cancellationToken);
+
+        var tags = await _dbContext.Tags
+            .Where(tag => tagIds.Contains(tag.Id))
+            .ToListAsync(cancellationToken);
+
+        return tags;
     }
 }
