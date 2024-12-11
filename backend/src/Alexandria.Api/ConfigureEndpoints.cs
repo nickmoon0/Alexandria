@@ -42,7 +42,8 @@ public static class ConfigureEndpoints
             .WithTags(nameof(Entry));
 
         endpoints
-            .MapEndpoint<CreateEntry>();
+            .MapEndpoint<CreateEntry>()
+            .MapEndpoint<GetEntry>();
 
         return app;
     }
