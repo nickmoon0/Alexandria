@@ -62,7 +62,7 @@ public static class ConfigureEndpoints
             .MapEndpoint<GetTag>()
             .MapEndpoint<GetTags>();
 
-        return endpoints;
+        return app;
     }
     
     private static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
