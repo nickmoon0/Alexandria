@@ -14,7 +14,7 @@ public abstract class CreateEntry : EndpointBase, IEndpoint
         .MapPost("", Handle)
         .WithSummary("Creates a new entry")
         .WithName(nameof(CreateEntry))
-        .RequireAuthorization(nameof(User))
+        .RequireAuthorization<User>()
         .DisableAntiforgery();
 
     private record Request(IFormFile File, string Name, string? Description);

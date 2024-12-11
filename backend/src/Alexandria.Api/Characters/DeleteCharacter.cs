@@ -14,7 +14,7 @@ public abstract class DeleteCharacter : EndpointBase, IEndpoint
         .MapDelete("/{id:guid}", Handle)
         .WithSummary("Deletes a character with the given ID")
         .WithName(nameof(DeleteCharacter))
-        .RequireAuthorization(nameof(Admin));
+        .RequireAuthorization<Admin>();
 
     private static async Task<IResult> Handle(
         [FromRoute] Guid id,

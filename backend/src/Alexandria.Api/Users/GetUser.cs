@@ -15,7 +15,7 @@ public abstract class GetUser : EndpointBase, IEndpoint
         .MapGet("/{id:guid}", Handle)
         .WithSummary("Retrieves a new user")
         .WithName(nameof(GetUser))
-        .RequireAuthorization(nameof(User));
+        .RequireAuthorization<User>();
 
     private record Response(UserDto User);
     

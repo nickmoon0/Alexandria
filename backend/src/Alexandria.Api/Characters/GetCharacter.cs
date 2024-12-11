@@ -15,7 +15,7 @@ public abstract class GetCharacter : EndpointBase, IEndpoint
         .MapGet("/{id:guid}", Handle)
         .WithSummary("Retrieves a character by ID")
         .WithName(nameof(GetCharacter))
-        .RequireAuthorization(nameof(User));
+        .RequireAuthorization<User>();
 
     private record Response(CharacterDto Character);
     

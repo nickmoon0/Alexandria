@@ -16,7 +16,7 @@ public abstract class GetEntry : EndpointBase, IEndpoint
         .MapGet("/{id:guid}", Handle)
         .WithSummary("Retrieves an entry based on the entry's ID")
         .WithName(nameof(GetEntry))
-        .RequireAuthorization(nameof(User));
+        .RequireAuthorization<User>();
 
     private static async Task<IResult> Handle(
         [FromRoute] Guid id,

@@ -14,9 +14,9 @@ public abstract class UpdateCharacter : EndpointBase, IEndpoint
         .MapPatch("/{id:guid}", Handle)
         .WithSummary("Patch updates a character")
         .WithName(nameof(UpdateCharacter))
-        .RequireAuthorization(nameof(Admin));
+        .RequireAuthorization<Admin>();
 
-    public record Request(
+    private record Request(
         string? FirstName,
         string? LastName,
         string? MiddleNames,

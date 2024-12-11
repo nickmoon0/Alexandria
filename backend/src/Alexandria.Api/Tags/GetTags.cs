@@ -1,4 +1,5 @@
 using Alexandria.Api.Common;
+using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Tags.DTOs;
@@ -14,7 +15,7 @@ public abstract class GetTags : EndpointBase, IEndpoint
         .MapGet("", Handle)
         .WithSummary("Gets all tags")
         .WithName(nameof(GetTags))
-        .RequireAuthorization(nameof(User));
+        .RequireAuthorization<User>();
 
     private static async Task<IResult> Handle([FromServices] IMediator mediator)
     {

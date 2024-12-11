@@ -1,8 +1,8 @@
 using Alexandria.Api.Common;
 using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
+using Alexandria.Api.Common.Roles;
 using Alexandria.Application.Tags.Commands;
-using Alexandria.Domain.UserAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +14,7 @@ public abstract class CreateTag : EndpointBase, IEndpoint
         .MapPost("", HandleAsync)
         .WithSummary("Creates a tag with the specified name")
         .WithName(nameof(CreateTag))
-        .RequireAuthorization(nameof(User));
+        .RequireAuthorization<User>();
 
     private record Request(string Name);
 

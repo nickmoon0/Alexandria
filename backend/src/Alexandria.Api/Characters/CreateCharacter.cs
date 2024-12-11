@@ -15,7 +15,7 @@ public abstract class CreateCharacter : EndpointBase, IEndpoint
         .MapPost("", Handle)
         .WithSummary("Creates a new character")
         .WithName(nameof(CreateCharacter))
-        .RequireAuthorization(nameof(Admin));
+        .RequireAuthorization<Admin>();
     
     private record Request(
         string FirstName,

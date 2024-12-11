@@ -15,7 +15,7 @@ public abstract class GetTag : EndpointBase, IEndpoint
         .MapGet("/{id:guid}", Handle)
         .WithSummary("Gets a tag with the given ID")
         .WithName(nameof(GetTag))
-        .RequireAuthorization(nameof(User));
+        .RequireAuthorization<User>();
 
     private static async Task<IResult> Handle(
         [FromRoute] Guid id,

@@ -14,7 +14,7 @@ public abstract class TagEntry : EndpointBase, IEndpoint
         .MapPost("/{entryId:guid}/tag/{tagId:guid}", Handle)
         .WithSummary("Tags the given entry with the given tag")
         .WithName(nameof(TagEntry))
-        .RequireAuthorization(nameof(User));
+        .RequireAuthorization<User>();
 
     private static async Task<IResult> Handle(
         [FromRoute] Guid entryId,
