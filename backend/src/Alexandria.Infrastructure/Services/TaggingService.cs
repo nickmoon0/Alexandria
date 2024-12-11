@@ -36,7 +36,7 @@ public class TaggingService : ITaggingService
         var tagging = Tagging.Create(tag.Id, typeName, entity.Id);
 
         var existingTags = await _dbContext.Taggings
-            .Where(t => t.EntityType == typeName && t.EntityId == entity.Id)
+            .Where(t => t.TagId == tag.Id && t.EntityId == entity.Id)
             .ToListAsync();
         if (existingTags.Count != 0)
         {

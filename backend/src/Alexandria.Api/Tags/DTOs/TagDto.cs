@@ -1,4 +1,4 @@
-namespace Alexandria.Api.Common.DTOs;
+namespace Alexandria.Api.Tags.DTOs;
 
 public class TagDto
 {

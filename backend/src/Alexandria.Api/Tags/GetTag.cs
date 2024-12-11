@@ -1,8 +1,8 @@
 using Alexandria.Api.Common;
-using Alexandria.Api.Common.DTOs;
 using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
+using Alexandria.Api.Tags.DTOs;
 using Alexandria.Application.Tags.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

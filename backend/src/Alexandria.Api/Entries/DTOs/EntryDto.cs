@@ -1,4 +1,4 @@
-using Alexandria.Api.Common.DTOs;
+using Alexandria.Api.Tags.DTOs;
 
 namespace Alexandria.Api.Entries.DTOs;
 
