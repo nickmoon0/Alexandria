@@ -45,7 +45,7 @@ public abstract class CreateEntry : EndpointBase, IEndpoint
             await request.File.CopyToAsync(stream);
         }
 
-        return Results.CreatedAtRoute(nameof(GetEntry), new { Id = result.EntryId }, new Response(result.EntryId, result.DocumentId));
+        return Results.Ok(new Response(result.EntryId, result.DocumentId));
     }
 
 }

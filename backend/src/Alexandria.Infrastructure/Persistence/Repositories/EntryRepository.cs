@@ -2,7 +2,6 @@ using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.EntryAggregate.Errors;
 using ErrorOr;
-using Microsoft.EntityFrameworkCore;
 
 namespace Alexandria.Infrastructure.Persistence.Repositories;
 
@@ -15,24 +14,11 @@ public class EntryRepository(AppDbContext context) : IEntryRepository
         await context.SaveChangesAsync(cancellationToken);
         return Result.Success;
     }
-
-    public async Task<ErrorOr<Entry>> FindByIdAsync(
-        Guid entryId, CancellationToken cancellationToken, HashSet<FindOptions>? optionsList = null)
+    
+    public async Task<ErrorOr<Entry>> FindByIdAsync(Guid entryId, CancellationToken cancellationToken)
     {
-        IQueryable<Entry> entryQuery = context.Entries;
+        var entry = await context.Entries.FindAsync([entryId], cancellationToken);
 
-        if (optionsList?.Contains(FindOptions.IncludeDocument) ?? false)
-        {
-            entryQuery = entryQuery.Include(entry => entry.Document);
-        }
-
-        if (optionsList?.Contains(FindOptions.IncludeComments) ?? false)
-        {
-            entryQuery = entryQuery.Include(entry => entry.Comments);
-        }
-
-        var entry = await entryQuery.SingleOrDefaultAsync(x => x.Id == entryId, cancellationToken);
-        
         if (entry == null)
         {
             return EntryErrors.NotFound;

@@ -8,6 +8,4 @@ public interface ITaggingService
 {
     public Task<ErrorOr<Success>> TagEntity<T>(T entity, Tag tag) where T : Entity;
     public Task<ErrorOr<Deleted>> RemoveTag<T>(T entity, Tag tag) where T : Entity;
-    public Task<ErrorOr<IReadOnlyList<Tag>>> GetEntityTags<TEntity>(TEntity entity, CancellationToken cancellationToken) 
-        where TEntity : Entity;
 }

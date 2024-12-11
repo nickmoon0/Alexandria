@@ -3,7 +3,6 @@ using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.Tests.TestUtils.Services;
 using Alexandria.Infrastructure.Persistence;
-using Alexandria.Infrastructure.Persistence.Models.Tagging;
 using Alexandria.Infrastructure.Services;
 using Alexandria.Infrastructure.Tests.TestUtils.Builders;
 using ErrorOr;
@@ -110,10 +109,10 @@ public class TaggingServiceTests
         await _taggingService.TagEntity(character, tag);
 
         // Act
-        var secondTagResult = await _taggingService.TagEntity(character, tag);
+        var action = async () => await _taggingService.TagEntity(character, tag);
 
         // Assert
-        secondTagResult.Errors.Should().Contain(TaggingErrors.TaggingExists);
+        await action.Should().ThrowAsync<DbUpdateException>();
     }
 
 }

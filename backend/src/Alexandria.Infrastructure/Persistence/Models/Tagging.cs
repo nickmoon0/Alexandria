@@ -1,7 +1,7 @@
 using Alexandria.Domain.Common.Interfaces;
 using ErrorOr;
 
-namespace Alexandria.Infrastructure.Persistence.Models.Tagging;
+namespace Alexandria.Infrastructure.Persistence.Models;
 
 public class Tagging : ISoftDeletable
 {

@@ -4,7 +4,7 @@ using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.Entities.Tag;
 using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.UserAggregate;
-using Alexandria.Infrastructure.Persistence.Models.Tagging;
+using Alexandria.Infrastructure.Persistence.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
