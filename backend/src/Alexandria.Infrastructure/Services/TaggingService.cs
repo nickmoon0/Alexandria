@@ -3,7 +3,7 @@ using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.Entities.Tag;
 using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Infrastructure.Persistence;
-using Alexandria.Infrastructure.Persistence.Models;
+using Alexandria.Infrastructure.Persistence.Models.Tagging;
 using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

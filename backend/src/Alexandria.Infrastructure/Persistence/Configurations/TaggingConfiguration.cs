@@ -1,5 +1,5 @@
 using Alexandria.Domain.Common.Entities.Tag;
-using Alexandria.Infrastructure.Persistence.Models;
+using Alexandria.Infrastructure.Persistence.Models.Tagging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
