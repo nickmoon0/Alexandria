@@ -27,8 +27,15 @@ public abstract class CreateTag : EndpointBase, IEndpoint
         var command = new CreateTagCommand(request.Name);
         var result = await mediator.Send(command);
 
+        if (result.IsError)
+        {
+            return result.ToHttpResponse();
+        }
+        
+        var response = new Response(result.Value.Id);
+        
         return result.IsError ? 
             result.ToHttpResponse() : 
-            Results.Ok();
+            Results.CreatedAtRoute(nameof(GetTag), response, response);
     }
 }

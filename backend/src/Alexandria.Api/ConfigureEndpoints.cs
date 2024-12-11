@@ -58,7 +58,9 @@ public static class ConfigureEndpoints
             .WithTags(nameof(Tag));
 
         endpoints
-            .MapEndpoint<CreateTag>();
+            .MapEndpoint<CreateTag>()
+            .MapEndpoint<GetTag>()
+            .MapEndpoint<GetTags>();
 
         return endpoints;
     }

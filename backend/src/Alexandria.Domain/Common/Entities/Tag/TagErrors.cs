@@ -11,4 +11,8 @@ public static class TagErrors
     public static readonly Error TagNotFound = Error.NotFound(
         $"{nameof(Tag)}.TagNotFound",
         "Tag not found.");
+
+    public static readonly Error TagAlreadyExists = Error.Conflict(
+        $"{nameof(Tag)}.TagAlreadyExists",
+        "Tag already exists.");
 }
