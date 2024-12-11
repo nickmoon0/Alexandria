@@ -3,6 +3,7 @@ using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Entries.DTOs;
+using Alexandria.Api.Tags.DTOs;
 using Alexandria.Application.Entries.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,6 @@ public abstract class GetEntry : EndpointBase, IEndpoint
         }
 
         DocumentDto? document = null;
-        IReadOnlyList<CommentDto>? comments = null;
         
         var entryResult = result.Value.Entry;
 
@@ -46,18 +46,22 @@ public abstract class GetEntry : EndpointBase, IEndpoint
             };
         }
 
-        if (entryResult.Comments != null)
+        var comments = entryResult.Comments?.Select(comment => new CommentDto
         {
-            comments = entryResult.Comments.Select(comment => new CommentDto
-            {
-                Id = comment.Id,
-                Content = comment.Content,
-                CreatedAtUtc = comment.CreatedAtUtc,
-                CreatedById = comment.CreatedById,
-                DeletedAtUtc = comment.DeletedAtUtc,
-            }).ToList();
-        }
+            Id = comment.Id,
+            Content = comment.Content,
+            CreatedAtUtc = comment.CreatedAtUtc,
+            CreatedById = comment.CreatedById,
+            DeletedAtUtc = comment.DeletedAtUtc,
+        }).ToList() ?? [];
 
+
+        var tags = entryResult.Tags?.Select(tag => new TagDto
+        {
+            Id = tag.Id,
+            Name = tag.Name,
+        }).ToList() ?? [];
+        
         var entry = new EntryDto
         {
             Id = entryResult.Id,
@@ -65,6 +69,7 @@ public abstract class GetEntry : EndpointBase, IEndpoint
             Description = entryResult.Description,
             Document = document,
             Comments = comments,
+            Tags = tags,
             CreatedById = entryResult.CreatedById,
             CreatedAtUtc = entryResult.CreatedAtUtc,
             DeletedAtUtc = entryResult.DeletedAtUtc,

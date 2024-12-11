@@ -1,8 +1,10 @@
 using Alexandria.Api.Characters;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Entries;
+using Alexandria.Api.Tags;
 using Alexandria.Api.Users;
 using Alexandria.Domain.CharacterAggregate;
+using Alexandria.Domain.Common.Entities.Tag;
 using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.UserAggregate;
 
@@ -19,6 +21,7 @@ public static class ConfigureEndpoints
         endpoints
             .MapCharacterEndpoints()
             .MapEntryEndpoints()
+            .MapTagEndpoints()
             .MapUserEndpoints();
     }
     
@@ -43,9 +46,23 @@ public static class ConfigureEndpoints
 
         endpoints
             .MapEndpoint<CreateEntry>()
-            .MapEndpoint<GetEntry>();
+            .MapEndpoint<GetEntry>()
+            .MapEndpoint<TagEntry>();
 
         return app;
+    }
+    
+    private static IEndpointRouteBuilder MapTagEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup("/tag")
+            .WithTags(nameof(Tag));
+
+        endpoints
+            .MapEndpoint<CreateTag>()
+            .MapEndpoint<GetTag>()
+            .MapEndpoint<GetTags>();
+
+        return endpoints;
     }
     
     private static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
