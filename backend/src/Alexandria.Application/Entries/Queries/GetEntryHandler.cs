@@ -1,4 +1,5 @@
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Application.Common.Responses;
 using Alexandria.Application.Entries.Responses;
 using ErrorOr;
 using MediatR;
@@ -11,13 +12,17 @@ public record GetEntryResponse(EntryResponse Entry);
 
 public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryResponse>>
 {
-    public readonly ILogger<GetEntryHandler> _logger;
-    public readonly IEntryRepository _entryRepository;
+    private readonly ILogger<GetEntryHandler> _logger;
+    private readonly IEntryRepository _entryRepository;
+    private readonly ITagRepository _tagRepository;
 
-    public GetEntryHandler(ILogger<GetEntryHandler> logger, IEntryRepository entryRepository)
+    public GetEntryHandler(
+        ILogger<GetEntryHandler> logger,
+        IEntryRepository entryRepository, ITagRepository tagRepository)
     {
         _logger = logger;
         _entryRepository = entryRepository;
+        _tagRepository = tagRepository;
     }
 
     public async Task<ErrorOr<GetEntryResponse>> Handle(GetEntryQuery request, CancellationToken cancellationToken)
@@ -33,7 +38,14 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         
         var entry = entryResult.Value;
 
+        var tags = await _tagRepository.GetEntityTags(entry, cancellationToken);
         var entryResponse = EntryResponse.FromEntry(entry);
+        
+        // Append tags to response
+        entryResponse.Tags = tags.Value
+            .Select(TagResponse.FromTag)
+            .ToList();
+        
         return new GetEntryResponse(entryResponse);
     }
 }

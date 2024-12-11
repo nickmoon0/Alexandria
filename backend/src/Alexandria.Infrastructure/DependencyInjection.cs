@@ -30,12 +30,16 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options => options.UseMySql(
             sqlConnString,
             serverVersion,
-            mySqlOptionsAction: mysqlOptions => 
-                mysqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name)));
+            mySqlOptionsAction: mysqlOptions =>
+            {
+                mysqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name);
+                mysqlOptions.EnablePrimitiveCollectionsSupport();
+            }));
         
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICharacterRepository, CharacterRepository>();
         services.AddScoped<IEntryRepository, EntryRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
         
         return services;
     }
