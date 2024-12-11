@@ -1,5 +1,5 @@
 using Alexandria.Domain.Common.Entities.Tag;
-using Alexandria.Infrastructure.Persistence.Models;
+using Alexandria.Infrastructure.Persistence.Models.Tagging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,7 +19,6 @@ public class TaggingConfigurations : IEntityTypeConfiguration<Tagging>
         // Properties
         builder.Property(tg => tg.TaggingId)
             .ValueGeneratedOnAdd();
-        
         builder.Property(tg => tg.EntityType)
             .IsRequired();
         builder.Property(tg => tg.EntityId)
@@ -36,5 +35,7 @@ public class TaggingConfigurations : IEntityTypeConfiguration<Tagging>
         builder
             .HasIndex(tg => new { tg.TagId, tg.EntityId })
             .IsUnique();
+        builder.HasIndex(tg => new { tg.EntityType, tg.EntityId });
+        builder.HasIndex(tg => new { tg.TagId });
     }
 }

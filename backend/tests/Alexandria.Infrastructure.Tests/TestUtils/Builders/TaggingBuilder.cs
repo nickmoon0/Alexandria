@@ -1,5 +1,5 @@
 using Alexandria.Common.Tests.Interfaces;
-using Alexandria.Infrastructure.Persistence.Models;
+using Alexandria.Infrastructure.Persistence.Models.Tagging;
 using ErrorOr;
 
 namespace Alexandria.Infrastructure.Tests.TestUtils.Builders;

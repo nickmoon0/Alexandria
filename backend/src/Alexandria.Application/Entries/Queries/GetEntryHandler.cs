@@ -1,4 +1,6 @@
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Application.Common.Responses;
+using Alexandria.Application.Entries.Responses;
 using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -6,30 +8,45 @@ using Microsoft.Extensions.Logging;
 namespace Alexandria.Application.Entries.Queries;
 
 public record GetEntryQuery(Guid EntryId) : IRequest<ErrorOr<GetEntryResponse>>;
-public record GetEntryResponse();
+public record GetEntryResponse(EntryResponse Entry);
 
 public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryResponse>>
 {
-    public readonly ILogger<GetEntryHandler> _logger;
-    public readonly IEntryRepository _entryRepository;
-
-    public GetEntryHandler(ILogger<GetEntryHandler> logger, IEntryRepository entryRepository)
+    private readonly ILogger<GetEntryHandler> _logger;
+    private readonly IEntryRepository _entryRepository;
+    private readonly ITaggingService _taggingService;
+    
+    public GetEntryHandler(
+        ILogger<GetEntryHandler> logger,
+        IEntryRepository entryRepository, ITagRepository tagRepository,
+        ITaggingService taggingService)
     {
         _logger = logger;
         _entryRepository = entryRepository;
+        _taggingService = taggingService;
     }
 
     public async Task<ErrorOr<GetEntryResponse>> Handle(GetEntryQuery request, CancellationToken cancellationToken)
     {
-        var entryResult = await _entryRepository.FindByIdAsync(request.EntryId, cancellationToken);
+        var entryResult = await _entryRepository.FindByIdAsync(
+            request.EntryId, cancellationToken, [FindOptions.IncludeDocument, FindOptions.IncludeComments]);
+        
         if (entryResult.IsError)
         {
             _logger.LogError("Get entry with Id: {EntryId} failed.", request.EntryId);
             return entryResult.Errors;
         }
         
+        var entry = entryResult.Value;
+
+        var tags = await _taggingService.GetEntityTags(entry, cancellationToken);
+        var entryResponse = EntryResponse.FromEntry(entry);
         
+        // Append tags to response
+        entryResponse.Tags = tags.Value
+            .Select(TagResponse.FromTag)
+            .ToList();
         
-        throw new NotImplementedException();
+        return new GetEntryResponse(entryResponse);
     }
 }
