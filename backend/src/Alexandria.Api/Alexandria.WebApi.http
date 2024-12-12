@@ -1,6 +1,29 @@
-@Alexandria.WebApi_HostAddress = http://localhost:5062
+@AlexandriaApi_HostAddress = http://localhost:5062
+@bearer_token = eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJqcjVka0k4ajdkVWR4c25sbkxDSzhZWmdlZkZFTEZ6NEdBUEFJaUxUVHFJIn0.eyJleHAiOjE3MzM5NjA4ODQsImlhdCI6MTczMzk2MDU4NCwianRpIjoiZTBmYjUzMDUtNDBlYy00M2U5LWIzNWMtMjkwOTY4ZjU3NzgwIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9ub3dwbHVzLWRldiIsImF1ZCI6ImFsZXhhbmRyaWEtZGV2Iiwic3ViIjoiOWUwNWU2MTktZmI3OC00NGUxLWExMjUtMmYyNzgzMzZlZTY4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYWxleGFuZHJpYS1kZXYiLCJzaWQiOiI1MzFkYmQwNy1mNWJhLTRkYmQtODM1MS03NmYxZTQxNzNkNDIiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInNjb3BlIjoiIiwicm9sZXMiOlsiQWRtaW4iXX0.KFk05_zaA9IENIszDZ6qoHCpb4BQn1nUx8aCuQfnclg6x50aOym15WL0oHeJxteT6bv9_YAFh7ZsNnGuLnfYWOZqyWF8oVZ-KbOD3S8RWrMBjSdUsB2yM8K4GB8xjk5la7Bp9kGoNfzNyNCLHId-G61VZ9tGom_TbcY_x-rQf1-S6N3UxlWX_Ku8SJdYUCN3NvLNKTVeQVjIVt1HkemdxSjSXcNm9qFp9kVnhe4fh7PbjPQkskaNVppP-mOwjczeLeETtbEsLIOGbYfYmWORqe_bQH69BpebGq6eDoDgpQnq6uh8QVsaqlv2xC72AwRXJQLjZoIBXV19vzTWbiGf3A
 
-GET {{Alexandria.WebApi_HostAddress}}/weatherforecast/
+GET {{AlexandriaApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST http://localhost:8080/realms/nowplus-dev/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id=alexandria-dev&username=testadmin1&password=TestPassword1
+
+###
+
+GET {{AlexandriaApi_HostAddress}}/api/entry/a1c5ab29-b818-11ef-9e71-0242ac120005
+Authorization: Bearer {{bearer_token}}
+
+###
+
+GET {{AlexandriaApi_HostAddress}}/api/user/5420ad01-57b9-4088-8be9-fded527ea95c
+Authorization: Bearer {{bearer_token}}
+
+###
+
+GET {{AlexandriaApi_HostAddress}}/api/tag
+Authorization: Bearer {{bearer_token}}
+
+##

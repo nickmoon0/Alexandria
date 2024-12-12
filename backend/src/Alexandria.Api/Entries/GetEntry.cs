@@ -4,6 +4,7 @@ using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Entries.DTOs;
 using Alexandria.Api.Tags.DTOs;
+using Alexandria.Api.Users.DTOs;
 using Alexandria.Application.Entries.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,12 @@ public abstract class GetEntry : EndpointBase, IEndpoint
                 Id = entryResult.Document.Id,
                 EntryId = entryResult.Document.EntryId,
                 FileExtension = entryResult.Document.FileExtension,
-                CreatedById = entryResult.Document.CreatedById,
+                CreatedBy = new UserDto
+                {
+                    Id = (Guid)entryResult.Document.CreatedByUser!.Id!,
+                    FirstName = entryResult.Document.CreatedByUser!.FirstName!,
+                    LastName = entryResult.Document.CreatedByUser!.LastName!
+                },
                 CreatedAtUtc = entryResult.Document.CreatedAtUtc,
                 DeletedAtUtc = entryResult.Document.DeletedAtUtc,
             };
@@ -51,7 +57,12 @@ public abstract class GetEntry : EndpointBase, IEndpoint
             Id = comment.Id,
             Content = comment.Content,
             CreatedAtUtc = comment.CreatedAtUtc,
-            CreatedById = comment.CreatedById,
+            CreatedBy = new UserDto
+            {
+                Id = (Guid)comment.CreatedBy!.Id!,
+                FirstName = comment.CreatedBy!.FirstName!,
+                LastName = comment.CreatedBy!.LastName!
+            },
             DeletedAtUtc = comment.DeletedAtUtc,
         }).ToList() ?? [];
 
@@ -70,7 +81,12 @@ public abstract class GetEntry : EndpointBase, IEndpoint
             Document = document,
             Comments = comments,
             Tags = tags,
-            CreatedById = entryResult.CreatedById,
+            CreatedBy = new UserDto
+            {
+                Id = (Guid)entryResult.CreatedBy!.Id!,
+                FirstName = entryResult.CreatedBy!.FirstName!,
+                LastName = entryResult.CreatedBy!.LastName!
+            },
             CreatedAtUtc = entryResult.CreatedAtUtc,
             DeletedAtUtc = entryResult.DeletedAtUtc,
         };

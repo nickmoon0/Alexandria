@@ -28,6 +28,11 @@ public class TestUserRepository : IUserRepository
             Task.FromResult<ErrorOr<User>>(userEntity);
     }
 
+    public Task<ErrorOr<IEnumerable<User>>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<ErrorOr<Success>> UpdateAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();

@@ -1,3 +1,5 @@
+using Alexandria.Api.Users.DTOs;
+
 namespace Alexandria.Api.Entries.DTOs;
 
 public class DocumentDto
@@ -7,7 +9,7 @@ public class DocumentDto
     public Guid? Id { get; init; }
     public Guid? EntryId { get; init; }
     public string? FileExtension { get; init; }
-    public Guid? CreatedById { get; init; }
+    public UserDto? CreatedBy { get; init; }
     public DateTime? CreatedAtUtc { get; init; }
     public DateTime? DeletedAtUtc { get; init; }
 }

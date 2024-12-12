@@ -25,7 +25,16 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
         return user;
     }
-    
+
+    public async Task<ErrorOr<IEnumerable<User>>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken)
+    {
+        var users = await context.Users
+            .Where(user => userIds.Contains(user.Id))
+            .ToListAsync(cancellationToken);
+
+        return users;
+    }
+
     public async Task<ErrorOr<Success>> UpdateAsync(CancellationToken cancellationToken)
     {
         await context.SaveChangesAsync(cancellationToken);
