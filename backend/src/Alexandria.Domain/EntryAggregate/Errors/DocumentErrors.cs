@@ -35,8 +35,4 @@ public static class DocumentErrors
     public static readonly Error CharacterIdNotPresent = Error.Conflict(
         $"{nameof(Document)}.CharacterIdNotPresent",
         "CharacterId is not present");
-    
-    public static readonly Error DocumentNull = Error.Validation(
-        $"{nameof(Document)}.{nameof(DocumentNull)}",
-        "Document was be null");
 }

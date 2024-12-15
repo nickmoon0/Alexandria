@@ -2,7 +2,6 @@ using Alexandria.Application.Common.Interfaces;
 using Alexandria.Application.Common.Responses;
 using Alexandria.Application.Entries.Responses;
 using Alexandria.Application.Users.Responses;
-using Alexandria.Domain.Common.Entities.Tag;
 using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.EntryAggregate.Errors;
 using ErrorOr;
@@ -11,7 +10,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Alexandria.Application.Entries.Queries;
 
-public record GetEntryQuery(Guid EntryId) : IRequest<ErrorOr<GetEntryResponse>>;
+public enum GetEntryQueryOptions
+{
+    IncludeComments,
+    IncludeDocument,
+    IncludeTags
+}
+
+public record GetEntryQuery(Guid EntryId, HashSet<GetEntryQueryOptions>? OptionsList = null) : IRequest<ErrorOr<GetEntryResponse>>;
 public record GetEntryResponse(EntryResponse Entry);
 
 public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryResponse>>
@@ -36,9 +42,15 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
 
     public async Task<ErrorOr<GetEntryResponse>> Handle(GetEntryQuery request, CancellationToken cancellationToken)
     {
+        var dbQueryOptions = new HashSet<FindOptions>();
+        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeComments) ?? false)
+            dbQueryOptions.Add(FindOptions.IncludeComments);
+        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeDocument) ?? false)
+            dbQueryOptions.Add(FindOptions.IncludeDocument);
+        
         // Get the entry from provided ID
         var entryResult = await _entryRepository.FindByIdAsync(
-            request.EntryId, cancellationToken, [FindOptions.IncludeDocument, FindOptions.IncludeComments]);
+            request.EntryId, cancellationToken, dbQueryOptions);
         
         if (entryResult.IsError)
         {
@@ -64,24 +76,43 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         };
         
         // Create comment response objects
-        var commentResponsesResult = await GetCommentResponses(entry, cancellationToken);
-        if (commentResponsesResult.IsError)
+        List<CommentResponse>? comments = null;
+        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeComments) ?? false)
         {
-            return commentResponsesResult.Errors;
+            var commentResponsesResult = await GetCommentResponses(entry, cancellationToken);
+            if (commentResponsesResult.IsError)
+            {
+                return commentResponsesResult.Errors;
+            }
+            
+            comments = commentResponsesResult.Value.ToList();
         }
+
         
         // Create document response object
-        var documentResponseResult = await GetDocumentResponse(entry, cancellationToken);
-        if (documentResponseResult.IsError)
+        DocumentResponse? document = null;
+        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeDocument) ?? false)
         {
-            return documentResponseResult.Errors;
+            var documentResponseResult = await GetDocumentResponse(entry, cancellationToken);
+            if (documentResponseResult.IsError)
+            {
+                return documentResponseResult.Errors;
+            }
+            
+            document = documentResponseResult.Value;
         }
         
         // Get the tag response objects
-        var tagResponsesResult = await GetTagResponses(entry, cancellationToken);
-        if (tagResponsesResult.IsError)
+        List<TagResponse>? tags = null;
+        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeTags) ?? false)
         {
-            return tagResponsesResult.Errors;
+            var tagResponsesResult = await GetTagResponses(entry, cancellationToken);
+            if (tagResponsesResult.IsError)
+            {
+                return tagResponsesResult.Errors;
+            }
+            
+            tags = tagResponsesResult.Value.ToList();
         }
         
         var entryResponse = new EntryResponse
@@ -89,12 +120,12 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
             Id = entry.Id,
             Name = entry.Name,
             Description = entry.Description,
-            Document = documentResponseResult.Value,
-            Comments = commentResponsesResult.Value.ToList(),
+            Document = document,
+            Comments = comments,
             CreatedBy = userResponse,
             CreatedAtUtc = entry.CreatedAtUtc,
             DeletedAtUtc = entry.DeletedAtUtc,
-            Tags = tagResponsesResult.Value.ToList(),
+            Tags = tags,
         };
 
         return new GetEntryResponse(entryResponse);
@@ -125,7 +156,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         if (entry.Document == null)
         {
             _logger.LogError("Document null for Entry with ID {ID}", entry.Id);
-            return DocumentErrors.DocumentNull;
+            return EntryErrors.DocumentNull;
         }
         var document = entry.Document;
         

@@ -18,12 +18,20 @@ public abstract class GetEntry : EndpointBase, IEndpoint
         .WithSummary("Retrieves an entry based on the entry's ID")
         .WithName(nameof(GetEntry))
         .RequireAuthorization<User>();
-
+    
     private static async Task<IResult> Handle(
         [FromRoute] Guid id,
-        [FromServices] IMediator mediator)
+        [FromServices] IMediator mediator,
+        [FromQuery] bool includeComments = false,
+        [FromQuery] bool includeDocument = false,
+        [FromQuery] bool includeTags = false)
     {
-        var query = new GetEntryQuery(id);
+        var options = new HashSet<GetEntryQueryOptions>();
+        if (includeComments) options.Add(GetEntryQueryOptions.IncludeComments);
+        if (includeDocument) options.Add(GetEntryQueryOptions.IncludeDocument);
+        if (includeTags) options.Add(GetEntryQueryOptions.IncludeTags);
+        
+        var query = new GetEntryQuery(id, options);
         var result = await mediator.Send(query);
         if (result.IsError)
         {
@@ -64,14 +72,14 @@ public abstract class GetEntry : EndpointBase, IEndpoint
                 LastName = comment.CreatedBy!.LastName!
             },
             DeletedAtUtc = comment.DeletedAtUtc,
-        }).ToList() ?? [];
+        }).ToList();
 
 
         var tags = entryResult.Tags?.Select(tag => new TagDto
         {
             Id = tag.Id,
             Name = tag.Name,
-        }).ToList() ?? [];
+        }).ToList();
         
         var entry = new EntryDto
         {

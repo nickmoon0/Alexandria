@@ -9,8 +9,8 @@ public class EntryDto
     public string? Name { get; init; }
     public string? Description { get; init; }
     public DocumentDto? Document { get; init; }
-    public IReadOnlyList<CommentDto> Comments { get; init; } = [];
-    public IReadOnlyList<TagDto> Tags { get; init; } = [];
+    public IReadOnlyList<CommentDto>? Comments { get; init; } = [];
+    public IReadOnlyList<TagDto>? Tags { get; init; } = [];
     public UserDto? CreatedBy { get; init; }
     public DateTime? CreatedAtUtc { get; init; }
     public DateTime? DeletedAtUtc { get; init; }
