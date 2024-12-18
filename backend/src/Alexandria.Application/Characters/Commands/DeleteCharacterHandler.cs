@@ -1,4 +1,5 @@
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common.Interfaces;
 using ErrorOr;
 using MediatR;
@@ -10,30 +11,28 @@ public record DeleteCharacterCommand(Guid Id) : IRequest<ErrorOr<Deleted>>;
 
 public class DeleteCharacterHandler : IRequestHandler<DeleteCharacterCommand, ErrorOr<Deleted>>
 {
-    private readonly ICharacterRepository _characterRepository;
+    private readonly IAppDbContext _context;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<DeleteCharacterHandler> _logger;
     
     public DeleteCharacterHandler(
-        ICharacterRepository characterRepository,
+        IAppDbContext context,
         IDateTimeProvider dateTimeProvider,
         ILogger<DeleteCharacterHandler> logger)
     {
-        _characterRepository = characterRepository;
+        _context = context;
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;
     }
     
     public async Task<ErrorOr<Deleted>> Handle(DeleteCharacterCommand request, CancellationToken cancellationToken)
     {
-        var characterResult = await _characterRepository.FindByIdAsync(request.Id, cancellationToken);
-        if (characterResult.IsError)
+        var character = await _context.Characters.FindAsync([request.Id], cancellationToken);
+        if (character == null)
         {
             _logger.LogInformation("No character found with ID: {ID}", request.Id);
-            return characterResult.Errors;
+            return CharacterErrors.NotFound;
         }
-        
-        var character = characterResult.Value;
         
         var deleteResult = character.Delete(_dateTimeProvider);
         if (deleteResult.IsError)
@@ -42,13 +41,7 @@ public class DeleteCharacterHandler : IRequestHandler<DeleteCharacterCommand, Er
             return deleteResult.Errors;
         }
         
-        var updateResult = await _characterRepository.UpdateAsync(cancellationToken);
-        if (updateResult.IsError)
-        {
-            _logger.LogError("Failed to update database after character delete with ID: {ID}", character.Id);
-            return characterResult.Errors;
-        }
-
+        await _context.SaveChangesAsync(cancellationToken);
         return Result.Deleted;
     }
 }

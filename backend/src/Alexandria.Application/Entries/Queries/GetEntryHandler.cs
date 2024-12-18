@@ -4,54 +4,46 @@ using Alexandria.Application.Entries.Responses;
 using Alexandria.Application.Users.Responses;
 using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.EntryAggregate.Errors;
+using Alexandria.Domain.UserAggregate;
 using ErrorOr;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Alexandria.Application.Entries.Queries;
 
+[Flags]
 public enum GetEntryQueryOptions
 {
-    IncludeComments,
-    IncludeDocument,
-    IncludeTags
+    None = 0,
+    IncludeComments = 1,
+    IncludeDocument = 2,
+    IncludeTags = 4
 }
 
-public record GetEntryQuery(Guid EntryId, HashSet<GetEntryQueryOptions>? OptionsList = null) : IRequest<ErrorOr<GetEntryResponse>>;
+public record GetEntryQuery(Guid EntryId, GetEntryQueryOptions Options) : IRequest<ErrorOr<GetEntryResponse>>;
 public record GetEntryResponse(EntryResponse Entry);
 
 public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryResponse>>
 {
     private readonly ILogger<GetEntryHandler> _logger;
-    private readonly IEntryRepository _entryRepository;
+    private readonly IAppDbContext _context;
     private readonly ITaggingService _taggingService;
-    private readonly IUserRepository _userRepository;
     
     public GetEntryHandler(
         ILogger<GetEntryHandler> logger,
-        IEntryRepository entryRepository,
-        ITagRepository tagRepository,
-        ITaggingService taggingService,
-        IUserRepository userRepository)
+        IAppDbContext context,
+        ITaggingService taggingService)
     {
         _logger = logger;
-        _entryRepository = entryRepository;
+        _context = context;
         _taggingService = taggingService;
-        _userRepository = userRepository;
     }
 
     public async Task<ErrorOr<GetEntryResponse>> Handle(GetEntryQuery request, CancellationToken cancellationToken)
     {
-        var dbQueryOptions = new HashSet<FindOptions>();
-        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeComments) ?? false)
-            dbQueryOptions.Add(FindOptions.IncludeComments);
-        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeDocument) ?? false)
-            dbQueryOptions.Add(FindOptions.IncludeDocument);
-        
         // Get the entry from provided ID
-        var entryResult = await _entryRepository.FindByIdAsync(
-            request.EntryId, cancellationToken, dbQueryOptions);
-        
+        var entryResult = await GetEntry(request.EntryId, request.Options, cancellationToken);
         if (entryResult.IsError)
         {
             _logger.LogError("Get entry with Id: {EntryId} failed.", request.EntryId);
@@ -61,23 +53,22 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         var entry = entryResult.Value;
 
         // Get the CreatedBy user response object
-        var createdByUserResult = await _userRepository.FindByIdAsync(entry.CreatedById, cancellationToken);
-        if (createdByUserResult.IsError)
+        var createdByUser = await _context.Users.FindAsync([entry.CreatedById], cancellationToken);
+        if (createdByUser == null)
         {
             _logger.LogError("Failed to retrieve user with ID {ID}", entry.CreatedById);
-            return createdByUserResult.Errors;
+            return UserErrors.NotFound;
         }
-        var createdByUser = createdByUserResult.Value;
+        
         var userResponse = new UserResponse
         {
             Id = createdByUser.Id,
-            FirstName = createdByUser.Name.FirstName,
-            LastName = createdByUser.Name.LastName
+            Name = createdByUser.Name,
         };
         
         // Create comment response objects
         List<CommentResponse>? comments = null;
-        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeComments) ?? false)
+        if (request.Options.HasFlag(GetEntryQueryOptions.IncludeComments))
         {
             var commentResponsesResult = await GetCommentResponses(entry, cancellationToken);
             if (commentResponsesResult.IsError)
@@ -91,7 +82,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         
         // Create document response object
         DocumentResponse? document = null;
-        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeDocument) ?? false)
+        if (request.Options.HasFlag(GetEntryQueryOptions.IncludeDocument))
         {
             var documentResponseResult = await GetDocumentResponse(entry, cancellationToken);
             if (documentResponseResult.IsError)
@@ -104,7 +95,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         
         // Get the tag response objects
         List<TagResponse>? tags = null;
-        if (request.OptionsList?.Contains(GetEntryQueryOptions.IncludeTags) ?? false)
+        if (request.Options.HasFlag(GetEntryQueryOptions.IncludeTags))
         {
             var tagResponsesResult = await GetTagResponses(entry, cancellationToken);
             if (tagResponsesResult.IsError)
@@ -131,6 +122,33 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         return new GetEntryResponse(entryResponse);
     }
 
+    private async Task<ErrorOr<Entry>> GetEntry(
+        Guid entryId,
+        GetEntryQueryOptions options,
+        CancellationToken cancellationToken)
+    {
+        IQueryable<Entry> query = _context.Entries;
+
+        if (options.HasFlag(GetEntryQueryOptions.IncludeComments))
+        {
+            query = query.Include(entry => entry.Comments);
+        }
+
+        if (options.HasFlag(GetEntryQueryOptions.IncludeDocument))
+        {
+            query = query.Include(entry => entry.Document);
+        }
+        
+        var entry = await query.SingleOrDefaultAsync(entry => entry.Id == entryId, cancellationToken);
+        if (entry == null)
+        {
+            _logger.LogError("Entry not found with ID {ID}", entryId);
+            return Error.NotFound();
+        }
+
+        return entry;
+    }
+    
     private async Task<ErrorOr<IEnumerable<TagResponse>>> GetTagResponses(Entry entry, CancellationToken cancellationToken)
     {
         var tags = await _taggingService.GetEntityTags(entry, cancellationToken);
@@ -160,18 +178,17 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         }
         var document = entry.Document;
         
-        var createdByResult = await _userRepository.FindByIdAsync(document.CreatedById, cancellationToken);
-        if (createdByResult.IsError)
+        var createdByUser = await _context.Users.FindAsync([document.CreatedById], cancellationToken);
+        if (createdByUser == null)
         {
             _logger.LogError("Failed to retrieve user with ID {ID} when getting Document CreatedBy user", document.CreatedById);
-            return createdByResult.Errors;
+            return UserErrors.NotFound;
         }
-        var createdByUser = createdByResult.Value;
+
         var userResponse = new UserResponse
         {
             Id = createdByUser.Id,
-            FirstName = createdByUser.Name.FirstName,
-            LastName = createdByUser.Name.LastName,
+            Name = createdByUser.Name,
         };
 
         var documentResponse = new DocumentResponse
@@ -192,19 +209,15 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         CancellationToken cancellationToken)
     {
         var commentUserIds = entry.Comments.Select(c => c.CreatedById).ToList();
-        var users = await _userRepository.FindByIdsAsync(commentUserIds, cancellationToken);
-        if (users.IsError)
-        {
-            _logger.LogError("Failed to retrieve users for comments in entry with ID {ID}", entry.Id);
-            return users.Errors;
-        }
+        var users = await _context.Users
+            .Where(user => commentUserIds.Contains(user.Id))
+            .ToListAsync(cancellationToken);
         
-        var usersDict = users.Value
+        var usersDict = users
             .Select(user => new UserResponse
             {
                 Id = user.Id,
-                FirstName = user.Name.FirstName,
-                LastName = user.Name.LastName,
+                Name = user.Name,
             })
             .ToDictionary(x => (Guid)x.Id!, x => x);
         

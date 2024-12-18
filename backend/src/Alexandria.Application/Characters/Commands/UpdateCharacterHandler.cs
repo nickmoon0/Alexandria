@@ -1,4 +1,5 @@
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common.ValueObjects.Name;
 using ErrorOr;
 using MediatR;
@@ -15,25 +16,23 @@ public record UpdateCharacterCommand(
 
 public class UpdateCharacterHandler : IRequestHandler<UpdateCharacterCommand, ErrorOr<Updated>>
 {
-    private readonly ICharacterRepository _characterRepository;
+    private readonly IAppDbContext _context;
     private readonly ILogger<UpdateCharacterHandler> _logger;
     
-    public UpdateCharacterHandler(ICharacterRepository characterRepository, ILogger<UpdateCharacterHandler> logger)
+    public UpdateCharacterHandler(IAppDbContext context, ILogger<UpdateCharacterHandler> logger)
     {
-        _characterRepository = characterRepository;
+        _context = context;
         _logger = logger;
     }
 
     public async Task<ErrorOr<Updated>> Handle(UpdateCharacterCommand request, CancellationToken cancellationToken)
     {
-        var characterResult = await _characterRepository.FindByIdAsync(request.Id, cancellationToken);
-        if (characterResult.IsError)
+        var character = await _context.Characters.FindAsync([request.Id], cancellationToken);
+        if (character == null)
         {
             _logger.LogInformation("Character not found with ID: {ID}", request.Id);
-            return characterResult.Errors;
+            return CharacterErrors.NotFound;
         }
-
-        var character = characterResult.Value;
         
         if (request.FirstName != null || request.LastName != null || request.MiddleNames != null)
         {
@@ -63,13 +62,7 @@ public class UpdateCharacterHandler : IRequestHandler<UpdateCharacterCommand, Er
             }
         }
 
-        var updateResult = await _characterRepository.UpdateAsync(cancellationToken);
-        if (updateResult.IsError)
-        {
-            _logger.LogInformation("Failed to update character with ID: {ID}", request.Id);
-            return updateResult.Errors;
-        }
-        
+        await _context.SaveChangesAsync(cancellationToken);
         return Result.Updated;
     }
 }

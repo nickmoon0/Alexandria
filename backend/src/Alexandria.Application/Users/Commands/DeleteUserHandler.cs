@@ -1,5 +1,6 @@
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.Common.Interfaces;
+using Alexandria.Domain.UserAggregate;
 using ErrorOr;
 using MediatR;
 
@@ -10,25 +11,22 @@ public record DeleteUserCommand(Guid Id) : IRequest<ErrorOr<Success>>;
 public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, ErrorOr<Success>>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly IUserRepository _userRepository;
+    private readonly IAppDbContext _context;
     
-    public DeleteUserHandler(IDateTimeProvider dateTimeProvider, IUserRepository userRepository)
+    public DeleteUserHandler(IDateTimeProvider dateTimeProvider, IAppDbContext context)
     {
         _dateTimeProvider = dateTimeProvider;
-        _userRepository = userRepository;
+        _context = context;
     }
     
     public async Task<ErrorOr<Success>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var userResult = await _userRepository.FindByIdAsync(request.Id, cancellationToken);
-        if (userResult.IsError) return userResult.Errors;
+        var user = await _context.Users.FindAsync([request.Id], cancellationToken);
+        if (user == null) return UserErrors.NotFound;
         
-        var user = userResult.Value;
-
         user.Delete(_dateTimeProvider);
-        var updateResult = await _userRepository.UpdateAsync(cancellationToken);
-        if (updateResult.IsError) return updateResult.Errors;
-        
+
+        await _context.SaveChangesAsync(cancellationToken);
         return Result.Success;
     }
 }

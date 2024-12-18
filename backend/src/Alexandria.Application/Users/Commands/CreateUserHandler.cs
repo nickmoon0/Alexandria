@@ -13,10 +13,10 @@ public record CreateUserResult(Guid UserId);
 
 public class CreateUserHandler : IRequestHandler<CreateUserCommand, ErrorOr<CreateUserResult>>
 {
-    private readonly IUserRepository _userRepository;
-    public CreateUserHandler(IUserRepository userRepository)
+    private readonly IAppDbContext _context;
+    public CreateUserHandler(IAppDbContext context)
     {
-        _userRepository = userRepository;
+        _context = context;
     }
     
     public async Task<ErrorOr<CreateUserResult>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -34,11 +34,9 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, ErrorOr<Crea
         }
 
         var user = userResult.Value;
-        var addResult = await _userRepository.AddAsync(user, cancellationToken);
-        if (addResult.IsError)
-        {
-            return addResult.Errors;
-        }
+        
+        await _context.Users.AddAsync(user, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         
         var response = new CreateUserResult(user.Id);
         return response;

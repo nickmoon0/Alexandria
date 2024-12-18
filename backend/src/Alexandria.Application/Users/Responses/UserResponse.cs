@@ -1,8 +1,9 @@
+using Alexandria.Domain.Common.ValueObjects.Name;
+
 namespace Alexandria.Application.Users.Responses;
 
 public class UserResponse
 {
-    public Guid? Id { get; init; }
-    public string? FirstName { get; init; }
-    public string? LastName { get; init; }
+    public required Guid Id { get; init; }
+    public required Name Name { get; init; }
 }

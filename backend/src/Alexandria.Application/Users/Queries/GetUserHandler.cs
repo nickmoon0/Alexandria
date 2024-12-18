@@ -1,37 +1,36 @@
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Application.Users.Responses;
+using Alexandria.Domain.Common.ValueObjects.Name;
+using Alexandria.Domain.UserAggregate;
 using ErrorOr;
 using MediatR;
 
 namespace Alexandria.Application.Users.Queries;
 
-public record GetUserQuery(Guid UserId) : IRequest<ErrorOr<GetUserResult>>;
-public record GetUserResult(Guid Id, string FirstName, string LastName, string? MiddleNames);
+public record GetUserQuery(Guid UserId) : IRequest<ErrorOr<UserResponse>>;
 
-public class GetUserHandler : IRequestHandler<GetUserQuery, ErrorOr<GetUserResult>>
+public class GetUserHandler : IRequestHandler<GetUserQuery, ErrorOr<UserResponse>>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IAppDbContext _context;
 
-    public GetUserHandler(IUserRepository userRepository)
+    public GetUserHandler(IAppDbContext context)
     {
-        _userRepository = userRepository;
+        _context = context;
     }
     
-    public async Task<ErrorOr<GetUserResult>> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<UserResponse>> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
-        var userResult = await _userRepository.FindByIdAsync(request.UserId, cancellationToken);
-
-        if (userResult.IsError)
+        var user = await _context.Users.FindAsync([request.UserId], cancellationToken);
+        if (user == null)
         {
-            return userResult.Errors;
+            return UserErrors.NotFound;
         }
 
-        var user = userResult.Value;
-        var response = new GetUserResult(
-            user.Id,
-            user.Name.FirstName,
-            user.Name.LastName,
-            user.Name.MiddleNames
-        );
+        var response = new UserResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+        };
         
         return response;
     }

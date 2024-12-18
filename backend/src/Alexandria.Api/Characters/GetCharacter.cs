@@ -3,6 +3,7 @@ using Alexandria.Api.Common;
 using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
+using Alexandria.Api.Users.DTOs;
 using Alexandria.Application.Characters.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +17,6 @@ public abstract class GetCharacter : EndpointBase, IEndpoint
         .WithSummary("Retrieves a character by ID")
         .WithName(nameof(GetCharacter))
         .RequireAuthorization<User>();
-
-    private record Response(CharacterDto Character);
     
     private static async Task<IResult> Handle(
         [FromRoute] Guid id,
@@ -31,18 +30,38 @@ public abstract class GetCharacter : EndpointBase, IEndpoint
             return result.ToHttpResponse();
         }
         
-        var character = result.Value;
-        var response = new Response(new CharacterDto
+        var character = result.Value.Character;
+
+        UserDto? userDto = null;
+
+        if (character.User != null)
+        {
+            userDto = new UserDto
+            {
+                Id = character.User.Id,
+                FirstName = character.User.Name.FirstName,
+                LastName = character.User.Name.LastName,
+            };
+        }
+
+        var createdByDto = new UserDto
+        {
+            Id = character.CreatedBy!.Id,
+            FirstName = character.CreatedBy.Name.FirstName,
+            LastName = character.CreatedBy.Name.LastName,
+        };
+        
+        var response = new CharacterDto
         {
             Id = character.Id,
-            FirstName = character.FirstName,
-            LastName = character.LastName,
-            MiddleNames = character.MiddlesNames,
+            FirstName = character.Name!.FirstName,
+            LastName = character.Name.LastName,
+            MiddleNames = character.Name.MiddleNames,
             Description = character.Description,
-            UserId = character.UserId,
-            CreatedBy = character.CreatedById,
+            User = userDto,
+            CreatedBy = createdByDto,
             CreatedOnUtc = character.CreatedAtUtc
-        });
+        };
         
         return Results.Ok(response);
     }

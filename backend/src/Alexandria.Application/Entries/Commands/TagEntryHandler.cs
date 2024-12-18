@@ -1,4 +1,6 @@
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Domain.Common.Entities.Tag;
+using Alexandria.Domain.EntryAggregate.Errors;
 using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -9,40 +11,35 @@ public record TagEntryCommand(Guid EntryId, Guid TagId) : IRequest<ErrorOr<Succe
 
 public class TagEntryHandler : IRequestHandler<TagEntryCommand, ErrorOr<Success>>
 {
+    private readonly IAppDbContext _context;
     private readonly ILogger<TagEntryHandler> _logger;
-    private readonly IEntryRepository _entryRepository;
-    private readonly ITagRepository _tagRepository;
     private readonly ITaggingService _taggingService;
     
     public TagEntryHandler(
+        IAppDbContext context,
         ILogger<TagEntryHandler> logger,
-        IEntryRepository entryRepository,
-        ITagRepository tagRepository,
         ITaggingService taggingService)
     {
+        _context = context;
         _logger = logger;
-        _entryRepository = entryRepository;
-        _tagRepository = tagRepository;
         _taggingService = taggingService;
     }
 
     public async Task<ErrorOr<Success>> Handle(TagEntryCommand request, CancellationToken cancellationToken)
     {
-        var entryResult = await _entryRepository.FindByIdAsync(request.EntryId, cancellationToken);
-        if (entryResult.IsError)
+        var entry = await _context.Entries.FindAsync([request.EntryId], cancellationToken);
+        if (entry == null)
         {
             _logger.LogError("Entry not found with ID {ID}", request.EntryId);
-            return entryResult.Errors;
+            return EntryErrors.NotFound;
         }
-        var entry = entryResult.Value;
         
-        var tagResult = await _tagRepository.FindByIdAsync(request.TagId, cancellationToken);
-        if (tagResult.IsError)
+        var tag = await _context.Tags.FindAsync([request.TagId], cancellationToken);
+        if (tag == null)
         {
             _logger.LogError("Tag not found with ID {ID}", request.TagId);
-            return tagResult.Errors;
+            return TagErrors.TagNotFound;
         }
-        var tag = tagResult.Value;
 
         var taggingResult = await _taggingService.TagEntity(entry, tag);
         if (taggingResult.IsError)
