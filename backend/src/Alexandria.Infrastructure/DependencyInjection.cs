@@ -27,7 +27,7 @@ public static class DependencyInjection
         var sqlConnString = configuration.GetConnectionString(nameof(AppDbContext));
         var serverVersion = ServerVersion.AutoDetect(sqlConnString);
         
-        services.AddDbContext<AppDbContext>(options => options.UseMySql(
+        services.AddDbContext<IAppDbContext, AppDbContext>(options => options.UseMySql(
             sqlConnString,
             serverVersion,
             mySqlOptionsAction: mysqlOptions =>

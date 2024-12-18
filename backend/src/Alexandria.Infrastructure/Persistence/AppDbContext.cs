@@ -1,4 +1,5 @@
 using System.Reflection;
+using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.Entities.Tag;
@@ -7,12 +8,13 @@ using Alexandria.Domain.UserAggregate;
 using Alexandria.Infrastructure.Persistence.Models.Tagging;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Alexandria.Infrastructure.Persistence;
 
 public class AppDbContext(
     DbContextOptions<AppDbContext> options,
-    IPublisher publisher) : DbContext(options)
+    IPublisher publisher) : DbContext(options), IAppDbContext
 {
     public virtual DbSet<Character> Characters { get; init; }
     public virtual DbSet<Comment> Comments { get; init; } 

@@ -22,14 +22,21 @@ public abstract class GetEntry : EndpointBase, IEndpoint
     private static async Task<IResult> Handle(
         [FromRoute] Guid id,
         [FromServices] IMediator mediator,
-        [FromQuery] bool includeComments = false,
-        [FromQuery] bool includeDocument = false,
-        [FromQuery] bool includeTags = false)
+        [FromQuery] string filterOptions = "None")
     {
-        var options = new HashSet<GetEntryQueryOptions>();
-        if (includeComments) options.Add(GetEntryQueryOptions.IncludeComments);
-        if (includeDocument) options.Add(GetEntryQueryOptions.IncludeDocument);
-        if (includeTags) options.Add(GetEntryQueryOptions.IncludeTags);
+        // Parse filter options into enum flag
+        var options = GetEntryQueryOptions.None;
+        if (!string.IsNullOrEmpty(filterOptions))
+        {
+            var values = filterOptions.Split('|', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var value in values)
+            {
+                if (Enum.TryParse<GetEntryQueryOptions>(value, true, out var parsedOption))
+                {
+                    options |= parsedOption;
+                }
+            }
+        }
         
         var query = new GetEntryQuery(id, options);
         var result = await mediator.Send(query);
