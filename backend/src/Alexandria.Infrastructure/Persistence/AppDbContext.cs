@@ -8,7 +8,6 @@ using Alexandria.Domain.UserAggregate;
 using Alexandria.Infrastructure.Persistence.Models.Tagging;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Alexandria.Infrastructure.Persistence;
 

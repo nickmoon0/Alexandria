@@ -1,6 +1,4 @@
-
 using Alexandria.Application.Users.Responses;
-using Alexandria.Domain.EntryAggregate;
 
 namespace Alexandria.Application.Entries.Responses;
 

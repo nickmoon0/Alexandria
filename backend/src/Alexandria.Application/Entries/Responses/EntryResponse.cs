@@ -1,7 +1,5 @@
 using Alexandria.Application.Common.Responses;
 using Alexandria.Application.Users.Responses;
-using Alexandria.Domain.Common.Entities.Tag;
-using Alexandria.Domain.EntryAggregate;
 
 namespace Alexandria.Application.Entries.Responses;
 

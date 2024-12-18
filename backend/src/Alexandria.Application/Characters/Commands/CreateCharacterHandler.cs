@@ -4,7 +4,6 @@ using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Domain.Common.ValueObjects.Name;
 using ErrorOr;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Alexandria.Application.Characters.Commands;

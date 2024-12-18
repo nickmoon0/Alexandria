@@ -1,12 +1,10 @@
 using Alexandria.Application.Common.Interfaces;
-using Alexandria.Application.Tests.TestUtils.Repositories;
 using Alexandria.Application.Users.Queries;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.UserAggregate;
 using Alexandria.Infrastructure.Persistence;
 using Alexandria.Infrastructure.Tests.TestUtils.Builders;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Alexandria.Application.Tests.UsersTests;
 

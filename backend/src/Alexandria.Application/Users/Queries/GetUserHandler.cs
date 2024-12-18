@@ -1,6 +1,5 @@
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Application.Users.Responses;
-using Alexandria.Domain.Common.ValueObjects.Name;
 using Alexandria.Domain.UserAggregate;
 using ErrorOr;
 using MediatR;

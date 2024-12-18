@@ -1,5 +1,4 @@
 using Alexandria.Common.Tests.Factories;
-using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.Tests.TestUtils.Services;
 using Alexandria.Infrastructure.Persistence;
@@ -8,7 +7,6 @@ using Alexandria.Infrastructure.Services;
 using Alexandria.Infrastructure.Tests.TestUtils.Builders;
 using ErrorOr;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Alexandria.Infrastructure.Tests.ServicesTests;
 

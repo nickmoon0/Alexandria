@@ -1,5 +1,4 @@
 using Alexandria.Domain.Common.Interfaces;
-using Alexandria.Domain.Common.ValueObjects.Name;
 using Alexandria.Domain.Tests.TestUtils.Services;
 
 namespace Alexandria.Domain.Tests.TestConstants;

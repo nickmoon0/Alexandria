@@ -1,4 +1,5 @@
 using ErrorOr;
+
 namespace Alexandria.Infrastructure.Persistence.Models.Tagging;
 
 public static class TaggingErrors

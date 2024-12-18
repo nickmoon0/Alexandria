@@ -1,6 +1,6 @@
-using ErrorOr;
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.UserAggregate;
+using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alexandria.Infrastructure.Persistence.Repositories;
