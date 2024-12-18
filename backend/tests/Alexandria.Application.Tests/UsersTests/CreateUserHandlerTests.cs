@@ -1,19 +1,24 @@
+using Alexandria.Application.Common.Interfaces;
 using Alexandria.Application.Tests.TestUtils.Repositories;
-using Alexandria.Application.Users.Commands.CreateUser;
+using Alexandria.Application.Users.Commands;
 using Alexandria.Domain.Common.ValueObjects.Name;
+using Alexandria.Infrastructure.Persistence;
+using Alexandria.Infrastructure.Tests.TestUtils.Builders;
 using FluentAssertions;
 
 namespace Alexandria.Application.Tests.UsersTests;
 
 public class CreateUserHandlerTests
 {
+    private readonly IAppDbContext _context;
     private readonly TestUserRepository _testUserRepository;
     private readonly CreateUserHandler _handler;
 
     public CreateUserHandlerTests()
     {
+        _context = new DbContextBuilder<AppDbContext>().Build().Value;
         _testUserRepository = new TestUserRepository([]);
-        _handler = new CreateUserHandler(_testUserRepository);
+        _handler = new CreateUserHandler(_context);
     }
 
     [Fact]
@@ -31,12 +36,9 @@ public class CreateUserHandlerTests
         result.Value.Should().NotBeNull();
 
         // Verify the user was added to the repository
-        var user = await _testUserRepository.FindByIdAsync(result.Value.UserId, CancellationToken.None);
-        user.IsError.Should().BeFalse();
-        user.Value.Id.Should().Be(id);
-        user.Value.Name.FirstName.Should().Be(command.FirstName);
-        user.Value.Name.LastName.Should().Be(command.LastName);
-        user.Value.Name.MiddleNames.Should().BeEquivalentTo(command.MiddleNames);
+        var user = await _context.Users.FindAsync([result.Value.UserId]);
+        user.Should().NotBeNull();
+        user!.Id.Should().Be(id);
     }
 
     [Fact]

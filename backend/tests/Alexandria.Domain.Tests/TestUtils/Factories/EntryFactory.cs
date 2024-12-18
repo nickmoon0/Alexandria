@@ -18,7 +18,6 @@ public static class EntryFactory
             name ?? Constants.Entry.Name,
             createdById ?? Constants.Entry.CreatedById,
             dateTimeProvider ?? Constants.Entry.DateTimeProvider,
-            description ?? Constants.Entry.Description,
-            document ?? DocumentFactory.CreateDocument().Value);
+            description ?? Constants.Entry.Description);
     }
 }

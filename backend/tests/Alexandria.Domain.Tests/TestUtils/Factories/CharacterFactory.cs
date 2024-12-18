@@ -20,6 +20,6 @@ public static class CharacterFactory
             createdById ?? Constants.Character.CreatedById,
             dateTimeProvider ?? Constants.Character.DateTimeProvider,
             description ?? Constants.Character.Description,
-            userId ?? Constants.Character.UserId);
+            userId);
     }
 }

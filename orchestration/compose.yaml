@@ -9,6 +9,7 @@ services:
       watch:
         - action: rebuild
           path: .
+    restart: always
     ports:
       - "80:80"
     depends_on:
@@ -21,6 +22,7 @@ services:
 
   idp:
     image: quay.io/keycloak/keycloak:26.0.6
+    restart: always
     command: start-dev
     env_file: "Env/KeyCloak.env"
     ports:

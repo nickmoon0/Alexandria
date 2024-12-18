@@ -7,11 +7,10 @@ namespace Alexandria.Domain.EntryAggregate;
 
 public class Document : Entity, IAuditable, ISoftDeletable
 {
-    private string? Name { get; set; }
-    private string? Description {get; set;}
-    
-    private string? ImagePath { get; set; }
-    private byte[]? Data { get; set; }
+    public string? Name { get; private set; }
+    public string? FileExtension { get; private set; }
+    public string? ImagePath { get; private set; }
+    public Guid? EntryId { get; private set; }
     
     public Guid CreatedById { get; }
     public DateTime CreatedAtUtc { get; }
@@ -21,45 +20,45 @@ public class Document : Entity, IAuditable, ISoftDeletable
     private Document() { }
 
     private Document(
+        Guid entryId,
         string name,
-        byte[] data,
+        string fileExtension,
         string imagePath,
         Guid createdById,
         DateTime utcNow,
-        string? description = null,
         Guid? id = null)
         : base(id ?? Guid.NewGuid())
     {
         Name = name;
-        Data = data;
+        FileExtension = fileExtension;
         ImagePath = imagePath;
         CreatedById = createdById;
         CreatedAtUtc = utcNow;
-        Description = description;
+        
+        EntryId = entryId;
         
         DeletedAtUtc = null;
     }
 
     public static ErrorOr<Document> Create(
+        Guid entryId,
         string documentName,
-        byte[] data,
+        string fileExtension,
         string imagePath,
         Guid createdById,
-        IDateTimeProvider dateTimeProvider,
-        string? description = null)
+        IDateTimeProvider dateTimeProvider)
     {
         var errorList = new List<Error>();
+
+        if (entryId == Guid.Empty)
+        {
+            errorList.Add(DocumentErrors.InvalidEntryId);
+        }
         
         // Validate document name
         if (!DocumentNameValid(documentName))
         {
             errorList.Add(DocumentErrors.InvalidDocumentName);
-        }
-        
-        // Validate array isn't empty
-        if (data.Length <= 0)
-        {
-            errorList.Add(DocumentErrors.EmptyData);
         }
 
         if (createdById == Guid.Empty)
@@ -72,7 +71,7 @@ public class Document : Entity, IAuditable, ISoftDeletable
             return errorList;
         }
         
-        return new Document(documentName, data, imagePath, createdById, dateTimeProvider.UtcNow, description);
+        return new Document(entryId, documentName, fileExtension, imagePath, createdById, dateTimeProvider.UtcNow);
     }
 
     public ErrorOr<Updated> Rename(string newName)
@@ -83,14 +82,6 @@ public class Document : Entity, IAuditable, ISoftDeletable
         }
         
         Name = newName;
-        return Result.Updated;
-    }
-
-    public ErrorOr<Updated> UpdateDescription(string? newDescription)
-    {
-        if (string.IsNullOrWhiteSpace(newDescription)) newDescription = null;
-        
-        Description = newDescription;
         return Result.Updated;
     }
     

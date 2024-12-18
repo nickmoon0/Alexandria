@@ -5,13 +5,14 @@ using ErrorOr;
 
 namespace Alexandria.Domain.EntryAggregate;
 
-public class Entry : TaggableAggregateRoot, IAuditable, ISoftDeletable
+public class Entry : AggregateRoot, IAuditable, ISoftDeletable
 {
-    private string? Name { get; set; }
-    private string? Description { get; set; }
+    public string? Name { get; private set; }
+    public string? Description { get; private set; }
 
-    private Document? Document { get; set; }
-    private List<Comment> Comments { get; set; } = [];
+    public Document? Document { get; private set; }
+    public List<Comment> Comments { get; private set; } = [];
+
     private List<Guid> CharacterIds { get; set; } = [];
     
     public Guid CreatedById { get; }
@@ -23,14 +24,12 @@ public class Entry : TaggableAggregateRoot, IAuditable, ISoftDeletable
     private Entry(
         string name,
         string? description,
-        Document? document,
         Guid createdById,
         DateTime createdAtUtc,
         Guid? id = null) : base(id ?? Guid.NewGuid())
     {
         Name = name;
         Description = description;
-        Document = document;
         
         CreatedById = createdById;
         CreatedAtUtc = createdAtUtc;
@@ -40,8 +39,7 @@ public class Entry : TaggableAggregateRoot, IAuditable, ISoftDeletable
         string name,
         Guid createdById,
         IDateTimeProvider dateTimeProvider,
-        string? description = null,
-        Document? document = null)
+        string? description = null)
     {
         name = name.Trim();
         if (string.IsNullOrEmpty(name))
@@ -56,7 +54,7 @@ public class Entry : TaggableAggregateRoot, IAuditable, ISoftDeletable
 
         if (description is { Length: 0 }) description = null;
         
-        return new Entry(name, description, document, createdById, dateTimeProvider.UtcNow);
+        return new Entry(name, description, createdById, dateTimeProvider.UtcNow);
     }
     
     public ErrorOr<Updated> AddCharacter(Guid characterId)

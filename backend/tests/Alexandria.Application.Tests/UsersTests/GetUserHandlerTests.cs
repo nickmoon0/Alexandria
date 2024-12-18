@@ -1,15 +1,16 @@
-using Alexandria.Application.Tests.TestUtils.Repositories;
-using Alexandria.Application.Users.Queries.GetUser;
+using Alexandria.Application.Common.Interfaces;
+using Alexandria.Application.Users.Queries;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.UserAggregate;
-using ErrorOr;
+using Alexandria.Infrastructure.Persistence;
+using Alexandria.Infrastructure.Tests.TestUtils.Builders;
 using FluentAssertions;
 
 namespace Alexandria.Application.Tests.UsersTests;
 
 public class GetUserHandlerTests
 {
-    private readonly TestUserRepository _testUserRepository;
+    private readonly IAppDbContext _context;
     private readonly GetUserHandler _handler;
 
     public GetUserHandlerTests()
@@ -26,25 +27,9 @@ public class GetUserHandlerTests
             user1,
             user2
         };
-
-        _testUserRepository = new TestUserRepository(testUsers);
-        _handler = new GetUserHandler(_testUserRepository);
-    }
-    
-    [Fact]
-    public async Task GetUser_WhenUserExists_ShouldReturnUser()
-    {
-        // Arrange
-        var existingUser = _testUserRepository.Users.First().Value;
-        var query = new GetUserQuery { UserId = existingUser.Id };
-
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().Be(result.Value);
+        
+        _context = new DbContextBuilder<AppDbContext>().Build().Value;
+        _handler = new GetUserHandler(_context);
     }
 
     [Fact]
@@ -52,13 +37,32 @@ public class GetUserHandlerTests
     {
         // Arrange
         var nonExistentUserId = Guid.NewGuid();
-        var query = new GetUserQuery { UserId = nonExistentUserId };
+        var query = new GetUserQuery(nonExistentUserId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(Error.NotFound());
+        result.Errors.Should().Contain(UserErrors.NotFound);
+    }
+    
+    [Fact]
+    public async Task GetUser_WhenUserExists_ShouldReturnUser()
+    {
+        // Arrange
+        var user = UserFactory.CreateUser(id: Guid.NewGuid()).Value;
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        
+        var existingUser = await _context.Users.FindAsync([user.Id]);
+        var query = new GetUserQuery(existingUser!.Id);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsError.Should().BeFalse();
+        result.Value.Should().NotBeNull();
     }
 }

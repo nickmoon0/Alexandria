@@ -1,5 +1,4 @@
 using Alexandria.Domain.CharacterAggregate;
-using Alexandria.Domain.Common.ValueObjects.Name;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.Tests.TestUtils.Services;
 using ErrorOr;
@@ -40,14 +39,13 @@ public class CharacterTests
         characterResult.Errors.Should().Contain(CharacterErrors.InvalidUserId);
     }
 
-    [Fact]
-    public void Create_WithWhiteSpaceDescription_ShouldReturnCharacter()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("  ")] // Two spaces
+    [InlineData("\t")] // One tab
+    [InlineData("   ")] // Three spaces
+    public void Create_WithWhiteSpaceDescription_ShouldReturnCharacter(string? description)
     {
-        // Arrange
-        var description = "";
-        description += "  "; // Two spaces
-        description += "    "; // One tab
-        
         // Act
         var characterResult = CharacterFactory.CreateCharacter(description: description);
         
@@ -133,6 +131,24 @@ public class CharacterTests
 
         // Assert
         result.IsError.Should().BeTrue();
+        character.DeletedAtUtc.Should().BeNull();
+    }
+    
+    [Fact]
+    public void Delete_WithUserId_ShouldReturnError()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var mockDateTimeProvider = new TestDateTimeProvider(now);
+        var userId = Guid.NewGuid();
+        var character = CharacterFactory.CreateCharacter(userId: userId).Value;
+
+        // Act
+        var result = character.Delete(mockDateTimeProvider);
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().Contain(CharacterErrors.CannotDeleteUsersCharacter);
         character.DeletedAtUtc.Should().BeNull();
     }
 }

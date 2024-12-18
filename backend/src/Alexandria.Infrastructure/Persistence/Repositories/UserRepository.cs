@@ -1,6 +1,7 @@
-using ErrorOr;
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.UserAggregate;
+using ErrorOr;
+using Microsoft.EntityFrameworkCore;
 
 namespace Alexandria.Infrastructure.Persistence.Repositories;
 
@@ -19,15 +20,30 @@ public class UserRepository(AppDbContext context) : IUserRepository
         var user = await context.Users.FindAsync([userId], cancellationToken);
         if (user == null)
         {
-            return Error.NotFound();
+            return UserErrors.NotFound;
         }
 
         return user;
     }
-    
+
+    public async Task<ErrorOr<IEnumerable<User>>> FindByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken)
+    {
+        var users = await context.Users
+            .Where(user => userIds.Contains(user.Id))
+            .ToListAsync(cancellationToken);
+
+        return users;
+    }
+
     public async Task<ErrorOr<Success>> UpdateAsync(CancellationToken cancellationToken)
     {
         await context.SaveChangesAsync(cancellationToken);
         return Result.Success;
+    }
+
+    public async Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.FindAsync([userId], cancellationToken);
+        return user != null;
     }
 }

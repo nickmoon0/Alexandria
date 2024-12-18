@@ -1,3 +1,3 @@
 namespace Alexandria.Api.Common.Roles;
 
-public static class Admin;
+public abstract class Admin : Role;

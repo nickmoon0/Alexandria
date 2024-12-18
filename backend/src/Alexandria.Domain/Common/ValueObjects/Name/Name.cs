@@ -14,6 +14,11 @@ public class Name : ValueObject
         yield return MiddleNames;
     }
 
+    public Name ShallowClone()
+    {
+        return (Name)MemberwiseClone();
+    }
+
     private Name(string firstName, string lastName, string? middleNames)
     {
         FirstName = firstName;

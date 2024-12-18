@@ -1,4 +1,3 @@
-using Alexandria.Domain.Common.ValueObjects.Name;
 using Alexandria.Domain.Tests.TestUtils.Factories;
 using Alexandria.Domain.Tests.TestUtils.Services;
 using Alexandria.Domain.UserAggregate;

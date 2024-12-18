@@ -13,15 +13,17 @@ public class DocumentTests
     public void Document_WithValidInputs_ShouldReturnDocument()
     {
         // Arrange
+        var entry = EntryFactory.CreateEntry().Value;
         const string documentName = "ValidDocument";
-        var data = new byte[] { 0x01, 0x02, 0x03 };
+        const string fileExtension = ".jpg";
+        var data = new MemoryStream([1, 2, 3, 4, 5]);
         var imagePath = "test/image.jpg";
         var ownerId = Guid.NewGuid();
         var now = DateTime.UtcNow;
         var dateTimeProvider = new TestDateTimeProvider(now);
         
         // Act
-        var result = Document.Create(documentName, data, imagePath, ownerId, dateTimeProvider);
+        var result = Document.Create(entry.Id, documentName, fileExtension, imagePath, ownerId, dateTimeProvider);
 
         // Assert
         result.IsError.Should().BeFalse();
@@ -54,20 +56,7 @@ public class DocumentTests
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
     }
-
-    [Fact]
-    public void Document_WithEmptyData_ShouldReturnError()
-    {
-        // Arrange
-        var data = Array.Empty<byte>();
-
-        // Act
-        var result = DocumentFactory.CreateDocument(data: data);
-
-        // Assert
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().Contain(DocumentErrors.EmptyData);
-    }
+    
 
     [Fact]
     public void Document_WithEmptyOwnerId_ShouldReturnError()
@@ -88,16 +77,14 @@ public class DocumentTests
     {
         // Arrange
         const string documentName = ""; // Invalid
-        var data = Array.Empty<byte>(); // Invalid
         var createdById = Guid.Empty; // Invalid
 
         // Act
-        var result = DocumentFactory.CreateDocument(name: documentName, data: data, createdById: createdById);
+        var result = DocumentFactory.CreateDocument(name: documentName, createdById: createdById);
 
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
-        result.Errors.Should().Contain(DocumentErrors.EmptyData);
         result.Errors.Should().Contain(DocumentErrors.InvalidUserId);
     }
     
@@ -166,51 +153,6 @@ public class DocumentTests
         // Assert
         result.IsError.Should().BeTrue();
         result.Errors.Should().Contain(DocumentErrors.InvalidDocumentName);
-    }
-    
-    [Fact]
-    public void UpdateDescription_WithValidDescription_ShouldUpdateDescription()
-    {
-        // Arrange
-        const string initialDescription = "InitialDescription";
-        const string newDescription = "This is a new description";
-        var document = DocumentFactory.CreateDocument(description: initialDescription).Value;
-
-        // Act
-        var result = document.UpdateDescription(newDescription);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-    }
-
-    [Fact]
-    public void UpdateDescription_WithNullDescription_ShouldSetDescriptionToNull()
-    {
-        // Arrange
-        const string initialDescription = "InitialDescription";
-        var document = DocumentFactory.CreateDocument(description: initialDescription).Value;
-        
-        // Act
-        var result = document.UpdateDescription(null);
-
-        // Assert
-        result.IsError.Should().BeFalse();
-    }
-
-    [Fact]
-    public void UpdateDescription_WithWhitespace_ShouldSetDescriptionToNull()
-    {
-        // Arrange
-        const string initialDescription = "InitialDescription";
-        const string whitespaceDescription = "   ";
-
-        var document = DocumentFactory.CreateDocument(description: initialDescription).Value;
-
-        // Act
-        var result = document.UpdateDescription(whitespaceDescription);
-
-        // Assert
-        result.IsError.Should().BeFalse();
     }
     
     [Fact]

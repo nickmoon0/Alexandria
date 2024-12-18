@@ -19,4 +19,12 @@ public static class EntryErrors
     public static readonly Error NotDeleted = Error.Validation(
         $"{nameof(Entry)}.NotDeleted",
         "Entry is not deleted.");
+    
+    public static readonly Error NotFound = Error.NotFound(
+        $"{nameof(Entry)}.NotFound)",
+        "Entry is not found.");
+    
+    public static readonly Error DocumentNull = Error.Validation(
+        $"{nameof(Entry)}.{nameof(DocumentNull)}",
+        "Document was be null");
 }

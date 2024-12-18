@@ -27,13 +27,19 @@ public static class DependencyInjection
         var sqlConnString = configuration.GetConnectionString(nameof(AppDbContext));
         var serverVersion = ServerVersion.AutoDetect(sqlConnString);
         
-        services.AddDbContext<AppDbContext>(options => options.UseMySql(
+        services.AddDbContext<IAppDbContext, AppDbContext>(options => options.UseMySql(
             sqlConnString,
             serverVersion,
-            mySqlOptionsAction: mysqlOptions => 
-                mysqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name)));
+            mySqlOptionsAction: mysqlOptions =>
+            {
+                mysqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name);
+                mysqlOptions.EnablePrimitiveCollectionsSupport();
+            }));
         
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICharacterRepository, CharacterRepository>();
+        services.AddScoped<IEntryRepository, EntryRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
         
         return services;
     }
@@ -41,9 +47,11 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddHostedService<RabbitMqConsumerService>();
-        services.AddScoped<MessageProcessorService>();
         
+        services.AddScoped<MessageProcessorService>();
         services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
+        services.AddScoped<ITaggingService, TaggingService>();
+        services.AddScoped<IFileService, FileService>();
         
         return services;
     }
