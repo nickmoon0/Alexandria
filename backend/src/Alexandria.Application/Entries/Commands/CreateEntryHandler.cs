@@ -17,20 +17,20 @@ public record CreateEntryResponse(string PermanentFilePath, Guid EntryId, Guid D
 
 public class CreateEntryHandler : IRequestHandler<CreateEntryCommand, ErrorOr<CreateEntryResponse>>
 {
+    private readonly IAppDbContext _context;
     private readonly ILogger<CreateEntryHandler> _logger;
     private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly IEntryRepository _entryRepository;
     private readonly IFileService _fileService;
     
     public CreateEntryHandler(
+        IAppDbContext context,
         ILogger<CreateEntryHandler> logger,
         IDateTimeProvider dateTimeProvider,
-        IEntryRepository entryRepository,
         IFileService fileService)
     {
+        _context = context;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
-        _entryRepository = entryRepository;
         _fileService = fileService;
     }
 
@@ -91,8 +91,11 @@ public class CreateEntryHandler : IRequestHandler<CreateEntryCommand, ErrorOr<Cr
             return documentResult.Errors;
         }
         var document = documentResult.Value;
-        await _entryRepository.AddAsync(entry, document, cancellationToken);
-
+        
+        await _context.Documents.AddAsync(document, cancellationToken);
+        await _context.Entries.AddAsync(entry, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        
         var response = new CreateEntryResponse(filePathResult.Value, entry.Id, document.Id);
         return response;
     }
