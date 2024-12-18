@@ -21,6 +21,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\Alexandria.Application\Alexandria.Application.csproj" />
       <ProjectReference Include="..\Alexandria.Domain.Tests\Alexandria.Domain.Tests.csproj" />
+      <ProjectReference Include="..\Alexandria.Infrastructure.Tests\Alexandria.Infrastructure.Tests.csproj" />
     </ItemGroup>
 
 </Project>

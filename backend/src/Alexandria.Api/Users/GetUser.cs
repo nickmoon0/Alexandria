@@ -16,8 +16,6 @@ public abstract class GetUser : EndpointBase, IEndpoint
         .WithSummary("Retrieves a new user")
         .WithName(nameof(GetUser))
         .RequireAuthorization<User>();
-
-    private record Response(UserDto User);
     
     private static async Task<IResult> Handle(
         [FromRoute] Guid id,
@@ -32,13 +30,13 @@ public abstract class GetUser : EndpointBase, IEndpoint
         }
 
         var userResult = result.Value;
-        var response = new Response(new UserDto
+        var response = new UserDto
         {
             Id = userResult.Id,
-            FirstName = userResult.FirstName,
-            LastName = userResult.LastName,
-            MiddleNames = userResult.MiddleNames,
-        });
+            FirstName = userResult.Name.FirstName,
+            LastName = userResult.Name.LastName,
+            MiddleNames = userResult.Name.MiddleNames,
+        };
         
         return Results.Ok(response);
     }

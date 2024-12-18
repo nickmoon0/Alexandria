@@ -1,5 +1,6 @@
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.Common.ValueObjects.Name;
+using Alexandria.Domain.UserAggregate;
 using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -11,28 +12,26 @@ public record UpdateUserCommand(Guid Id, string FirstName, string LastName, stri
 
 public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, ErrorOr<Updated>>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IAppDbContext _context;
     private readonly ILogger<UpdateUserHandler> _logger;
     
-    public UpdateUserHandler(ILogger<UpdateUserHandler> logger, IUserRepository userRepository)
+    public UpdateUserHandler(ILogger<UpdateUserHandler> logger, IAppDbContext context)
     {
         _logger = logger;
-        _userRepository = userRepository;
+        _context = context;
     }
     
     public async Task<ErrorOr<Updated>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Update user request for ID: {ID}", request.Id);
-        
-        var userResult = await _userRepository.FindByIdAsync(request.Id, cancellationToken);
-        if (userResult.IsError)
+
+        var user = await _context.Users.FindAsync([request.Id], cancellationToken);
+        if (user == null)
         {
             _logger.LogError("Could not retrieve user with ID: {ID}", request.Id);
-            return userResult.Errors;
+            return UserErrors.NotFound;
         }
         
-        var user = userResult.Value;
-
         var nameResult = Name.Create(request.FirstName, request.LastName);
         if (nameResult.IsError)
         {
@@ -42,14 +41,10 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, ErrorOr<Upda
         var name = nameResult.Value;
 
         user.UpdateName(name);
-        var updateResult = await _userRepository.UpdateAsync(cancellationToken);
-        if (updateResult.IsError)
-        {
-            _logger.LogError("Failed to update user with ID: {ID}", request.Id);
-            return updateResult.Errors;
-        }
-
+        
+        await _context.SaveChangesAsync(cancellationToken);
         _logger.LogInformation("User updated with ID: {ID}", request.Id);
+        
         return Result.Updated;
     }
 }
