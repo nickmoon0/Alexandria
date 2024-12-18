@@ -14,4 +14,6 @@ public interface IAppDbContext
     public DbSet<Entry> Entries { get; }
     public DbSet<Tag> Tags { get; }
     public DbSet<User> Users { get; }
+
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

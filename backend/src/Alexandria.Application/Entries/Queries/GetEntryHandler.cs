@@ -63,8 +63,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         var userResponse = new UserResponse
         {
             Id = createdByUser.Id,
-            FirstName = createdByUser.Name.FirstName,
-            LastName = createdByUser.Name.LastName
+            Name = createdByUser.Name,
         };
         
         // Create comment response objects
@@ -189,8 +188,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         var userResponse = new UserResponse
         {
             Id = createdByUser.Id,
-            FirstName = createdByUser.Name.FirstName,
-            LastName = createdByUser.Name.LastName,
+            Name = createdByUser.Name,
         };
 
         var documentResponse = new DocumentResponse
@@ -219,8 +217,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
             .Select(user => new UserResponse
             {
                 Id = user.Id,
-                FirstName = user.Name.FirstName,
-                LastName = user.Name.LastName,
+                Name = user.Name,
             })
             .ToDictionary(x => (Guid)x.Id!, x => x);
         

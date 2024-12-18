@@ -58,9 +58,9 @@ public abstract class GetEntry : EndpointBase, IEndpoint
                 FileExtension = entryResult.Document.FileExtension,
                 CreatedBy = new UserDto
                 {
-                    Id = (Guid)entryResult.Document.CreatedByUser!.Id!,
-                    FirstName = entryResult.Document.CreatedByUser!.FirstName!,
-                    LastName = entryResult.Document.CreatedByUser!.LastName!
+                    Id = entryResult.Document.CreatedByUser!.Id,
+                    FirstName = entryResult.Document.CreatedByUser.Name.FirstName,
+                    LastName = entryResult.Document.CreatedByUser.Name.LastName
                 },
                 CreatedAtUtc = entryResult.Document.CreatedAtUtc,
                 DeletedAtUtc = entryResult.Document.DeletedAtUtc,
@@ -75,8 +75,8 @@ public abstract class GetEntry : EndpointBase, IEndpoint
             CreatedBy = new UserDto
             {
                 Id = (Guid)comment.CreatedBy!.Id!,
-                FirstName = comment.CreatedBy!.FirstName!,
-                LastName = comment.CreatedBy!.LastName!
+                FirstName = comment.CreatedBy.Name.FirstName,
+                LastName = comment.CreatedBy.Name.LastName
             },
             DeletedAtUtc = comment.DeletedAtUtc,
         }).ToList();
@@ -98,9 +98,9 @@ public abstract class GetEntry : EndpointBase, IEndpoint
             Tags = tags,
             CreatedBy = new UserDto
             {
-                Id = (Guid)entryResult.CreatedBy!.Id!,
-                FirstName = entryResult.CreatedBy!.FirstName!,
-                LastName = entryResult.CreatedBy!.LastName!
+                Id = entryResult.CreatedBy!.Id!,
+                FirstName = entryResult.CreatedBy.Name.FirstName,
+                LastName = entryResult.CreatedBy.Name.LastName
             },
             CreatedAtUtc = entryResult.CreatedAtUtc,
             DeletedAtUtc = entryResult.DeletedAtUtc,

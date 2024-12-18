@@ -9,16 +9,16 @@ namespace Alexandria.Application.Characters.Events;
 
 public class UserCreatedHandler : INotificationHandler<UserCreatedEvent>
 {
-    private readonly ICharacterRepository _characterRepository;
+    private readonly IAppDbContext _context;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<UserCreatedHandler> _logger;
     
     public UserCreatedHandler(
-        ICharacterRepository characterRepository,
+        IAppDbContext context,
         IDateTimeProvider dateTimeProvider,
         ILogger<UserCreatedHandler> logger)
     {
-        _characterRepository = characterRepository;
+        _context = context;
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;
     }
@@ -41,12 +41,7 @@ public class UserCreatedHandler : INotificationHandler<UserCreatedEvent>
 
         var character = characterResult.Value;
         
-        var insertResult = await _characterRepository.AddAsync(character, cancellationToken);
-        if (insertResult.IsError)
-        {
-            _logger.LogError("Failed to insert character from user: {UserId}", user.Id);
-            return;
-        }
+        await _context.Characters.AddAsync(character, cancellationToken);
         _logger.LogInformation("Created character from user: {UserId}", user.Id);
     }
 }
