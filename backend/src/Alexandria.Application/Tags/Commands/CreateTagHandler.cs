@@ -12,11 +12,11 @@ public record CreateTagResponse(Guid Id);
 public class CreateTagHandler : IRequestHandler<CreateTagCommand, ErrorOr<CreateTagResponse>>
 {
     private readonly ILogger<CreateTagHandler> _logger;
-    private readonly ITagRepository _tagRepository;
+    private readonly IAppDbContext _context;
 
-    public CreateTagHandler(ITagRepository tagRepository, ILogger<CreateTagHandler> logger)
+    public CreateTagHandler(IAppDbContext context, ILogger<CreateTagHandler> logger)
     {
-        _tagRepository = tagRepository;
+        _context = context;
         _logger = logger;
     }
 
@@ -30,12 +30,8 @@ public class CreateTagHandler : IRequestHandler<CreateTagCommand, ErrorOr<Create
         }
         var tag = tagResult.Value;
         
-        var addResult = await _tagRepository.AddAsync(tag, cancellationToken);
-        if (addResult.IsError)
-        {
-            _logger.LogError("Failed to add tag with name {Name}", request.Name);
-            return addResult.Errors;
-        }
+        await _context.Tags.AddAsync(tag, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new CreateTagResponse(tag.Id);
     }
