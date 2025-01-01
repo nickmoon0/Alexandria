@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Alexandria.Application.Entries.Queries;
 
 [Flags]
-public enum GetEntryQueryOptions
+public enum GetEntryOptions
 {
     None = 0,
     IncludeComments = 1,
@@ -21,7 +21,7 @@ public enum GetEntryQueryOptions
     IncludeTags = 4
 }
 
-public record GetEntryQuery(Guid EntryId, GetEntryQueryOptions Options) : IRequest<ErrorOr<GetEntryResponse>>;
+public record GetEntryQuery(Guid EntryId, GetEntryOptions Options) : IRequest<ErrorOr<GetEntryResponse>>;
 public record GetEntryResponse(EntryResponse Entry);
 
 public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryResponse>>
@@ -68,7 +68,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         
         // Create comment response objects
         List<CommentResponse>? comments = null;
-        if (request.Options.HasFlag(GetEntryQueryOptions.IncludeComments))
+        if (request.Options.HasFlag(GetEntryOptions.IncludeComments))
         {
             var commentResponsesResult = await GetCommentResponses(entry, cancellationToken);
             if (commentResponsesResult.IsError)
@@ -82,7 +82,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         
         // Create document response object
         DocumentResponse? document = null;
-        if (request.Options.HasFlag(GetEntryQueryOptions.IncludeDocument))
+        if (request.Options.HasFlag(GetEntryOptions.IncludeDocument))
         {
             var documentResponseResult = await GetDocumentResponse(entry, cancellationToken);
             if (documentResponseResult.IsError)
@@ -95,7 +95,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
         
         // Get the tag response objects
         List<TagResponse>? tags = null;
-        if (request.Options.HasFlag(GetEntryQueryOptions.IncludeTags))
+        if (request.Options.HasFlag(GetEntryOptions.IncludeTags))
         {
             var tagResponsesResult = await GetTagResponses(entry, cancellationToken);
             if (tagResponsesResult.IsError)
@@ -124,17 +124,17 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
 
     private async Task<ErrorOr<Entry>> GetEntry(
         Guid entryId,
-        GetEntryQueryOptions options,
+        GetEntryOptions options,
         CancellationToken cancellationToken)
     {
         IQueryable<Entry> query = _context.Entries;
 
-        if (options.HasFlag(GetEntryQueryOptions.IncludeComments))
+        if (options.HasFlag(GetEntryOptions.IncludeComments))
         {
             query = query.Include(entry => entry.Comments);
         }
 
-        if (options.HasFlag(GetEntryQueryOptions.IncludeDocument))
+        if (options.HasFlag(GetEntryOptions.IncludeDocument))
         {
             query = query.Include(entry => entry.Document);
         }
