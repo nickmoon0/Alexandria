@@ -1,5 +1,5 @@
 using Alexandria.Application.Common.Interfaces;
-using Alexandria.Application.Common.Responses;
+using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Entries.Responses;
 using Alexandria.Application.Users.Responses;
 using Alexandria.Domain.EntryAggregate;

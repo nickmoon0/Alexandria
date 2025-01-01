@@ -85,4 +85,32 @@ public class TaggingService : ITaggingService
 
         return tags;
     }
+
+    public async Task<IReadOnlyDictionary<Guid, IEnumerable<Tag>>> GetEntitiesTags<TEntity>(
+        IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken) where TEntity : Entity
+    {
+        var entityIds = entities.Select(e => e.Id).ToList();
+
+        var taggings = await _dbContext.Taggings
+            .Where(x => entityIds.Contains(x.EntityId))
+            .ToListAsync(cancellationToken);
+
+        var tagIds = taggings.Select(tagging => tagging.TagId).Distinct().ToList();
+
+        var tags = await _dbContext.Tags
+            .Where(tag => tagIds.Contains(tag.Id))
+            .ToListAsync(cancellationToken);
+
+        var tagDict = tags.ToDictionary(tag => tag.Id);
+
+        var result = taggings
+            .GroupBy(tagging => tagging.EntityId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(tagging => tagDict[tagging.TagId]));
+
+        return result;
+    }
+
 }

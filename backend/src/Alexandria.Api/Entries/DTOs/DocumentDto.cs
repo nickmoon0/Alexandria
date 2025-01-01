@@ -1,4 +1,5 @@
 using Alexandria.Api.Users.DTOs;
+using Alexandria.Application.Entries.Responses;
 
 namespace Alexandria.Api.Entries.DTOs;
 
@@ -12,4 +13,17 @@ public class DocumentDto
     public UserDto? CreatedBy { get; init; }
     public DateTime? CreatedAtUtc { get; init; }
     public DateTime? DeletedAtUtc { get; init; }
+
+    public static DocumentDto? FromDocumentResponse(DocumentResponse? documentResponse) =>
+        documentResponse == null
+            ? null
+            : new DocumentDto
+            {
+                Id = documentResponse.Id,
+                EntryId = documentResponse.EntryId,
+                FileExtension = documentResponse.FileExtension,
+                CreatedBy = UserDto.FromUserResponse(documentResponse.CreatedByUser),
+                CreatedAtUtc = documentResponse.CreatedAtUtc,
+                DeletedAtUtc = documentResponse.DeletedAtUtc
+            };
 }

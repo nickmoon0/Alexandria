@@ -1,4 +1,4 @@
-using Alexandria.Application.Common.Responses;
+using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
 
 namespace Alexandria.Application.Entries.Responses;
