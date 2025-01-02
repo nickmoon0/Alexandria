@@ -1,10 +1,12 @@
 using Alexandria.Application.Common;
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Application.Common.Pagination;
 using Alexandria.Application.Entries.Responses;
 using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
 using Alexandria.Domain.Common.Entities.Tag;
 using Alexandria.Domain.EntryAggregate;
+using Alexandria.Domain.EntryAggregate.Errors;
 using ErrorOr;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +23,7 @@ public enum GetEntriesOptions
 }
 
 public record GetEntriesQuery(
-    Guid? LastEntryIdPaged = null,
-    DateTime? LastEntryDatePaged = null,
-    int Count = 30,
+    PaginatedRequest PaginatedParams,
     GetEntriesOptions Options = GetEntriesOptions.None) : IRequest<ErrorOr<GetEntriesResponse>>;
 public record GetEntriesResponse(IEnumerable<EntryResponse> Entries);
 
@@ -47,34 +47,51 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
     {
         if (request.Options.HasFlag(GetEntriesOptions.IncludeThumbnails))
         {
-            throw new NotImplementedException("Thumbnails are not yet supported.");
+            throw new NotImplementedException("Thumbnails are not implemented");
         }
         
-        if (request is 
-            { LastEntryDatePaged: not null, LastEntryIdPaged: null } or
-            { LastEntryIdPaged: null, LastEntryDatePaged: not null })
+        Entry? cursorEntry = null;
+        if (request.PaginatedParams.CursorId != null)
         {
-            _logger.LogInformation("PreviousEntryDatePaged and PreviousEntryIdPaged must both have values or both be null");
-            return ApplicationErrors.BadQueryError;
+            cursorEntry = await _context.Entries.FindAsync([request.PaginatedParams.CursorId], cancellationToken);
+            if (cursorEntry == null) return EntryErrors.NotFound;
         }
-        
-        IQueryable<Entry> entriesQuery = _context.Entries
-            .OrderByDescending(x => x.CreatedAtUtc)
-            .ThenBy(x => x.Id);
 
-        if (request.LastEntryDatePaged != null)
+        IQueryable<Entry> entriesQuery = _context.Entries;
+
+        if (cursorEntry != null && request.PaginatedParams is { Direction: PaginationDirection.NextPage })
         {
-            entriesQuery = entriesQuery.Where(entry => 
-                entry.CreatedAtUtc < request.LastEntryDatePaged ||
-                (entry.CreatedAtUtc == request.LastEntryDatePaged && entry.Id > request.LastEntryIdPaged));
+            entriesQuery = entriesQuery
+                .Where(entry => entry.CreatedAtUtc < cursorEntry.CreatedAtUtc ||
+                                (entry.CreatedAtUtc == cursorEntry.CreatedAtUtc && entry.Id < cursorEntry.Id))
+                .OrderByDescending(entry => entry.CreatedAtUtc)
+                .ThenByDescending(entry => entry.Id);
+        }
+        else if (cursorEntry != null && request.PaginatedParams is { Direction: PaginationDirection.PreviousPage })
+        {
+            entriesQuery = entriesQuery
+                .Where(entry => entry.CreatedAtUtc > cursorEntry.CreatedAtUtc ||
+                                (entry.CreatedAtUtc == cursorEntry.CreatedAtUtc && entry.Id > cursorEntry.Id))
+                .OrderBy(entry => entry.CreatedAtUtc)
+                .ThenBy(entry => entry.Id);
+        }
+        else
+        {
+            entriesQuery = entriesQuery
+                .OrderByDescending(entry => entry.CreatedAtUtc)
+                .ThenByDescending(entry => entry.Id);
         }
         
         var entries = await entriesQuery
-            .Take(request.Count)
+            .Take(request.PaginatedParams.PageSize)
             .ToListAsync(cancellationToken);
 
+        if (request.PaginatedParams is { Direction: PaginationDirection.PreviousPage })
+        {
+            entries.Reverse();
+        }
+        
         var entryResponses = await GetEntryResponses(entries, request.Options, cancellationToken);
-
         return new GetEntriesResponse(entryResponses);
     }
 

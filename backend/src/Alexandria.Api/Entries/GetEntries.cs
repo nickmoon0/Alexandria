@@ -1,8 +1,10 @@
+using System.Text.Json;
 using Alexandria.Api.Common;
 using Alexandria.Api.Common.Extensions;
 using Alexandria.Api.Common.Interfaces;
 using Alexandria.Api.Common.Roles;
 using Alexandria.Api.Entries.DTOs;
+using Alexandria.Application.Common.Pagination;
 using Alexandria.Application.Entries.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -19,14 +21,18 @@ public abstract class GetEntries : EndpointBase, IEndpoint
 
     private static async Task<IResult> Handle(
         [FromServices] IMediator mediator,
-        [FromQuery] Guid? lastPagedId = null,
-        [FromQuery] DateTime? lastPagedDate = null,
-        [FromQuery] int count = 30,
+        [FromQuery] string? pageRequest = null,
         [FromQuery] string? options = null)
     {
+        var paginatedRequest = pageRequest == null
+            ? new PaginatedRequest()
+            : JsonSerializer.Deserialize<PaginatedRequest>(pageRequest);
+
+        if (paginatedRequest == null) return Results.InternalServerError("Error parsing pageRequest");
+        
         var filterOptions = options?.ParseToEnumFlags<GetEntriesOptions>() ?? default;
         
-        var query = new GetEntriesQuery(lastPagedId, lastPagedDate, count, filterOptions);
+        var query = new GetEntriesQuery(paginatedRequest, filterOptions);
         var result = await mediator.Send(query);
         if (result.IsError)
         {
