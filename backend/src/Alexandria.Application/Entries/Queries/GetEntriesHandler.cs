@@ -25,13 +25,14 @@ public enum GetEntriesOptions
 public record GetEntriesQuery(
     PaginatedRequest PaginatedParams,
     GetEntriesOptions Options = GetEntriesOptions.None) : IRequest<ErrorOr<GetEntriesResponse>>;
-public record GetEntriesResponse(IEnumerable<EntryResponse> Entries);
-
+public record GetEntriesResponse(PaginationResponse<EntryResponse> Entries);
 public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEntriesResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<GetEntriesHandler> _logger;
     private readonly ITaggingService _taggingService;
+
+    private static readonly int _maxPageSize = 100;
     
     public GetEntriesHandler(
         IAppDbContext context,
@@ -45,54 +46,73 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
 
     public async Task<ErrorOr<GetEntriesResponse>> Handle(GetEntriesQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("GetEntriesHandler processing request...");
+        if (request.PaginatedParams.PageSize > 100)
+        {
+            _logger.LogInformation(
+                "User attempted to retrieve more than {PageSize} entries (exceeds maximum of {MaxPageSize}).",
+                request.PaginatedParams.PageSize,
+                _maxPageSize);
+            return ApplicationErrors.BadQueryError;
+        }
         if (request.Options.HasFlag(GetEntriesOptions.IncludeThumbnails))
         {
+            _logger.LogInformation("IncludeThumbnails enabled");
             throw new NotImplementedException("Thumbnails are not implemented");
         }
         
-        Entry? cursorEntry = null;
+        Entry? cursorEntry;
+        IQueryable<Entry> entriesQuery = _context.Entries;
+        
         if (request.PaginatedParams.CursorId != null)
         {
+            _logger.LogInformation("CursorId set to: {CursorId}", request.PaginatedParams.CursorId);
+            
             cursorEntry = await _context.Entries.FindAsync([request.PaginatedParams.CursorId], cancellationToken);
-            if (cursorEntry == null) return EntryErrors.NotFound;
-        }
-
-        IQueryable<Entry> entriesQuery = _context.Entries;
-
-        if (cursorEntry != null && request.PaginatedParams is { Direction: PaginationDirection.NextPage })
-        {
+            if (cursorEntry == null)
+            {
+                _logger.LogInformation("Entry with ID \'{CursorId}\' not found", request.PaginatedParams.CursorId);
+                return EntryErrors.NotFound;
+            }
+            
             entriesQuery = entriesQuery
                 .Where(entry => entry.CreatedAtUtc < cursorEntry.CreatedAtUtc ||
-                                (entry.CreatedAtUtc == cursorEntry.CreatedAtUtc && entry.Id < cursorEntry.Id))
-                .OrderByDescending(entry => entry.CreatedAtUtc)
-                .ThenByDescending(entry => entry.Id);
-        }
-        else if (cursorEntry != null && request.PaginatedParams is { Direction: PaginationDirection.PreviousPage })
-        {
-            entriesQuery = entriesQuery
-                .Where(entry => entry.CreatedAtUtc > cursorEntry.CreatedAtUtc ||
-                                (entry.CreatedAtUtc == cursorEntry.CreatedAtUtc && entry.Id > cursorEntry.Id))
-                .OrderBy(entry => entry.CreatedAtUtc)
-                .ThenBy(entry => entry.Id);
-        }
-        else
-        {
-            entriesQuery = entriesQuery
-                .OrderByDescending(entry => entry.CreatedAtUtc)
-                .ThenByDescending(entry => entry.Id);
+                                (entry.CreatedAtUtc == cursorEntry.CreatedAtUtc && entry.Id < cursorEntry.Id));
         }
         
         var entries = await entriesQuery
+            .OrderByDescending(entry => entry.CreatedAtUtc)
+            .ThenByDescending(entry => entry.Id)
             .Take(request.PaginatedParams.PageSize)
             .ToListAsync(cancellationToken);
-
-        if (request.PaginatedParams is { Direction: PaginationDirection.PreviousPage })
-        {
-            entries.Reverse();
-        }
+        
+        _logger.LogInformation("Retrieved {EntryCount} entries", entries.Count);
         
         var entryResponses = await GetEntryResponses(entries, request.Options, cancellationToken);
-        return new GetEntriesResponse(entryResponses);
+
+        var lastEntry = entries.Last();
+
+        Guid? nextCursor = null;
+        if (entries.Count != 0)
+        {
+            var hasNextPage = await _context.Entries.AnyAsync(entry =>
+                    entry.CreatedAtUtc < lastEntry.CreatedAtUtc ||
+                    (entry.CreatedAtUtc == lastEntry.CreatedAtUtc && entry.Id < lastEntry.Id),
+                cancellationToken);
+            if (hasNextPage)
+            {
+                nextCursor = lastEntry.Id;
+                _logger.LogInformation("NextCursor set to {CursorId}", nextCursor);
+            }
+        }
+        
+        var pagedResponse = new PaginationResponse<EntryResponse>()
+        {
+            Data = entryResponses.ToList(),
+            Paging = new PagingData { NextCursor = nextCursor }
+        };
+        
+        return new GetEntriesResponse(pagedResponse);
     }
 
     private async Task<IEnumerable<EntryResponse>> GetEntryResponses(

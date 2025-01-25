@@ -39,7 +39,21 @@ public abstract class GetEntries : EndpointBase, IEndpoint
             return result.ToHttpResponse();
         }
 
-        var entryDtoList = result.Value.Entries.Select(EntryDto.FromEntryResponse);
-        return Results.Ok(entryDtoList);
+        var entriesPageResult = result.Value.Entries;
+        
+        
+        var entryDtoList = entriesPageResult.Data
+            .Select(EntryDto.FromEntryResponse)
+            .Where(entry => entry != null)
+            .Cast<EntryDto>()
+            .ToList();
+        
+        var pageResponse = new PaginationResponse<EntryDto>
+        {
+            Data = entryDtoList,
+            Paging = entriesPageResult.Paging,
+        };
+        
+        return Results.Ok(pageResponse);
     }
 }
