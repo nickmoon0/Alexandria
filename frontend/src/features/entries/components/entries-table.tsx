@@ -4,7 +4,7 @@ import { getEntries } from '@/features/entries/api/get-entries';
 
 export const EntriesTable = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [count, setCount] = useState<number>(5);
+  const [count, setCount] = useState<number>(25);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [cursorStack, setCursorStack] = useState<string[]>([]);
 
@@ -52,7 +52,7 @@ export const EntriesTable = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="col-span-full container mx-auto px-4">
       {/* Page records drop down */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-2">
@@ -65,9 +65,10 @@ export const EntriesTable = () => {
             onChange={handleItemsPerPageChange}
             value={count}
           >
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="5">5</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
           </select>
         </div>
       </div>
