@@ -1,37 +1,24 @@
 import { Entry } from '@/types/app';
 import { useEffect, useState } from 'react';
 import { getEntries } from '@/features/entries/api/get-entries';
+import EntryPopup from './EntriesPopup';
+import { useEntries } from '../hooks/useEntries';
+import Button from '@/components/button';
 
 export const EntriesTable = () => {
-  const [entries, setEntries] = useState<Entry[]>([]);
-  const [count, setCount] = useState<number>(25);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [cursorStack, setCursorStack] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Clear stack and cursor on each refresh to prevent place-tracking problems
-    setCursorStack([]);
-    setNextCursor(null);
-    fetchEntries(null);
-  }, [count]);
+  const {
+    entries,
+    count,
+    nextCursor,
+    cursorStack,
+    entryPopup,
+    setCount,
+    handleEntryClick,
+    handlePopupClose,
+    fetchEntries,
+    setCursorStack
+   } = useEntries();
   
-  const fetchEntries = async (cursorId:string | null, previous:boolean = false) => {
-    const pageRequest = {
-      PageSize: count,
-      CursorId: cursorId,
-    };
-
-    const response = await getEntries({ pageRequest });
-
-    setEntries(response.data);
-    setNextCursor(response.paging.nextCursor);
-
-    // Dont add cursor to stack if moving backwards
-    if (!previous && cursorId !== null) {
-      setCursorStack((prevStack) => [...prevStack, cursorId]);
-    }
-  };
-
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCount(Number(e.target.value));
   };
@@ -51,8 +38,10 @@ export const EntriesTable = () => {
     }
   };
 
+
   return (
     <div className="col-span-full container mx-auto px-4">
+      {entryPopup && <EntryPopup entry={entryPopup} onClose={handlePopupClose} />}
       {/* Page records drop down */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-2">
@@ -86,7 +75,7 @@ export const EntriesTable = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {entries.map(entry => (
-              <tr className="hover:bg-gray-50" key={entry.id}>
+              <tr onClick={() => handleEntryClick(entry.id)} className="hover:bg-gray-50" key={entry.id}>
                 <td className="py-4 px-6 text-gray-600">{entry.id}</td>
                 <td className="py-4 px-6 text-gray-600">{entry.name}</td>
                 <td className="py-4 px-6 text-gray-600">{entry.description}</td>
@@ -99,18 +88,16 @@ export const EntriesTable = () => {
 
       {/* Pagination controls */}
       <div className="flex justify-between items-center mt-4">
-        <button
-          className="bg-gray-200 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
+        <Button
           onClick={handlePreviousPage}
           disabled={cursorStack.length <= 0}>
           Previous Page
-        </button>
-        <button
-          className="bg-gray-200 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
+        </Button>
+        <Button
           onClick={handleNextPage}
           disabled={!nextCursor}>
           Next Page
-        </button>
+        </Button>
       </div>
     </div>
   );

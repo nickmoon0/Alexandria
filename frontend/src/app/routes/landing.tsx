@@ -1,4 +1,4 @@
-import { EntriesTable } from '@/features/entries/components/entries-table';
+import { EntriesTable } from '@/features/entries/components/EntriesTable';
 import { useAuth } from 'react-oidc-context';
 
 const LandingRoute = () => {
