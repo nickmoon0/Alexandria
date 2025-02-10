@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getEntries } from "@/features/entries/api/get-entries";
+import { getEntries, GetEntriesOptions } from "@/features/entries/api/get-entries";
 import { Entry } from "@/types/app";
 
 export const useEntries = () => {
@@ -13,7 +13,7 @@ export const useEntries = () => {
   const fetchEntries = async (cursorId: string | null, previous: boolean = false) => {
     const pageRequest = { PageSize: count, CursorId: cursorId };
 
-    const response = await getEntries({ pageRequest });
+    const response = await getEntries({ pageRequest, options:GetEntriesOptions.IncludeDocument });
 
     setEntries(response.data);
     setNextCursor(response.paging.nextCursor);

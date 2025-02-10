@@ -9,6 +9,10 @@ export interface Character {
   createdOnUtc: Date;
 };
 
+export interface Document {
+  id: string
+};
+
 export interface Entry {
   id:string,
   name:string,
@@ -16,6 +20,7 @@ export interface Entry {
   createdAtUtc:Date,
   deletedAtUtc:Date,
   createdBy:User,
+  document:Document,
   tags:Tag[],
 };
 

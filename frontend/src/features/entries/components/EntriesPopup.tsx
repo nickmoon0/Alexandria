@@ -1,6 +1,8 @@
 import Button from '@/components/button';
 import { Entry } from "@/types/app";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getFile } from '../api/get-file';
+import MediaViewer from '@/components/MediaViewer';
 
 export interface EntryPopupProps {
   entry: Entry;
@@ -27,6 +29,7 @@ const EntryPopup: React.FC<EntryPopupProps> = ({ entry, onClose }) => {
         <p className="text-gray-600 mb-4">Description: {entry.description}</p>
         <p className="text-gray-600 mb-4">Created By: {entry.createdBy.firstName} {entry.createdBy.lastName}</p>
         <p className="text-gray-600 mb-4">Created At: {entry.createdAtUtc.toString()}</p>
+        <MediaViewer documentId={entry.document.id} />
         <div className="flex justify-end">
           <Button onClick={onClose}>
             Close

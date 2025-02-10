@@ -6,17 +6,22 @@ export enum GetEntriesOptions {
   None = 'None',
   IncludeThumbnails = 'IncludeThumbnails',
   IncludeTags = 'IncludeTags',
+  IncludeDocument = 'IncludeDocument'
 };
 
-export interface GetEntriesParams {
+export interface GetEntriesProps {
   options?: GetEntriesOptions;
   pageRequest?: PaginatedRequest;
 };
 
-export const getEntries = async (params:GetEntriesParams) => {
-  const queryString = `pageRequest=${encodeURIComponent(
-    JSON.stringify(params.pageRequest)
+export const getEntries = async ({ options, pageRequest }:GetEntriesProps) => {
+  var queryString = `pageRequest=${encodeURIComponent(
+    JSON.stringify(pageRequest)
   )}`;
+
+  if (options) {
+    queryString += `&options=${options}`
+  }
 
   const response = await api.get<PaginatedResponse<Entry>>(`/entry?${queryString}`);
   return response.data;
