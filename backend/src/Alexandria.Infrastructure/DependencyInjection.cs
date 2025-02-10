@@ -52,6 +52,7 @@ public static class DependencyInjection
         services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddScoped<ITaggingService, TaggingService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<ITokenService, TokenService>();
         
         return services;
     }
