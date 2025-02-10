@@ -3,7 +3,6 @@ using Alexandria.CoreApi.Common.Interfaces;
 using Alexandria.CoreApi.Documents;
 using Alexandria.CoreApi.Entries;
 using Alexandria.CoreApi.Tags;
-using Alexandria.CoreApi.Tokens;
 using Alexandria.CoreApi.Users;
 using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common.Entities.Tag;
@@ -17,15 +16,14 @@ public static class ConfigureEndpoints
     public static void AddEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup("/api")
-            .RequireAuthorization();
-            //.WithOpenApi();
+            .RequireAuthorization()
+            .WithOpenApi();
         
         endpoints
             .MapCharacterEndpoints()
             .MapDocumentEndpoints()
             .MapEntryEndpoints()
             .MapTagEndpoints()
-            .MapTokenEndpoints()
             .MapUserEndpoints();
     }
     
@@ -49,6 +47,7 @@ public static class ConfigureEndpoints
             .WithTags(nameof(Document));
 
         endpoints
+            .MapEndpoint<GetDocumentToken>()
             .MapEndpoint<DownloadDocument>();
 
         return app;
@@ -77,17 +76,6 @@ public static class ConfigureEndpoints
             .MapEndpoint<CreateTag>()
             .MapEndpoint<GetTag>()
             .MapEndpoint<GetTags>();
-
-        return app;
-    }
-
-    private static IEndpointRouteBuilder MapTokenEndpoints(this IEndpointRouteBuilder app)
-    {
-        var endpoints = app.MapGroup("/token")
-            .WithTags("Token");
-
-        endpoints
-            .MapEndpoint<GetToken>();
 
         return app;
     }

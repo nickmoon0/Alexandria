@@ -1,5 +1,6 @@
 namespace Alexandria.Application.Common.Constants;
 
+[Flags]
 public enum FilePermissions
 {
     None = 0,
