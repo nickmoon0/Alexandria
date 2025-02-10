@@ -10,4 +10,9 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Alexandria.Application\Alexandria.Application.csproj" />
+      <ProjectReference Include="..\Alexandria.Infrastructure\Alexandria.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
