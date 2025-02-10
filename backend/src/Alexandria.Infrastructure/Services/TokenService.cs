@@ -26,8 +26,8 @@ public class TokenService : ITokenService
     {
         var expiryTimestamp = new DateTimeOffset(_dateTimeProvider.UtcNow.AddMinutes(expiryMinutes))
             .ToUnixTimeSeconds();
+        
         var dataToSign = GenerateDataToSign(documentId, filePermissions, expiryTimestamp);
-
         var signature = ComputeSignature(dataToSign);
         
         return $"{dataToSign}{TOKEN_SEPARATOR}{signature}";
