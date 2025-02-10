@@ -19,7 +19,8 @@ public enum GetEntriesOptions
 {
     None = 0,
     IncludeThumbnails = 1 << 0, // TODO: Implement thumbnails
-    IncludeTags = 1 << 1
+    IncludeTags = 1 << 1,
+    IncludeDocument = 1 << 2
 }
 
 public record GetEntriesQuery(
@@ -79,6 +80,11 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
                 .Where(entry => entry.CreatedAtUtc < cursorEntry.CreatedAtUtc ||
                                 (entry.CreatedAtUtc == cursorEntry.CreatedAtUtc && entry.Id < cursorEntry.Id));
         }
+
+        if (request.Options.HasFlag(GetEntriesOptions.IncludeDocument))
+        {
+            entriesQuery = entriesQuery.Include(entry => entry.Document);
+        }
         
         var entries = await entriesQuery
             .OrderByDescending(entry => entry.CreatedAtUtc)
@@ -130,7 +136,7 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
                 user => user.Id,
                 user => user,
                 cancellationToken);
-
+        
         // Retrieve and append tags if option was enabled
         IReadOnlyDictionary<Guid, IEnumerable<Tag>>? entryTags = null;
         if (options.HasFlag(GetEntriesOptions.IncludeTags))
@@ -145,6 +151,13 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
                 Name = entry.Name,
                 Tags = GetTagResponse(entry.Id),
                 Description = entry.Description,
+                Document = !options.HasFlag(GetEntriesOptions.IncludeDocument) ? null : new DocumentResponse
+                {
+                    Id = entry.Document!.Id,
+                    Name = entry.Document!.Name,
+                    ImagePath = entry.Document!.ImagePath,
+                    FileExtension = entry.Document!.FileExtension
+                },
                 CreatedBy = GetUserResponse(entry.CreatedById),
                 CreatedAtUtc = entry.CreatedAtUtc,
                 DeletedAtUtc = entry.DeletedAtUtc

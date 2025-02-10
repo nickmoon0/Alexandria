@@ -1,0 +1,38 @@
+using Alexandria.CoreApi.Common.Extensions;
+using Alexandria.Application.Characters.Commands;
+using Alexandria.CoreApi.Common;
+using Alexandria.CoreApi.Common.Interfaces;
+using Alexandria.CoreApi.Common.Roles;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Alexandria.CoreApi.Characters;
+
+public abstract class UpdateCharacter : EndpointBase, IEndpoint
+{
+    public static void Map(IEndpointRouteBuilder app) => app
+        .MapPatch("/{id:guid}", Handle)
+        .WithSummary("Patch updates a character")
+        .WithName(nameof(UpdateCharacter))
+        .RequireAuthorization<Admin>();
+
+    private record Request(
+        string? FirstName,
+        string? LastName,
+        string? MiddleNames,
+        string? Description);
+    
+    private static async Task<IResult> Handle(
+        [FromRoute] Guid id,
+        [FromBody] Request request,
+        [FromServices] IMediator mediator)
+    {
+        var command = new UpdateCharacterCommand(
+            id, request.FirstName, request.LastName, request.MiddleNames, request.Description);
+        var result = await mediator.Send(command);
+
+        return result.IsError ? 
+            result.ToHttpResponse() : 
+            Results.Ok();
+    }
+}

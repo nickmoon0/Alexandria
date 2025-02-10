@@ -7,4 +7,5 @@ public interface IFileService
 {
     public ErrorOr<string> GenerateFilePath(string fileName, FileType fileType);
     public ErrorOr<FileType> DetermineFileType(string fileName);
+    public string GetContentType(string fileName);
 }
