@@ -3,7 +3,9 @@ using System.Text;
 using Alexandria.Application.Common.Constants;
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.Common.Interfaces;
+using Alexandria.Infrastructure.Common.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Alexandria.Infrastructure.Services;
 
@@ -11,15 +13,16 @@ public class TokenService : ITokenService
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<TokenService> _logger;
+    private readonly TokenOptions _tokenOptions;
     
-    private const string PRIVATE_KEY = "zN2UQoNtpC0Ior6GCMFHZbJlYqAA8JgLp+uKdQC4aSL1cKmNsU7y4pDVVuQ6+y9Ci3FWL4Vr/6TryAiNe7ZTLTGswpfL3qZWuYCd+ss4ddpdaAi8cug3xLEj0nMWCms8zImMQctiqLZWlLluoCyZXxM99v1ff4uVKfmSpI1dh7I=";
     private const char TOKEN_SEPARATOR = '|';
     private const char PERMISSIONS_SEPARATOR = ',';
     
-    public TokenService(IDateTimeProvider dateTimeProvider, ILogger<TokenService> logger)
+    public TokenService(IDateTimeProvider dateTimeProvider, ILogger<TokenService> logger, IOptions<TokenOptions> tokenOptions)
     {
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;
+        _tokenOptions = tokenOptions.Value;
     }
     
     public string GenerateToken(Guid documentId, int expiryMinutes, params FilePermissions[] filePermissions)
@@ -101,9 +104,9 @@ public class TokenService : ITokenService
         return $"{documentId}{TOKEN_SEPARATOR}{filePermissionsString}{TOKEN_SEPARATOR}{expiryTimestamp}";
     }
         
-    private static string ComputeSignature(string dataToSign)
+    private string ComputeSignature(string dataToSign)
     {
-        using var hmac = new HMACSHA3_512(Encoding.UTF8.GetBytes(PRIVATE_KEY));
+        using var hmac = new HMACSHA3_512(Encoding.UTF8.GetBytes(_tokenOptions.PrivateKey));
         var signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataToSign)));
         return signature;
     }

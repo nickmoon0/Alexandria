@@ -21,22 +21,9 @@ public static class ConfigureServices
             });
         });
         builder.Services.AddOpenApi();
-
-        builder.AddOptions();
         
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
-        
-        return builder;
-    }
-    
-    private static WebApplicationBuilder AddOptions(this WebApplicationBuilder builder)
-    {
-        builder.Services.Configure<RabbitMqOptions>(
-            builder.Configuration.GetSection(nameof(RabbitMqOptions)));
-        
-        builder.Services.Configure<FileStorageOptions>(
-            builder.Configuration.GetSection(nameof(FileStorageOptions)));
         
         return builder;
     }
