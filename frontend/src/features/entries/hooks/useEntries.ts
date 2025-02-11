@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { getEntries, GetEntriesOptions } from "@/features/entries/api/get-entries";
-import { Entry } from "@/types/app";
+import { useEffect, useState } from 'react';
+import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
+import { Entry } from '@/types/app';
 
 export const useEntries = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -34,7 +34,7 @@ export const useEntries = () => {
   // Handle Entry Click
   const handleEntryClick = (rowId: string) => {
     const entry = entries.find((entry) => entry.id === rowId);
-    if (!entry) return console.error("Entry not found");
+    if (!entry) return console.error('Entry not found');
     setEntryPopup(entry);
   };
 

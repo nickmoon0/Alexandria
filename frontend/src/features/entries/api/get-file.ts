@@ -10,7 +10,7 @@ export const getFile = async ({ documentId }:GetFileProps) => {
   });
 
   const url = URL.createObjectURL(response.data);
-  const contentType = response.headers["content-type"];
+  const contentType = response.headers['content-type'];
 
   return ({
     mediaUrl: url,

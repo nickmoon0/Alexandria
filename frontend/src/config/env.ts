@@ -24,13 +24,11 @@ const createEnv = () => {
 
   if (!parsedEnv.success) {
     throw new Error(
-      `Invalid env provided.
-The following variables are missing or invalid:
-${Object.entries(parsedEnv.error.flatten().fieldErrors)
-  .map(([k, v]) => `- ${k}: ${v}`)
-  .join('\n')}
-`,
-    );
+      `Invalid env provided. The following variables are missing or invalid: ${Object
+        .entries(parsedEnv.error.flatten().fieldErrors)
+        .map(([k, v]) => `- ${k}: ${v}`)
+        .join('\n')}`
+      );
   }
 
   return parsedEnv.data;

@@ -14,19 +14,19 @@ export interface Document {
 };
 
 export interface Entry {
-  id:string,
-  name:string,
-  description:string,
-  createdAtUtc:Date,
-  deletedAtUtc:Date,
-  createdBy:User,
-  document:Document,
-  tags:Tag[],
+  id:string;
+  name:string;
+  description:string;
+  createdAtUtc:Date;
+  deletedAtUtc:Date;
+  createdBy:User;
+  document:Document;
+  tags:Tag[];
 };
 
 export interface Tag {
-  id:string,
-  name:string,
+  id:string;
+  name:string;
 };
 
 export interface User {
