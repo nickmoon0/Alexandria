@@ -1,5 +1,4 @@
-import { getFile } from "@/features/entries/api/get-file";
-import { getDocumentParams } from "@/lib/document-service";
+import { getDocumentParams, TokenPermissions } from "@/lib/document-service";
 import React, { useEffect, useState } from "react";
 import Button from "@/components/button";
 
@@ -18,7 +17,10 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
 
   const retrieveDocumentParams = async () => {
-    const documentParams = await getDocumentParams({ documentId });
+    const documentParams = await getDocumentParams({ 
+      documentId,
+      tokenPermission:TokenPermissions.Read 
+    });
     if (documentParams !== null) {
       setMediaSrc(documentParams.url);
 

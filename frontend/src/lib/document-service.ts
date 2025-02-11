@@ -1,8 +1,14 @@
 import { env } from '@/config/env';
 import { api } from '@/lib/api-client';
 
+export enum TokenPermissions {
+  Read = 'Read',
+  Write = 'Write'
+};
+
 interface GetDocumentParamsProps {
   documentId: string;
+  tokenPermission: TokenPermissions
 };
 
 interface DocumentParams {
@@ -10,10 +16,10 @@ interface DocumentParams {
   contentType: string;
 };
 
-export const getDocumentParams = async ({ documentId }: GetDocumentParamsProps): Promise<DocumentParams | null> => {
+export const getDocumentParams = async ({ documentId, tokenPermission }: GetDocumentParamsProps): Promise<DocumentParams | null> => {
   try {
     // Get token
-    const tokenResponse = await api.get(`/document/${documentId}/token/Read`);
+    const tokenResponse = await api.get(`/document/${documentId}/token/${tokenPermission}`);
 
     if (!tokenResponse.data.token) {
       console.error('Failed to get document token');
