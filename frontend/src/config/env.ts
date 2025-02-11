@@ -2,7 +2,8 @@ import * as z from 'zod';
 
 const createEnv = () => {
   const EnvSchema = z.object({
-    API_URL: z.string(),
+    CORE_API_URL: z.string(),
+    FILE_API_URL: z.string(),
     KEYCLOAK_URL: z.string(),
     KEYCLOAK_REALM: z.string(),
     KEYCLOAK_CLIENT_ID: z.string(),

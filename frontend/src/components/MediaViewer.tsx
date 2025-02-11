@@ -1,5 +1,7 @@
 import { getFile } from "@/features/entries/api/get-file";
+import { getDocumentParams } from "@/lib/document-service";
 import React, { useEffect, useState } from "react";
+import Button from "@/components/button";
 
 interface MediaViewerProps {
   documentId: string;
@@ -15,31 +17,37 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   const [mediaSrc, setMediaSrc] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
 
-  useEffect(() => {
-    if (!documentId) return;
+  const retrieveDocumentParams = async () => {
+    const documentParams = await getDocumentParams({ documentId });
+    if (documentParams !== null) {
+      setMediaSrc(documentParams.url);
 
-    /*const fetchMedia = async () => {
-      try {
-        const response = await getFile({ documentId });
-
-        setMediaSrc(response.mediaUrl);
-        // Use direct API URL for video streaming
-        if (response.contentType.startsWith("video/")) {
-          setMediaType(MediaType.video);
-        } else if (response.contentType.startsWith("image/")) {
-          setMediaType(MediaType.image);
-        } else {
-          console.error("Unsupported content type:", response.contentType);
-        }
-      } catch (error) {
-        console.error("Error fetching media:", error);
+      // Determine media type based on content type
+      const contentType = documentParams.contentType.toLowerCase();
+      if (contentType.startsWith("image/")) {
+        setMediaType(MediaType.image);
+      } else if (contentType.startsWith("video/")) {
+        setMediaType(MediaType.video);
+      } else {
+        setMediaType(MediaType.document); // Default to document type if not image/video
       }
-    };
+    }
+  };
 
-    fetchMedia();*/
-    setMediaType(MediaType.video);
-    setMediaSrc('test');
+  useEffect(() => {
+    retrieveDocumentParams();
   }, [documentId]);
+
+  const handleDownload = () => {
+    if (mediaSrc) {
+      const link = document.createElement("a");
+      link.href = mediaSrc;
+      link.download = `document-${documentId}`; // Default filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   return (
     <div className="pb-4 px-4">
@@ -48,9 +56,14 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
       )}
       {mediaType === MediaType.video && mediaSrc && (
         <video className="rounded-md" controls style={{ maxWidth: "100%" }}>
-          <source src={`http://localhost:5062/api/document/${documentId}`} type="video/mp4" />
+          <source src={mediaSrc} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
+      )}
+      {mediaType === MediaType.document && mediaSrc && (
+        <Button onClick={handleDownload}>
+          Download
+        </Button>
       )}
       {mediaType === null && <p>Loading...</p>}
     </div>
