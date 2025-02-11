@@ -47,8 +47,7 @@ public static class ConfigureEndpoints
             .WithTags(nameof(Document));
 
         endpoints
-            .MapEndpoint<GetDocumentToken>()
-            .MapEndpoint<DownloadDocument>();
+            .MapEndpoint<GetDocumentToken>();
 
         return app;
     }

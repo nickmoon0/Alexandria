@@ -1,6 +1,6 @@
-using Alexandria.Application.Common.Interfaces;
-using Alexandria.Domain.Common.Interfaces;
-using Alexandria.Infrastructure.Services;
+using Alexandria.Application;
+using Alexandria.Infrastructure;
+using Alexandria.Infrastructure.Common.Options;
 
 namespace Alexandria.FileApi;
 
@@ -10,8 +10,21 @@ public static class ConfigureServices
     {
         builder.Services.AddOpenApi();
 
-        builder.Services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
-        builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.AddOptions();
+        
+        builder.Services.AddApplication();
+        builder.Services.AddInfrastructure(builder.Configuration);
+        
+        return builder;
+    }
+    
+    private static WebApplicationBuilder AddOptions(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<RabbitMqOptions>(
+            builder.Configuration.GetSection(nameof(RabbitMqOptions)));
+        
+        builder.Services.Configure<FileStorageOptions>(
+            builder.Configuration.GetSection(nameof(FileStorageOptions)));
         
         return builder;
     }

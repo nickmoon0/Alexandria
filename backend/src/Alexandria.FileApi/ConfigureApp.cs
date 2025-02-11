@@ -15,6 +15,8 @@ public static class ConfigureApp
         app.UseTokenAuthentication();
         app.UseHttpsRedirection();
         
+        app.AddEndpoints();
+        
         return app;
     }
 }

@@ -1,31 +1,26 @@
-using Alexandria.CoreApi.Common.Extensions;
 using Alexandria.Application.Documents.Queries;
-using Alexandria.CoreApi.Common;
-using Alexandria.CoreApi.Common.Interfaces;
-using Alexandria.CoreApi.Common.Roles;
+using Alexandria.FileApi.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Alexandria.CoreApi.Documents;
+namespace Alexandria.FileApi.Documents;
 
 public abstract class DownloadDocument : EndpointBase, IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
-        .MapMethods("{documentId:guid}", [ HttpMethods.Get, HttpMethods.Head ], Handle)
-        .WithSummary("Downloads a document with the specified Guid")
-        .WithName(nameof(DownloadDocument))
-        .RequireAuthorization<User>();
+        .MapGet("", Handle)
+        .WithSummary("Download specified document")
+        .WithName(nameof(DownloadDocument));
 
     private static async Task<IResult> Handle(
-        [FromRoute] Guid documentId,
         [FromServices] IMediator mediator)
     {
-        var query = new GetDocumentFileStreamQuery(documentId);
+        var query = new GetDocumentFileStreamQuery(DocumentId);
         
         var queryResult = await mediator.Send(query);
         if (queryResult.IsError)
         {
-            return queryResult.ToHttpResponse();
+            return Results.InternalServerError();
         }
         
         var documentStream = queryResult.Value.DocumentFileStream;
