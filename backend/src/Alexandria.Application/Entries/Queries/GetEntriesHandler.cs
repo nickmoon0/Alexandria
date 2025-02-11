@@ -96,11 +96,10 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
         
         var entryResponses = await GetEntryResponses(entries, request.Options, cancellationToken);
 
-        var lastEntry = entries.Last();
-
         Guid? nextCursor = null;
         if (entries.Count != 0)
         {
+            var lastEntry = entries.Last();
             var hasNextPage = await _context.Entries.AnyAsync(entry =>
                     entry.CreatedAtUtc < lastEntry.CreatedAtUtc ||
                     (entry.CreatedAtUtc == lastEntry.CreatedAtUtc && entry.Id < lastEntry.Id),
@@ -126,6 +125,8 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
         GetEntriesOptions options,
         CancellationToken cancellationToken)
     {
+        if (entries.Count == 0) return [];
+        
         var createdByUserIds = entries
             .Select(x => x.CreatedById)
             .Distinct();
