@@ -21,7 +21,8 @@ public static class ConfigureEndpoints
             .WithTags(nameof(Document));
 
         endpoints
-            .MapEndpoint<DownloadDocument>();
+            .MapEndpoint<DownloadDocument>()
+            .MapEndpoint<GetDocumentContentType>();
         
         return app;
     }

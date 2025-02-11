@@ -26,7 +26,9 @@ public abstract class DownloadDocument : EndpointBase, IEndpoint
         var documentStream = queryResult.Value.DocumentFileStream;
         var fileName = queryResult.Value.FileName;
         var contentType = queryResult.Value.ContentType;
-        
-        return Results.File(documentStream, contentType, fileName, enableRangeProcessing: true);
+
+        return documentStream == null ? 
+            Results.InternalServerError() : 
+            Results.File(documentStream, contentType, fileName, enableRangeProcessing: true);
     }
 }

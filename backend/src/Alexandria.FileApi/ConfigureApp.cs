@@ -10,6 +10,7 @@ public static class ConfigureApp
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            app.UseCors(ConfigureServices.LocalHost5173CorsPolicy);
         }
 
         app.UseTokenAuthentication();

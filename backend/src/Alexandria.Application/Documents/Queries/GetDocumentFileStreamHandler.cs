@@ -1,15 +1,26 @@
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.EntryAggregate.Errors;
-using Alexandria.Domain.UserAggregate;
 using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Alexandria.Application.Documents.Queries;
 
-public record GetDocumentFileStreamQuery(Guid DocumentId) : IRequest<ErrorOr<GetDocumentFileStreamResponse>>;
+[Flags]
+public enum GetDocumentFileStreamOptions
+{
+    None = 0,
+    HeadersOnly = 1 << 0
+}
 
-public record GetDocumentFileStreamResponse(FileStream DocumentFileStream, string FileName, string ContentType);
+public record GetDocumentFileStreamQuery(
+    Guid DocumentId,
+    GetDocumentFileStreamOptions Options = GetDocumentFileStreamOptions.None) : IRequest<ErrorOr<GetDocumentFileStreamResponse>>;
+
+public record GetDocumentFileStreamResponse(
+    FileStream? DocumentFileStream = null,
+    string? FileName = null,
+    string? ContentType = null);
 
 public class GetDocumentFileStreamHandler : IRequestHandler<GetDocumentFileStreamQuery, ErrorOr<GetDocumentFileStreamResponse>>
 {
@@ -38,6 +49,11 @@ public class GetDocumentFileStreamHandler : IRequestHandler<GetDocumentFileStrea
         var filePath = Path.Combine(document.ImagePath!, fileName);
         var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         var contentType = _fileService.GetContentType(fileName);
+
+        if (request.Options.HasFlag(GetDocumentFileStreamOptions.HeadersOnly))
+        {
+            return new GetDocumentFileStreamResponse(ContentType: contentType);
+        }
         
         return new GetDocumentFileStreamResponse(
             stream,
