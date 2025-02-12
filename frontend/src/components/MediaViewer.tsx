@@ -52,7 +52,7 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   };
 
   return (
-    <div className='pb-4 px-4'>
+    <div>
       {mediaType === MediaType.image && mediaSrc && (
         <img className='rounded-md' src={mediaSrc} alt='Document' style={{ maxWidth: '100%' }} />
       )}

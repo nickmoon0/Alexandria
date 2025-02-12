@@ -10,7 +10,7 @@ export enum GetEntriesOptions {
 };
 
 export interface GetEntriesProps {
-  options?: GetEntriesOptions;
+  options?: GetEntriesOptions[];
   pageRequest?: PaginatedRequest;
 };
 
@@ -20,7 +20,7 @@ export const getEntries = async ({ options, pageRequest }:GetEntriesProps) => {
   )}`;
 
   if (options) {
-    queryString += `&options=${options}`
+    queryString += `&options=${options.join('|')}`
   }
 
   const response = await api.get<PaginatedResponse<Entry>>(`/entry?${queryString}`);

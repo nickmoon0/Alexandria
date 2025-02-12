@@ -1,6 +1,7 @@
 import EntryPopup from '@/features/entries/components/EntriesPopup';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import Button from '@/components/Button';
+import TagList from '@/components/TagList';
 
 export const EntriesTable = () => {
   const {
@@ -67,7 +68,7 @@ export const EntriesTable = () => {
               <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>ID</th>
               <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Name</th>
               <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Description</th>
-              <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Created At</th>
+              <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Tags</th>
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-200'>
@@ -76,7 +77,7 @@ export const EntriesTable = () => {
                 <td className='py-4 px-6 text-gray-600'>{entry.id}</td>
                 <td className='py-4 px-6 text-gray-600'>{entry.name}</td>
                 <td className='py-4 px-6 text-gray-600'>{entry.description}</td>
-                <td className='py-4 px-6 text-gray-600'>{entry.createdAtUtc.toString()}</td>
+                <td className='py-4 px-6 text-gray-600'><TagList tags={entry.tags} /></td>
               </tr>
             ))}
           </tbody>

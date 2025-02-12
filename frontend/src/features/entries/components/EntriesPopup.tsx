@@ -1,7 +1,8 @@
 import Button from '@/components/Button';
 import { Entry } from '@/types/app';
-import React from 'react';
+import React, { useState } from 'react';
 import MediaViewer from '@/components/MediaViewer';
+import TagList from '@/components/TagList';
 
 export interface EntryPopupProps {
   entry: Entry;
@@ -9,6 +10,8 @@ export interface EntryPopupProps {
 }
 
 const EntryPopup: React.FC<EntryPopupProps> = ({ entry, onClose }) => {
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+
   if (!entry) return null; // Prevent rendering if no entry
 
   return (
@@ -25,11 +28,20 @@ const EntryPopup: React.FC<EntryPopupProps> = ({ entry, onClose }) => {
 
         {/* Content */}
         <h1 className='text-2xl font-bold text-gray-800 mb-3'>{entry.name}</h1>
-        <p className='text-gray-600 mb-4'>Description: {entry.description}</p>
-        <p className='text-gray-600 mb-4'>Created By: {entry.createdBy.firstName} {entry.createdBy.lastName}</p>
-        <p className='text-gray-600 mb-4'>Created At: {entry.createdAtUtc.toString()}</p>
+        { entry.tags && <TagList tags={entry.tags} tagListClassName='mb-2' /> }
+        <p className='text-gray-600 pb-3'>{entry.description}</p>
         <MediaViewer documentId={entry.document.id} />
-        <div className='flex justify-end'>
+        { showDetails && 
+          <div>
+            <p className='text-gray-600 mt-4 mb-2'><span className='font-medium'>Document ID: </span>{entry.id}</p>
+            <p className='text-gray-600 mb-2'><span className='font-medium'>Created By: </span>{entry.createdBy.firstName} {entry.createdBy.lastName}</p>
+            <p className='text-gray-600 mb-2'><span className='font-medium'>Created At: </span>{entry.createdAtUtc.toString()}</p>
+          </div>
+        }
+        <div className='flex justify-between pt-4'>
+          <Button onClick={() => setShowDetails(!showDetails)} className='mr-2'>
+            { showDetails ? 'Hide Details' : 'Show Details' }
+          </Button>
           <Button onClick={onClose}>
             Close
           </Button>

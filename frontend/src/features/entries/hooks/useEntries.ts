@@ -13,7 +13,7 @@ export const useEntries = () => {
   const fetchEntries = async (cursorId: string | null, previous: boolean = false) => {
     const pageRequest = { PageSize: count, CursorId: cursorId };
 
-    const response = await getEntries({ pageRequest, options:GetEntriesOptions.IncludeDocument });
+    const response = await getEntries({ pageRequest, options: [ GetEntriesOptions.IncludeDocument, GetEntriesOptions.IncludeTags ] });
 
     setEntries(response.data);
     setNextCursor(response.paging.nextCursor);
