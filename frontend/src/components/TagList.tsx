@@ -18,7 +18,7 @@ export const ClickableTag = <T extends (...args: any[]) => void>({ tag, classNam
   return (
     <span
       onClick={onClick}
-      className={`px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-full shadow-md hover:bg-blue-700 transition ${className}`}
+      className={`px-3 py-1 cursor-pointer text-sm font-medium text-white bg-blue-600 rounded-full shadow-md hover:bg-blue-700 transition ${className}`}
     >
       {tag.name}
     </span>
