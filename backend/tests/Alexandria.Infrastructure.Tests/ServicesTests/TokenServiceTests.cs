@@ -2,6 +2,7 @@ using Alexandria.Application.Common.Constants;
 using Alexandria.Common.Tests.Services;
 using Alexandria.Infrastructure.Services;
 using Alexandria.Domain.Tests.TestUtils.Services;
+using Alexandria.Infrastructure.Tests.TestUtils.Options;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +22,7 @@ public class TokenServiceTests
         var testDateTimeProvider = new TestDateTimeProvider(FixedTestDate);
         _mockLogger = new TestLogger<TokenService>();
 
-        _tokenService = new TokenService(testDateTimeProvider, _mockLogger);
+        _tokenService = new TokenService(testDateTimeProvider, _mockLogger, new MockTokenOptions());
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public class TokenServiceTests
     {
         // Arrange
         var expiredDateTimeProvider = new TestDateTimeProvider(FixedTestDate.AddMinutes(-5));
-        var expiredTokenService = new TokenService(expiredDateTimeProvider, _mockLogger);
+        var expiredTokenService = new TokenService(expiredDateTimeProvider, _mockLogger, new MockTokenOptions());
         var token = expiredTokenService.GenerateToken(_validDocumentId, -5, FilePermissions.Read);
 
         // Act

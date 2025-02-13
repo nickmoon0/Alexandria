@@ -2,6 +2,21 @@ import EntryPopup from '@/features/entries/components/EntriesPopup';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import Button from '@/components/Button';
 import TagList from '@/components/TagList';
+import EntryUploadForm from './EntryUploadForm';
+import { Plus } from 'lucide-react';
+import { CircleX } from 'lucide-react';
+
+interface DeleteButtonProps {
+  onClick: (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+};
+
+const DeleteButton = ({ onClick }:DeleteButtonProps) => {
+  return (
+    <button onClick={onClick} className='px-2 py-2 text-red-600 font-medium rounded-lg shadow-md hover:bg-red-700 hover:text-white transition'>
+      <CircleX />
+    </button>
+  );
+};
 
 export const EntriesTable = () => {
   const {
@@ -10,11 +25,14 @@ export const EntriesTable = () => {
     nextCursor,
     cursorStack,
     entryPopup,
+    newEntryPopup,
     setCount,
     handleEntryClick,
-    handlePopupClose,
+    handleEntryPopupClose,
     fetchEntries,
-    setCursorStack
+    setCursorStack,
+    setNewEntryPopup,
+    setNextCursor
    } = useEntries();
   
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -36,11 +54,27 @@ export const EntriesTable = () => {
     }
   };
 
+  const handleUploadClick = () => {
+    setNewEntryPopup(true);
+  };
+
+  const handleCloseUploadClick = () => {
+    setNewEntryPopup(false);
+    setCursorStack([]);
+    setNextCursor(null);
+    fetchEntries(null);
+  };
+
+  const handleDelete = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.stopPropagation();
+  };
 
   return (
     <div className='col-span-full container mx-auto px-4'>
-      {entryPopup && <EntryPopup entry={entryPopup} onClose={handlePopupClose} />}
-      {/* Page records drop down */}
+      {entryPopup && <EntryPopup entry={entryPopup} onClose={handleEntryPopupClose} />}
+      {newEntryPopup && <EntryUploadForm onClose={handleCloseUploadClick} />}
+      
+      {/* Top controls */}
       <div className='flex justify-between items-center mb-4'>
         <div className='flex items-center space-x-2'>
           <label htmlFor='itemsPerPage' className='text-sm font-medium text-gray-600'>
@@ -58,6 +92,10 @@ export const EntriesTable = () => {
             <option value='100'>100</option>
           </select>
         </div>
+        <Button onClick={handleUploadClick} className="flex items-center space-x-1">
+          <Plus size={17} />
+          <span>New</span>
+        </Button>
       </div>
 
       {/* Table */}
@@ -65,7 +103,7 @@ export const EntriesTable = () => {
         <table className='min-w-full bg-white border border-gray-200'>
           <thead className='bg-gray-50 border-b'>
             <tr>
-              <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>ID</th>
+              <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Delete</th>
               <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Name</th>
               <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Description</th>
               <th className='py-4 px-6 text-left text-sm font-semibold text-gray-600 tracking-wider'>Tags</th>
@@ -74,7 +112,7 @@ export const EntriesTable = () => {
           <tbody className='divide-y divide-gray-200'>
             {entries.map(entry => (
               <tr onClick={() => handleEntryClick(entry.id)} className='hover:bg-gray-50' key={entry.id}>
-                <td className='py-4 px-6 text-gray-600'>{entry.id}</td>
+                <td className='py-4 px-6 text-gray-600'><DeleteButton onClick={handleDelete} /></td>
                 <td className='py-4 px-6 text-gray-600'>{entry.name}</td>
                 <td className='py-4 px-6 text-gray-600'>{entry.description}</td>
                 <td className='py-4 px-6 text-gray-600'><TagList tags={entry.tags} /></td>

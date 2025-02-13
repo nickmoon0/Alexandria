@@ -22,7 +22,8 @@ public static class ConfigureEndpoints
 
         endpoints
             .MapEndpoint<DownloadDocument>()
-            .MapEndpoint<GetDocumentContentType>();
+            .MapEndpoint<GetDocumentContentType>()
+            .MapEndpoint<UploadDocument>();
         
         return app;
     }

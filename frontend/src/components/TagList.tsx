@@ -1,4 +1,3 @@
-import React from 'react';
 import { Tag } from '@/types/app';
 
 export interface TagListProps<T extends (...args: any[]) => void> {
@@ -29,7 +28,7 @@ const TagList = <T extends (...args: any[]) => void>({ tags, tagListClassName, t
   if (!tags || tags.length === 0) return null;
 
   return (
-    <div className={`flex flex-wrap gap-2 mt-4 pb-2 ${tagListClassName}`}>
+    <div className={`flex flex-wrap gap-2 pb-2 ${tagListClassName}`}>
       {tags.map((tag) => (
         <ClickableTag key={tag.id} tag={tag} className={tagClassName} onClick={(e) => {
           e.stopPropagation();

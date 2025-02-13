@@ -14,19 +14,18 @@ public abstract class CreateEntry : EndpointBase, IEndpoint
         .MapPost("", Handle)
         .WithSummary("Creates a new entry")
         .WithName(nameof(CreateEntry))
-        .RequireAuthorization<User>()
-        .DisableAntiforgery();
+        .RequireAuthorization<User>();
 
-    private record Request(IFormFile File, string Name, string? Description);
-
+    private record Request(string FileName, string Name, string? Description);
     private record Response(Guid EntryId, Guid DocumentId);
+    
     private static async Task<IResult> Handle(
-        [FromForm] Request request,
+        [FromBody] Request request,
         [FromServices] IMediator mediator)
     {
         var command = new CreateEntryCommand(
             request.Name,
-            request.File.FileName,
+            request.FileName,
             (Guid)UserId!,
             request.Description);
 
@@ -39,13 +38,10 @@ public abstract class CreateEntry : EndpointBase, IEndpoint
         
         var result = commandResult.Value;
 
-        // Copy file to permanent location
-        await using (var stream = new FileStream(result.PermanentFilePath, FileMode.Create))
-        {
-            await request.File.CopyToAsync(stream);
-        }
-
-        return Results.CreatedAtRoute(nameof(GetEntry), new { Id = result.EntryId }, new Response(result.EntryId, result.DocumentId));
+        return Results.CreatedAtRoute(
+            nameof(GetEntry),
+            new { Id = result.EntryId },
+            new Response(result.EntryId, result.DocumentId));
     }
 
 }

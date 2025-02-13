@@ -1,3 +1,4 @@
+using Alexandria.Application.Common.Constants;
 using Alexandria.Application.Documents.Queries;
 using Alexandria.FileApi.Common;
 using MediatR;
@@ -15,6 +16,10 @@ public abstract class DownloadDocument : EndpointBase, IEndpoint
     private static async Task<IResult> Handle(
         [FromServices] IMediator mediator)
     {
+        if (!TokenPermissions.Contains(FilePermissions.Read))
+        {
+            return Results.Unauthorized();
+        }
         var query = new GetDocumentFileStreamQuery(DocumentId);
         
         var queryResult = await mediator.Send(query);

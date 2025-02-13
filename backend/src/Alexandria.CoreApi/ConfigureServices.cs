@@ -24,20 +24,6 @@ public static class ConfigureServices
             });
         });
         builder.Services.AddOpenApi();
-        builder.WebHost.ConfigureKestrel(options =>
-        {
-            // Set max request body size for all endpoints
-            options.Limits.MaxRequestBodySize = 16106127360; // 15 GB
-            options.Limits.MaxResponseBufferSize = null;
-        });
-        
-        builder.Services.Configure<FormOptions>(options =>
-        {
-            options.MultipartBodyLengthLimit = 16106127360; // 15 GB
-        });
-        
-        builder.Services.AddAntiforgery();
-        
         builder.Services.AddAuth(builder.Configuration);
 
         builder.Services.AddApplication();

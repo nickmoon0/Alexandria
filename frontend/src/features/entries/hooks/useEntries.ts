@@ -8,6 +8,7 @@ export const useEntries = () => {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [cursorStack, setCursorStack] = useState<string[]>([]);
   const [entryPopup, setEntryPopup] = useState<Entry | null>(null);
+  const [newEntryPopup, setNewEntryPopup] = useState<boolean>(false);
 
   // Fetch Entries
   const fetchEntries = async (cursorId: string | null, previous: boolean = false) => {
@@ -38,10 +39,9 @@ export const useEntries = () => {
     setEntryPopup(entry);
   };
 
-  const handlePopupClose = () => {
+  const handleEntryPopupClose = () => {
     setEntryPopup(null);
   }
-
 
   return {
     entries,
@@ -49,10 +49,13 @@ export const useEntries = () => {
     nextCursor,
     cursorStack,
     entryPopup,
+    newEntryPopup,
     setCount,
     handleEntryClick,
-    handlePopupClose,
+    handleEntryPopupClose,
     fetchEntries,
-    setCursorStack
+    setCursorStack,
+    setNewEntryPopup,
+    setNextCursor
   };
 };

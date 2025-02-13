@@ -14,10 +14,11 @@ public static class ConfigureApp
         }
 
         app.UseTokenAuthentication();
+        
+        app.UseAntiforgery();
+        
         app.UseHttpsRedirection();
-        
         app.AddEndpoints();
-        
         return app;
     }
 }
