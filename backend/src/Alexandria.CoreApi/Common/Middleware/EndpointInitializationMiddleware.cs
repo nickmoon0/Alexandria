@@ -1,4 +1,7 @@
 using System.Security.Claims;
+using System.Text.Json;
+using Alexandria.Application.Common.Interfaces;
+using Alexandria.Application.Common.Roles;
 
 namespace Alexandria.CoreApi.Common.Middleware;
 
@@ -15,6 +18,17 @@ public class EndpointInitializationMiddleware(RequestDelegate next)
                 EndpointBase.InitializeUserId(userId);
                 context.Items["UserId"] = userId;
             }
+            
+            var roleFactory = context.RequestServices.GetRequiredService<IRoleFactory>();
+            var userRoles = user
+                .FindAll(ClaimTypes.Role)
+                .Select(claim => roleFactory.CreateRoleInstance(claim.Value))
+                .OfType<Role>()
+                .ToList();
+            
+            // Initialize the roles in EndpointBase
+            EndpointBase.InitializeRoles(userRoles);
+            context.Items["UserRoles"] = userRoles;
         }
 
         await next(context);

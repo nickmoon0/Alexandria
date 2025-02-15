@@ -5,6 +5,7 @@ import TagList from '@/components/TagList';
 import EntryUploadForm from './EntryUploadForm';
 import { Plus } from 'lucide-react';
 import { CircleX } from 'lucide-react';
+import { deleteEntry } from '../api/delete-entry';
 
 interface DeleteButtonProps {
   onClick: (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -32,7 +33,8 @@ export const EntriesTable = () => {
     fetchEntries,
     setCursorStack,
     setNewEntryPopup,
-    setNextCursor
+    setNextCursor,
+    refreshEntries
    } = useEntries();
   
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -60,13 +62,17 @@ export const EntriesTable = () => {
 
   const handleCloseUploadClick = () => {
     setNewEntryPopup(false);
-    setCursorStack([]);
-    setNextCursor(null);
-    fetchEntries(null);
+    refreshEntries();
   };
 
-  const handleDelete = (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.stopPropagation();
+  const handleDelete = async (entryId:string) => {
+    try {
+      await deleteEntry({ entryId });
+
+      refreshEntries();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -112,7 +118,10 @@ export const EntriesTable = () => {
           <tbody className='divide-y divide-gray-200'>
             {entries.map(entry => (
               <tr onClick={() => handleEntryClick(entry.id)} className='hover:bg-gray-50' key={entry.id}>
-                <td className='py-4 px-6 text-gray-600'><DeleteButton onClick={handleDelete} /></td>
+                <td className='py-4 px-6 text-gray-600'><DeleteButton onClick={(event) => {
+                  event.stopPropagation();
+                  handleDelete(entry.id);
+                }} /></td>
                 <td className='py-4 px-6 text-gray-600'>{entry.name}</td>
                 <td className='py-4 px-6 text-gray-600'>{entry.description}</td>
                 <td className='py-4 px-6 text-gray-600'><TagList tags={entry.tags} /></td>

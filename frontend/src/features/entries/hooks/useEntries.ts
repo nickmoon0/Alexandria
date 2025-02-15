@@ -27,9 +27,7 @@ export const useEntries = () => {
 
   // Refresh entries when count changes
   useEffect(() => {
-    setCursorStack([]);
-    setNextCursor(null);
-    fetchEntries(null);
+    refreshEntries();
   }, [count]);
 
   // Handle Entry Click
@@ -42,6 +40,12 @@ export const useEntries = () => {
   const handleEntryPopupClose = () => {
     setEntryPopup(null);
   }
+
+  const refreshEntries = () => {
+    setCursorStack([]);
+    setNextCursor(null);
+    fetchEntries(null);
+  };
 
   return {
     entries,
@@ -56,6 +60,7 @@ export const useEntries = () => {
     fetchEntries,
     setCursorStack,
     setNewEntryPopup,
-    setNextCursor
+    setNextCursor,
+    refreshEntries
   };
 };

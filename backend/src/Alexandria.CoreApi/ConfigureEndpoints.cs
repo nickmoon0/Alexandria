@@ -59,6 +59,7 @@ public static class ConfigureEndpoints
 
         endpoints
             .MapEndpoint<CreateEntry>()
+            .MapEndpoint<DeleteEntry>()
             .MapEndpoint<GetEntries>()
             .MapEndpoint<GetEntry>()
             .MapEndpoint<TagEntry>();

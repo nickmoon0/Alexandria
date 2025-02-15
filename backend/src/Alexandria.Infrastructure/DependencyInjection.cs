@@ -1,6 +1,7 @@
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Infrastructure.Common.Options;
+using Alexandria.Infrastructure.Factories;
 using Alexandria.Infrastructure.Persistence;
 using Alexandria.Infrastructure.Persistence.Repositories;
 using Alexandria.Infrastructure.Services;
@@ -19,7 +20,8 @@ public static class DependencyInjection
             .AddMediatR(options => 
                 options.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection)))
             .AddPersistence(configuration)
-            .AddServices();
+            .AddServices()
+            .AddFactories();
 
         return services;
     }
@@ -58,7 +60,13 @@ public static class DependencyInjection
         
         return services;
     }
-    
+
+    private static IServiceCollection AddFactories(this IServiceCollection services)
+    {
+        services.AddScoped<IRoleFactory, RoleFactory>();
+        return services;
+    }
+
     private static IServiceCollection RegisterOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RabbitMqOptions>(
