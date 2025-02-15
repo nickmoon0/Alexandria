@@ -1,5 +1,7 @@
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Domain.Common.Interfaces;
+using Alexandria.Infrastructure.Common.Options;
+using Alexandria.Infrastructure.Factories;
 using Alexandria.Infrastructure.Persistence;
 using Alexandria.Infrastructure.Persistence.Repositories;
 using Alexandria.Infrastructure.Services;
@@ -14,10 +16,12 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services
+            .RegisterOptions(configuration)
             .AddMediatR(options => 
                 options.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection)))
             .AddPersistence(configuration)
-            .AddServices();
+            .AddServices()
+            .AddFactories();
 
         return services;
     }
@@ -52,6 +56,27 @@ public static class DependencyInjection
         services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddScoped<ITaggingService, TaggingService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<ITokenService, TokenService>();
+        
+        return services;
+    }
+
+    private static IServiceCollection AddFactories(this IServiceCollection services)
+    {
+        services.AddScoped<IRoleFactory, RoleFactory>();
+        return services;
+    }
+
+    private static IServiceCollection RegisterOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<RabbitMqOptions>(
+            configuration.GetSection(nameof(RabbitMqOptions)));
+        
+        services.Configure<FileStorageOptions>(
+            configuration.GetSection(nameof(FileStorageOptions)));
+        
+        services.Configure<TokenOptions>(
+            configuration.GetSection(nameof(TokenOptions)));
         
         return services;
     }

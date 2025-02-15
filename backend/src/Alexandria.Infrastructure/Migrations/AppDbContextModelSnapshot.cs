@@ -156,6 +156,9 @@ namespace Alexandria.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAtUtc", "Id")
+                        .IsUnique();
+
                     b.ToTable("Entry", (string)null);
                 });
 
@@ -172,7 +175,7 @@ namespace Alexandria.Infrastructure.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.Tagging", b =>
+            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.Tagging.Tagging", b =>
                 {
                     b.Property<Guid>("TaggingId")
                         .ValueGeneratedOnAdd()
@@ -299,7 +302,7 @@ namespace Alexandria.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.Tagging", b =>
+            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.Tagging.Tagging", b =>
                 {
                     b.HasOne("Alexandria.Domain.Common.Entities.Tag.Tag", null)
                         .WithMany()

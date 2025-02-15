@@ -1,13 +1,20 @@
 import Axios, { InternalAxiosRequestConfig } from 'axios';
 import { env } from '@/config/env';
 
-let token: string | undefined = undefined;
+// Helper function to store and retrieve the token securely
+const TOKEN_KEY = "authToken";
 
 export function initializeToken(newToken: string | undefined) {
-  token = newToken;
+  if (newToken) {
+    sessionStorage.setItem(TOKEN_KEY, newToken); // Store token securely
+  } else {
+    sessionStorage.removeItem(TOKEN_KEY); // Clear token on logout
+  }
 }
 
 async function authRequestInterceptor(config: InternalAxiosRequestConfig) {
+  const token = sessionStorage.getItem(TOKEN_KEY); // Retrieve token from sessionStorage
+
   if (config.headers) {
     config.headers.Accept = 'application/json';
     if (token) {
@@ -20,7 +27,8 @@ async function authRequestInterceptor(config: InternalAxiosRequestConfig) {
 }
 
 export const api = Axios.create({
-  baseURL: env.API_URL,
+  baseURL: env.CORE_API_URL,
+  withCredentials: true
 });
 
 api.interceptors.request.use(authRequestInterceptor);
@@ -29,6 +37,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.log(error.response);
+      
+      const token = sessionStorage.getItem(TOKEN_KEY); // Check token from sessionStorage
       if (token) {
         console.log('401 but Token is available');
       } else {

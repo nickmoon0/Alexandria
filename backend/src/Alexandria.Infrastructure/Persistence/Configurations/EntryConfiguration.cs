@@ -33,5 +33,10 @@ public class EntryConfiguration : IEntityTypeConfiguration<Entry>
         builder.HasOne(e => e.Document)
             .WithOne()
             .OnDelete(DeleteBehavior.NoAction);
+        
+        // Create indexes
+        builder
+            .HasIndex(e => new { e.CreatedAtUtc, e.Id })
+            .IsUnique();
     }
 }

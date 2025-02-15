@@ -119,6 +119,11 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
         }
 
         DeletedAtUtc = dateTimeProvider.UtcNow;
+        if (Document?.Delete(dateTimeProvider).IsError ?? false)
+        {
+            return DocumentErrors.AlreadyDeleted;
+        }
+        
         return Result.Deleted;
     }
 

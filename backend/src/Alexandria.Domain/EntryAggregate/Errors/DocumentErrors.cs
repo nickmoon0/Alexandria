@@ -35,4 +35,12 @@ public static class DocumentErrors
     public static readonly Error CharacterIdNotPresent = Error.Conflict(
         $"{nameof(Document)}.CharacterIdNotPresent",
         "CharacterId is not present");
+
+    public static readonly Error NotFound = Error.NotFound(
+        $"{nameof(Document)}.DocumentNotFound",
+        "Document not found");
+
+    public static readonly Error AlreadyDeleted = Error.Validation(
+        $"{nameof(Document)}.AlreadyDeleted",
+        "Document is already deleted");
 }

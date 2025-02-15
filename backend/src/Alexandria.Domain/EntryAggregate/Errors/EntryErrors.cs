@@ -21,7 +21,7 @@ public static class EntryErrors
         "Entry is not deleted.");
     
     public static readonly Error NotFound = Error.NotFound(
-        $"{nameof(Entry)}.NotFound)",
+        $"{nameof(Entry)}.NotFound",
         "Entry is not found.");
     
     public static readonly Error DocumentNull = Error.Validation(

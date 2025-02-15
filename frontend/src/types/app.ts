@@ -9,6 +9,26 @@ export interface Character {
   createdOnUtc: Date;
 };
 
+export interface Document {
+  id: string
+};
+
+export interface Entry {
+  id:string;
+  name:string;
+  description:string;
+  createdAtUtc:Date;
+  deletedAtUtc:Date;
+  createdBy:User;
+  document:Document;
+  tags:Tag[];
+};
+
+export interface Tag {
+  id:string;
+  name:string;
+};
+
 export interface User {
   id: string;
   firstName: string;
