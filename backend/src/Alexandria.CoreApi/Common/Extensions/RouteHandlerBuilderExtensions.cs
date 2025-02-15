@@ -1,4 +1,4 @@
-using Alexandria.CoreApi.Common.Roles;
+using Alexandria.Application.Common.Roles;
 
 namespace Alexandria.CoreApi.Common.Extensions;
 

@@ -1,9 +1,9 @@
 using Alexandria.CoreApi.Common.Extensions;
 using Alexandria.Application.Characters.Queries;
+using Alexandria.Application.Common.Roles;
 using Alexandria.CoreApi.Characters.DTOs;
 using Alexandria.CoreApi.Common;
 using Alexandria.CoreApi.Common.Interfaces;
-using Alexandria.CoreApi.Common.Roles;
 using Alexandria.CoreApi.Users.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

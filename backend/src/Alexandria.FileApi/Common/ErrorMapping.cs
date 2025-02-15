@@ -1,6 +1,6 @@
 using ErrorOr;
 
-namespace Alexandria.CoreApi.Common;
+namespace Alexandria.FileApi.Common;
 
 public static class ErrorMapping
 {

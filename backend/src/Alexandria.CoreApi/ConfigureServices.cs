@@ -1,5 +1,5 @@
 using Alexandria.Application;
-using Alexandria.CoreApi.Common.Roles;
+using Alexandria.Application.Common.Roles;
 using Alexandria.Infrastructure;
 using Alexandria.Infrastructure.Common.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

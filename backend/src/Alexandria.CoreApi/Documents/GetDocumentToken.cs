@@ -1,9 +1,9 @@
 using Alexandria.Application.Common.Constants;
+using Alexandria.Application.Common.Roles;
 using Alexandria.Application.Documents.Queries;
 using Alexandria.CoreApi.Common;
 using Alexandria.CoreApi.Common.Extensions;
 using Alexandria.CoreApi.Common.Interfaces;
-using Alexandria.CoreApi.Common.Roles;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

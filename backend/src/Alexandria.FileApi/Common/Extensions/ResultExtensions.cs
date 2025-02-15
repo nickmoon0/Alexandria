@@ -1,6 +1,6 @@
 using ErrorOr;
 
-namespace Alexandria.CoreApi.Common.Extensions;
+namespace Alexandria.FileApi.Common.Extensions;
 
 public static class ResultExtensions
 {

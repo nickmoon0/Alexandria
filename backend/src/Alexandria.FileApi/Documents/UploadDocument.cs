@@ -1,7 +1,7 @@
 using Alexandria.Application.Common.Constants;
 using Alexandria.Application.Documents.Queries;
-using Alexandria.CoreApi.Common.Extensions;
 using Alexandria.FileApi.Common;
+using Alexandria.FileApi.Common.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
