@@ -28,7 +28,10 @@ public class GetDocumentFileStreamHandler : IRequestHandler<GetDocumentFileStrea
     private readonly IFileService _fileService;
     private readonly ILogger<GetDocumentFileStreamHandler> _logger;
     
-    public GetDocumentFileStreamHandler(IAppDbContext context, IFileService fileService, ILogger<GetDocumentFileStreamHandler> logger)
+    public GetDocumentFileStreamHandler(
+        IAppDbContext context,
+        IFileService fileService,
+        ILogger<GetDocumentFileStreamHandler> logger)
     {
         _context = context;
         _fileService = fileService;
@@ -46,7 +49,7 @@ public class GetDocumentFileStreamHandler : IRequestHandler<GetDocumentFileStrea
         
         // Prepare file stream
         var fileName = $"{document.Name}{document.FileExtension}";
-        var filePath = Path.Combine(document.ImagePath!, fileName);
+        var filePath = Path.Combine(_fileService.GetAbsoluteFileDirectory(), document.ImagePath!, fileName);
         var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         var contentType = _fileService.GetContentType(fileName);
 
