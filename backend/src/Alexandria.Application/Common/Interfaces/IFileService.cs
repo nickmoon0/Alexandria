@@ -4,8 +4,9 @@ using ErrorOr;
 namespace Alexandria.Application.Common.Interfaces;
 
 public interface IFileService
-{
-    public ErrorOr<string> GenerateFilePath(string fileName, FileType fileType);
+{ 
+    public ErrorOr<string> GenerateRelativeFilePath(string fileName, FileType fileType);
+    public string GetAbsoluteFileDirectory();
     public ErrorOr<FileType> DetermineFileType(string fileName);
     public string GetContentType(string fileName);
 }

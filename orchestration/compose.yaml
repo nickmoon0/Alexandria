@@ -1,10 +1,11 @@
 version: '3.8'
 
 services:
-  api:
+  coreapi:
     build:
       context: ../backend
-      target: development
+      target: final
+      dockerfile: CoreApi.Dockerfile
     develop:
       watch:
         - action: rebuild
@@ -15,6 +16,30 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    volumes:
+      - C:\Users\Nicks PC\Projects\Alexandria\backend\files:/fileuploads
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    env_file: "Env/Api.env"
+
+  fileapi:
+    build:
+      context: ../backend
+      target: final
+      dockerfile: FileApi.Dockerfile
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+    restart: always
+    ports:
+      - "81:80"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - C:\Users\Nicks PC\Projects\Alexandria\backend\files:/fileuploads
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80

@@ -50,7 +50,7 @@ public class CreateEntryHandler : IRequestHandler<CreateEntryCommand, ErrorOr<Cr
         var newFileName = Guid.NewGuid().ToString();
         var outputFileName = $"{newFileName}{fileExtension}";
         
-        var filePathResult = _fileService.GenerateFilePath(outputFileName, fileType);
+        var filePathResult = _fileService.GenerateRelativeFilePath(outputFileName, fileType);
         if (filePathResult.IsError)
         {
             _logger.LogError("Failed to retrieve file path");

@@ -21,18 +21,23 @@ public class FileService : IFileService
         _options = options.Value;
     }
     
-    public ErrorOr<string> GenerateFilePath(string fileName, FileType fileType)
+    public ErrorOr<string> GenerateRelativeFilePath(string fileName, FileType fileType)
     {
         var currYear = _dateTimeProvider.UtcNow.Year;
-        var directory = Path.Combine(_options.Path, fileType.ToString(), currYear.ToString());
-        var filePath = Path.Combine(directory, fileName);
+        
+        var relativePath = Path.Combine(fileType.ToString(), currYear.ToString());
+        var absolutePath = Path.Combine(_options.AbsolutePath, relativePath);
+        
+        var filePath = Path.Combine(relativePath, fileName);
         
         // Make sure that directory exists
-        Directory.CreateDirectory(directory);
+        Directory.CreateDirectory(absolutePath);
 
         return filePath;
     }
 
+    public string GetAbsoluteFileDirectory() => _options.AbsolutePath;
+    
     public ErrorOr<FileType> DetermineFileType(string fileName)
     {
         var extension = Path.GetExtension(fileName);
