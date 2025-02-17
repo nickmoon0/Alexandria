@@ -58,7 +58,7 @@ public class CreateEntryHandler : IRequestHandler<CreateEntryCommand, ErrorOr<Cr
         }
         
         // Create database records relevant to file
-        var imagePath = Path.GetDirectoryName(filePathResult.Value);
+        var imagePath = Path.GetDirectoryName(filePathResult.Value)?.Replace('\\', '/');
         if (imagePath == null)
         {
             _logger.LogError("Failed to get image directory");
