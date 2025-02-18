@@ -1,4 +1,4 @@
 export type Route = {
   path: string;
-  getHref: () => string;
+  getHref: (param?:string) => string;
 }

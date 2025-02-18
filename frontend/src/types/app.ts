@@ -9,6 +9,14 @@ export interface Character {
   createdOnUtc: Date;
 };
 
+export interface Comment {
+  id:string;
+  content:string;
+  createdAtUtc:Date;
+  deletedAtUtc:Date;
+  createdBy:User;
+};
+
 export interface Document {
   id: string
 };
@@ -21,6 +29,7 @@ export interface Entry {
   deletedAtUtc:Date;
   createdBy:User;
   document:Document;
+  comments:Comment[];
   tags:Tag[];
 };
 

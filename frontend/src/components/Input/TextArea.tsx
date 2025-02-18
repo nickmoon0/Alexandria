@@ -1,6 +1,7 @@
 export interface TextAreaProps {
   value: string;
   onChange?: (value: string) => void;
+  onKeyDown?: (e:React.KeyboardEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   className?: string;
   disabled?: boolean;
@@ -10,6 +11,7 @@ export interface TextAreaProps {
 const TextArea: React.FC<TextAreaProps> = ({
   value,
   onChange,
+  onKeyDown,
   placeholder = 'Enter text...',
   className,
   disabled = false,
@@ -19,6 +21,7 @@ const TextArea: React.FC<TextAreaProps> = ({
     <textarea
       value={value}
       onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+      onKeyDown={onKeyDown ? (e) => onKeyDown(e) : undefined}
       placeholder={placeholder}
       disabled={disabled}
       rows={rows}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
 import { Entry } from '@/types/app';
+import { paths } from '@/config/paths';
 
 export const useEntries = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -9,6 +11,8 @@ export const useEntries = () => {
   const [cursorStack, setCursorStack] = useState<string[]>([]);
   const [entryPopup, setEntryPopup] = useState<Entry | null>(null);
   const [newEntryPopup, setNewEntryPopup] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   // Fetch Entries
   const fetchEntries = async (cursorId: string | null, previous: boolean = false) => {
@@ -32,9 +36,7 @@ export const useEntries = () => {
 
   // Handle Entry Click
   const handleEntryClick = (rowId: string) => {
-    const entry = entries.find((entry) => entry.id === rowId);
-    if (!entry) return console.error('Entry not found');
-    setEntryPopup(entry);
+    navigate(paths.entry.getHref(rowId));
   };
 
   const handleEntryPopupClose = () => {

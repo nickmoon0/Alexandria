@@ -54,10 +54,26 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   return (
     <div>
       {mediaType === MediaType.image && mediaSrc && (
-        <img className='rounded-md mx-auto' src={mediaSrc} alt='Document' style={{ maxWidth: '100%' }} />
+        <img 
+          className='rounded-md mx-auto'
+          src={mediaSrc} alt='Document'
+          style={{ 
+            maxWidth: '100%',
+            height: 'auto',
+            maxHeight: '80vh',
+            display: 'block'
+          }} />
       )}
       {mediaType === MediaType.video && mediaSrc && (
-        <video className='rounded-md mx-auto' controls style={{ maxWidth: '100%' }}>
+        <video 
+          className='rounded-md mx-auto'
+          controls 
+          style={{ 
+            maxWidth: '100%',
+            maxHeight: '80vh',
+            display: 'block',
+            objectFit: 'contain'
+          }}>
           <source src={mediaSrc} type='video/mp4' />
           Your browser does not support the video tag.
         </video>

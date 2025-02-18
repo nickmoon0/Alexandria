@@ -25,6 +25,16 @@ export default tseslint.config(
       ],
       semi: ['error', 'always'],
       quotes: ['error', 'single'],
+      'no-restricted-imports': [
+        'error',
+        {
+          "patterns": [
+            "./*",  // Disallow relative imports
+            "../*"  // Disallow parent directory imports
+          ],
+          "message": "Use '@' alias for local imports instead of relative paths."
+        }
+      ]
     },
   },
 )
