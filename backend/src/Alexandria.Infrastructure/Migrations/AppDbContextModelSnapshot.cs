@@ -39,10 +39,6 @@ namespace Alexandria.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("EntryIds")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<Guid?>("UserId")
                         .HasColumnType("char(36)");
 
@@ -179,30 +175,6 @@ namespace Alexandria.Infrastructure.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.EntryCharacter.EntryCharacter", b =>
-                {
-                    b.Property<Guid>("EntryCharacterId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("CharacterId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("EntryId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("EntryCharacterId");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("EntryId");
-
-                    b.ToTable("EntryCharacter");
-                });
-
             modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.Tagging.Tagging", b =>
                 {
                     b.Property<Guid>("TaggingId")
@@ -267,7 +239,7 @@ namespace Alexandria.Infrastructure.Migrations
 
                             b1.HasKey("CharacterId");
 
-                            b1.ToTable("Character");
+                            b1.ToTable("Character", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("CharacterId");
@@ -320,28 +292,13 @@ namespace Alexandria.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("User");
+                            b1.ToTable("User", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
                         });
 
                     b.Navigation("Name")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Alexandria.Infrastructure.Persistence.Models.EntryCharacter.EntryCharacter", b =>
-                {
-                    b.HasOne("Alexandria.Domain.CharacterAggregate.Character", null)
-                        .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Alexandria.Domain.EntryAggregate.Entry", null)
-                        .WithMany()
-                        .HasForeignKey("EntryId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
