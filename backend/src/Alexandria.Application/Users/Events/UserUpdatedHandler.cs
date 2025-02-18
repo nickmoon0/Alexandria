@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Alexandria.Application.Characters.Events;
+namespace Alexandria.Application.Users.Events;
 
 public class UserUpdatedHandler : INotificationHandler<UserUpdatedEvent>
 {

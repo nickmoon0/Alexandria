@@ -128,7 +128,7 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
         {
             return CommentErrors.AlreadyDeleted;
         }
-
+        
         return Result.Deleted;
     }
 
