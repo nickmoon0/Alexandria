@@ -2,7 +2,7 @@ import Axios, { InternalAxiosRequestConfig } from 'axios';
 import { env } from '@/config/env';
 
 // Helper function to store and retrieve the token securely
-const TOKEN_KEY = "authToken";
+const TOKEN_KEY = 'authToken';
 
 export function initializeToken(newToken: string | undefined) {
   if (newToken) {

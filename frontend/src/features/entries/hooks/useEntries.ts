@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
 import { Entry } from '@/types/app';
@@ -15,7 +15,7 @@ export const useEntries = () => {
   const navigate = useNavigate();
 
   // Fetch Entries
-  const fetchEntries = async (cursorId: string | null, previous: boolean = false) => {
+  const fetchEntries = useCallback(async (cursorId: string | null, previous: boolean = false) => {
     const pageRequest = { PageSize: count, CursorId: cursorId };
 
     const response = await getEntries({ pageRequest, options: [ GetEntriesOptions.IncludeDocument, GetEntriesOptions.IncludeTags ] });
@@ -27,11 +27,6 @@ export const useEntries = () => {
     if (!previous && cursorId !== null) {
       setCursorStack((prevStack) => [...prevStack, cursorId]);
     }
-  };
-
-  // Refresh entries when count changes
-  useEffect(() => {
-    refreshEntries();
   }, [count]);
 
   // Handle Entry Click
@@ -41,13 +36,18 @@ export const useEntries = () => {
 
   const handleEntryPopupClose = () => {
     setEntryPopup(null);
-  }
+  };
 
-  const refreshEntries = () => {
+  const refreshEntries = useCallback(() => {
     setCursorStack([]);
     setNextCursor(null);
     fetchEntries(null);
-  };
+  }, [fetchEntries]);
+
+  // Refresh entries when count changes
+  useEffect(() => {
+    refreshEntries();
+  }, [refreshEntries, count]);
 
   return {
     entries,

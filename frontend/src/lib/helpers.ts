@@ -1,11 +1,11 @@
 export const formatDateTime = (input: Date | string):string => {
-  const date = typeof input === "string" ? new Date(input) : input;
+  const date = typeof input === 'string' ? new Date(input) : input;
 
   if (isNaN(date.getTime())) {
-      throw new Error("Invalid date provided");
+      throw new Error('Invalid date provided');
   }
 
-  const pad = (num: number) => num.toString().padStart(2, "0");
+  const pad = (num: number) => num.toString().padStart(2, '0');
 
   const hours = pad(date.getHours());
   const minutes = pad(date.getMinutes());

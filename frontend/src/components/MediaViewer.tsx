@@ -1,5 +1,5 @@
 import { getDocumentParams, TokenPermissions } from '@/lib/document-service';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Button from '@/components/Button';
 
 interface MediaViewerProps {
@@ -16,7 +16,7 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   const [mediaSrc, setMediaSrc] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
 
-  const retrieveDocumentParams = async () => {
+  const retrieveDocumentParams = useCallback(async () => {
     const documentParams = await getDocumentParams({ 
       documentId,
       tokenPermission:TokenPermissions.Read 
@@ -34,11 +34,11 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
         setMediaType(MediaType.document); // Default to document type if not image/video
       }
     }
-  };
+  }, [documentId]);
 
   useEffect(() => {
     retrieveDocumentParams();
-  }, [documentId]);
+  }, [retrieveDocumentParams, documentId]);
 
   const handleDownload = () => {
     if (mediaSrc) {

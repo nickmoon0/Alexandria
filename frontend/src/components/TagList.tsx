@@ -1,19 +1,19 @@
 import { Tag } from '@/types/app';
 
-export interface TagListProps<T extends (...args: any[]) => void> {
+export interface TagListProps<T extends (...args: unknown[]) => void> {
   tags:Tag[];
   tagListClassName?:string;
   tagClassName?:string;
   onClick?: T;
 }
 
-export interface ClickableTagProps<T extends (...args: any[]) => void> {
+export interface ClickableTagProps<T extends (...args: unknown[]) => void> {
   tag:Tag;
   className?:string;
   onClick?: T;
 };
 
-export const ClickableTag = <T extends (...args: any[]) => void>({ tag, className, onClick }:ClickableTagProps<T>) => {
+export const ClickableTag = <T extends (...args: unknown[]) => void>({ tag, className, onClick }:ClickableTagProps<T>) => {
   return (
     <span
       onClick={onClick}
@@ -24,7 +24,7 @@ export const ClickableTag = <T extends (...args: any[]) => void>({ tag, classNam
   );
 };
 
-const TagList = <T extends (...args: any[]) => void>({ tags, tagListClassName, tagClassName, onClick }:TagListProps<T>) => {
+const TagList = <T extends (...args: unknown[]) => void>({ tags, tagListClassName, tagClassName, onClick }:TagListProps<T>) => {
   if (!tags || tags.length === 0) return null;
 
   return (

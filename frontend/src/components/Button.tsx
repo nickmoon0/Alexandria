@@ -1,11 +1,11 @@
-export interface ButtonProps<T extends (...args: any[]) => void> {
+export interface ButtonProps<T extends (...args: unknown[]) => void> {
   onClick: T;
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
 }
 
-const Button = <T extends (...args: any[]) => void>({ 
+const Button = <T extends (...args: unknown[]) => void>({ 
   children,
   onClick,
   className,
@@ -20,7 +20,7 @@ const Button = <T extends (...args: any[]) => void>({
       } ${className}`}>
       {children}
     </button>
-  )
+  );
 };
 
 export default Button;

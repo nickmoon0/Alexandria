@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 
 interface FileUplodProps {
@@ -25,7 +24,7 @@ const FileUpload = ({ selectedFile, handleFileChange, handleClearFile, handleUpl
           onClick={handleUpload}
           className='px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md cursor-pointer hover:bg-blue-700 transition'
         >
-          {selectedFile ? `Upload` : 'Select File'}
+          {selectedFile ? 'Upload' : 'Select File'}
         </button>
         {selectedFile && (
           <button

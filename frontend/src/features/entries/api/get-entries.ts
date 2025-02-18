@@ -15,12 +15,12 @@ export interface GetEntriesProps {
 };
 
 export const getEntries = async ({ options, pageRequest }:GetEntriesProps) => {
-  var queryString = `pageRequest=${encodeURIComponent(
+  let queryString = `pageRequest=${encodeURIComponent(
     JSON.stringify(pageRequest)
   )}`;
 
   if (options) {
-    queryString += `&options=${options.join('|')}`
+    queryString += `&options=${options.join('|')}`;
   }
 
   const response = await api.get<PaginatedResponse<Entry>>(`/entry?${queryString}`);

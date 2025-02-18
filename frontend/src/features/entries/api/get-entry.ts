@@ -1,4 +1,4 @@
-import { api } from "@/lib/api-client";
+import { api } from '@/lib/api-client';
 
 export enum GetEntryOptions {
   None = 'None',
@@ -13,7 +13,7 @@ export interface GetEntryProps {
 };
 
 export const getEntry = async ({ entryId, options }:GetEntryProps) => {
-  var queryString = '';
+  let queryString = '';
   if (options) {
     queryString += `?options=${options.join('|')}`;
   }

@@ -22,7 +22,7 @@ const EntryUploadForm = ({ onClose }: EntryUploadFormProps) => {
 
   const handleClearFile = () => {
     setFileValue(undefined);
-  }
+  };
 
   const handleUpload = async () => {
     if (!fileValue) {
