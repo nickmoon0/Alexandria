@@ -15,4 +15,8 @@ public static class CommentErrors
     public static readonly Error InvalidData = Error.Validation(
         $"{nameof(Comment)}.InvalidData",
         "Data was not valid");
+    
+    public static readonly Error AlreadyDeleted = Error.Validation(
+        $"{nameof(Comment)}.AlreadyDeleted",
+        "Comment was already deleted.");
 }

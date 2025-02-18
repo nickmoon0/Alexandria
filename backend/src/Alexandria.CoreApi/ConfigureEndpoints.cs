@@ -61,6 +61,7 @@ public static class ConfigureEndpoints
             .MapEndpoint<AddComment>()
             .MapEndpoint<CreateEntry>()
             .MapEndpoint<DeleteEntry>()
+            .MapEndpoint<GetComments>()
             .MapEndpoint<GetEntries>()
             .MapEndpoint<GetEntry>()
             .MapEndpoint<TagEntry>();

@@ -123,7 +123,12 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
         {
             return DocumentErrors.AlreadyDeleted;
         }
-        
+
+        if (Comments.Any(comment => comment.Delete(dateTimeProvider).IsError))
+        {
+            return CommentErrors.AlreadyDeleted;
+        }
+
         return Result.Deleted;
     }
 

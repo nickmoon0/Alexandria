@@ -30,6 +30,7 @@ public class DeleteEntryHandler
         // Note: Include all entry sub-records so that they can be deleted as well
         var entry = await _context.Entries
             .Include(entry => entry.Document)
+            .Include(entry => entry.Comments)
             .SingleOrDefaultAsync(entry => entry.Id == request.EntryId, cancellationToken);
         
         if (entry == null)
