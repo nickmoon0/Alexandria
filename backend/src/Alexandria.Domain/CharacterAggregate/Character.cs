@@ -10,7 +10,8 @@ public class Character : AggregateRoot, IAuditable, ISoftDeletable
 {
     public Name Name { get; private set; } = null!;
     public string? Description { get; private set; }
-
+    public List<Guid> EntryIds { get; set; } = [];
+    
     public Guid? UserId { get; private set; }
 
     public Guid CreatedById { get; private set; }
