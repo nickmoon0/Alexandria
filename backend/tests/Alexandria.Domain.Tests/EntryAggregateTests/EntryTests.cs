@@ -42,43 +42,29 @@ public class EntryTests
         }
 
         [Fact]
-        public void AddCharacter_ValidId_ShouldAddCharacter()
+        public void AddCharacter_ValidCharacter_ShouldAddCharacter()
         {
             // Arrange
             var entry = EntryFactory.CreateEntry().Value;
-            var characterId = Guid.NewGuid();
+            var character = CharacterFactory.CreateCharacter().Value;
 
             // Act
-            var result = entry.AddCharacter(characterId);
+            var result = entry.AddCharacter(character);
 
             // Assert
             result.IsError.Should().BeFalse();
         }
 
         [Fact]
-        public void AddCharacter_EmptyId_ShouldReturnInvalidCharacterIdError()
+        public void AddCharacter_DuplicateCharacter_ShouldReturnCharacterIdAlreadyPresentError()
         {
             // Arrange
             var entry = EntryFactory.CreateEntry().Value;
+            var character = CharacterFactory.CreateCharacter().Value;
+            entry.AddCharacter(character);
 
             // Act
-            var result = entry.AddCharacter(Guid.Empty);
-
-            // Assert
-            result.IsError.Should().BeTrue();
-            result.FirstError.Should().Be(DocumentErrors.InvalidCharacterId);
-        }
-
-        [Fact]
-        public void AddCharacter_DuplicateId_ShouldReturnCharacterIdAlreadyPresentError()
-        {
-            // Arrange
-            var entry = EntryFactory.CreateEntry().Value;
-            var characterId = Guid.NewGuid();
-            entry.AddCharacter(characterId);
-
-            // Act
-            var result = entry.AddCharacter(characterId);
+            var result = entry.AddCharacter(character);
 
             // Assert
             result.IsError.Should().BeTrue();
@@ -86,43 +72,29 @@ public class EntryTests
         }
 
         [Fact]
-        public void RemoveCharacter_ValidId_ShouldRemoveCharacter()
+        public void RemoveCharacter_ValidCharacter_ShouldRemoveCharacter()
         {
             // Arrange
             var entry = EntryFactory.CreateEntry().Value;
-            var characterId = Guid.NewGuid();
-            entry.AddCharacter(characterId);
+            var character = CharacterFactory.CreateCharacter().Value;
+            entry.AddCharacter(character);
 
             // Act
-            var result = entry.RemoveCharacter(characterId);
+            var result = entry.RemoveCharacter(character);
 
             // Assert
             result.IsError.Should().BeFalse();
         }
 
         [Fact]
-        public void RemoveCharacter_EmptyId_ShouldReturnInvalidCharacterIdError()
+        public void RemoveCharacter_CharacterNotPresent_ShouldReturnCharacterIdNotPresentError()
         {
             // Arrange
             var entry = EntryFactory.CreateEntry().Value;
+            var character = CharacterFactory.CreateCharacter().Value;
 
             // Act
-            var result = entry.RemoveCharacter(Guid.Empty);
-
-            // Assert
-            result.IsError.Should().BeTrue();
-            result.FirstError.Should().Be(DocumentErrors.InvalidCharacterId);
-        }
-
-        [Fact]
-        public void RemoveCharacter_IdNotPresent_ShouldReturnCharacterIdNotPresentError()
-        {
-            // Arrange
-            var entry = EntryFactory.CreateEntry().Value;
-            var characterId = Guid.NewGuid();
-
-            // Act
-            var result = entry.RemoveCharacter(characterId);
+            var result = entry.RemoveCharacter(character);
 
             // Assert
             result.IsError.Should().BeTrue();

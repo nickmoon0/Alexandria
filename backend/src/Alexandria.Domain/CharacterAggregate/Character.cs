@@ -2,6 +2,7 @@ using Alexandria.Domain.CharacterAggregate.Events;
 using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Domain.Common.ValueObjects.Name;
+using Alexandria.Domain.EntryAggregate;
 using ErrorOr;
 
 namespace Alexandria.Domain.CharacterAggregate;
@@ -10,7 +11,9 @@ public class Character : AggregateRoot, IAuditable, ISoftDeletable
 {
     public Name Name { get; private set; } = null!;
     public string? Description { get; private set; }
-    public List<Guid> EntryIds { get; set; } = [];
+
+    public List<Entry> Entries { get; init; } = [];
+    public IReadOnlyList<Guid> EntryIds => Entries.Select(x => x.Id).ToList();
     
     public Guid? UserId { get; private set; }
 

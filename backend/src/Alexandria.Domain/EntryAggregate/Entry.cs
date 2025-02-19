@@ -1,3 +1,4 @@
+using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common;
 using Alexandria.Domain.Common.Interfaces;
 using Alexandria.Domain.EntryAggregate.Errors;
@@ -13,7 +14,8 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
     public Document? Document { get; private set; }
     public List<Comment> Comments { get; private set; } = [];
 
-    private List<Guid> CharacterIds { get; set; } = [];
+    public List<Character> Characters { get; init; } = [];
+    public IReadOnlyList<Guid> CharacterIds => Characters.Select(c => c.Id).ToList();
     
     public Guid CreatedById { get; }
     public DateTime CreatedAtUtc { get; }
@@ -57,35 +59,25 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
         return new Entry(name, description, createdById, dateTimeProvider.UtcNow);
     }
     
-    public ErrorOr<Updated> AddCharacter(Guid characterId)
+    public ErrorOr<Updated> AddCharacter(Character character)
     {
-        if (characterId == Guid.Empty)
-        {
-            return DocumentErrors.InvalidCharacterId;
-        }
-
-        if (CharacterIds.Contains(characterId))
+        if (Characters.Contains(character))
         {
             return DocumentErrors.CharacterIdAlreadyPresent;
         }
         
-        CharacterIds.Add(characterId);
+        Characters.Add(character);
         return Result.Updated;
     }
 
-    public ErrorOr<Updated> RemoveCharacter(Guid characterId)
+    public ErrorOr<Updated> RemoveCharacter(Character character)
     {
-        if (characterId == Guid.Empty)
-        {
-            return DocumentErrors.InvalidCharacterId;
-        }
-
-        if (!CharacterIds.Contains(characterId))
+        if (!Characters.Contains(character))
         {
             return DocumentErrors.CharacterIdNotPresent;
         }
         
-        CharacterIds.Remove(characterId);
+        Characters.Remove(character);
         return Result.Updated;
     }
 
