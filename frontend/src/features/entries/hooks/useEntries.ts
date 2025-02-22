@@ -4,6 +4,9 @@ import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entrie
 import { Entry } from '@/types/app';
 import { paths } from '@/config/paths';
 import { useEntriesRefresh } from './EntriesContext';
+import { deleteEntry } from '../api/delete-entry';
+import { useToast } from '@/hooks/ToastContext';
+import { ToastType } from '@/components/Toast';
 
 export const useEntries = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -13,20 +16,25 @@ export const useEntries = () => {
   const [newEntryPopup, setNewEntryPopup] = useState<boolean>(false);
 
   const { count, entriesRefresh } = useEntriesRefresh();
+  const { showToast } = useToast();
 
   const navigate = useNavigate();
 
   // Fetch Entries
   const fetchEntries = useCallback(async (cursorId: string | null, previous: boolean = false) => {
-    const pageRequest = { PageSize: count, CursorId: cursorId };
-    const response = await getEntries({ pageRequest, options: [ GetEntriesOptions.IncludeDocument, GetEntriesOptions.IncludeTags ] });
-
-    setEntries(response.data);
-    setNextCursor(response.paging.nextCursor);
-
-    // Don't add cursor to stack if moving backwards
-    if (!previous && cursorId !== null) {
-      setCursorStack((prevStack) => [...prevStack, cursorId]);
+    try {
+      const pageRequest = { PageSize: count, CursorId: cursorId };
+      const response = await getEntries({ pageRequest, options: [ GetEntriesOptions.IncludeDocument, GetEntriesOptions.IncludeTags ] });
+  
+      setEntries(response.data);
+      setNextCursor(response.paging.nextCursor);
+  
+      // Don't add cursor to stack if moving backwards
+      if (!previous && cursorId !== null) {
+        setCursorStack((prevStack) => [...prevStack, cursorId]);
+      }
+    } catch (Error) {
+      showToast('Failed to fetch entries', ToastType.Error);
     }
   }, [count]);
 
@@ -45,6 +53,16 @@ export const useEntries = () => {
     fetchEntries(null);
   }, [fetchEntries]);
 
+  const handleDelete = async (entryId:string) => {
+    try {
+      await deleteEntry({ entryId });
+
+      refreshEntries();
+    } catch (error) {
+      showToast('Failed to delete entry', ToastType.Error);
+    }
+  };
+
   // Refresh entries when count changes
   useEffect(() => {
     refreshEntries();
@@ -59,6 +77,7 @@ export const useEntries = () => {
     newEntryPopup,
     handleEntryClick,
     handleEntryPopupClose,
+    handleDelete,
     fetchEntries,
     setCursorStack,
     setNewEntryPopup,

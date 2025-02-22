@@ -24,7 +24,7 @@ export const EntriesTable = () => {
     handleEntryClick,
     fetchEntries,
     setCursorStack,
-    refreshEntries
+    handleDelete
    } = useEntries();
   
 
@@ -40,16 +40,6 @@ export const EntriesTable = () => {
       const prevCursor = cursorStack[cursorStack.length - 2];
       setCursorStack((prevStack) => prevStack.slice(0, -1));
       fetchEntries(prevCursor, true);
-    }
-  };
-
-  const handleDelete = async (entryId:string) => {
-    try {
-      await deleteEntry({ entryId });
-
-      refreshEntries();
-    } catch (error) {
-      console.error(error);
     }
   };
 

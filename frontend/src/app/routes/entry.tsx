@@ -10,44 +10,60 @@ import Button from '@/components/Button';
 import CommentBlock from '@/features/comments/components/CommentBlock';
 import { createComment } from '@/features/comments/api/create-comment';
 import { getComments } from '@/features/comments/api/get-comments';
+import { useToast } from '@/hooks/ToastContext';
+import { ToastType } from '@/components/Toast';
 
 const EntryRoute = () => {
   const [entry, setEntry] = useState<Entry | null>(null);
   const [commentValue, setCommentValue] = useState<string | null>(null);
 
   const { entryId } = useParams();
+  const { showToast } = useToast();
 
   const retrieveEntry = async (entryId:string) => {
-    const response = await getEntry({
-      entryId,
-      options: [
-        GetEntryOptions.IncludeComments,
-        GetEntryOptions.IncludeDocument,
-        GetEntryOptions.IncludeTags,
-        GetEntryOptions.IncludeCharacters
-      ]
-    });
-
-    setEntry(response);
+    try {
+      const response = await getEntry({
+        entryId,
+        options: [
+          GetEntryOptions.IncludeComments,
+          GetEntryOptions.IncludeDocument,
+          GetEntryOptions.IncludeTags,
+          GetEntryOptions.IncludeCharacters
+        ]
+      });
+  
+      setEntry(response);
+    } catch (error) {
+      showToast('Failed to retrieve entry', ToastType.Error);
+    }
   };
 
   const retrieveComments = async (entryId:string) => {
-    const response = await getComments({entryId});
-    setEntry((prevEntry) => {
-      if (!prevEntry) return null;
+    try {
+      const response = await getComments({entryId});
+      setEntry((prevEntry) => {
+        if (!prevEntry) return null;
+  
+        return {...prevEntry,
+        comments: response
+        };
+      });
+    } catch (error) {
+      showToast('Failed to retrieve comments', ToastType.Error);
+    }
 
-      return {...prevEntry,
-      comments: response
-      };
-    });
   };
 
   const addComment = async () => {
-    if (entryId) {
-      await createComment({ content:commentValue ?? '', entryId });
-      retrieveComments(entryId);
-      setCommentValue(null);
-    };
+    try {
+      if (entryId) {
+        await createComment({ content:commentValue ?? '', entryId });
+        retrieveComments(entryId);
+        setCommentValue(null);
+      };
+    } catch (error) {
+      showToast('Failed to add comment', ToastType.Error);
+    }
   };
 
   const textAreaKeyDown = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
