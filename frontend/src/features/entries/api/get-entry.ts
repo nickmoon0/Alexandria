@@ -4,7 +4,8 @@ export enum GetEntryOptions {
   None = 'None',
   IncludeComments = 'IncludeComments',
   IncludeTags = 'IncludeTags',
-  IncludeDocument = 'IncludeDocument'
+  IncludeDocument = 'IncludeDocument',
+  IncludeCharacters = 'IncludeCharacters'
 };
 
 export interface GetEntryProps {

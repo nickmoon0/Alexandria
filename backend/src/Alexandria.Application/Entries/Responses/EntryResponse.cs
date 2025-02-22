@@ -1,3 +1,4 @@
+using Alexandria.Application.Characters.Responses;
 using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
 
@@ -9,6 +10,7 @@ public class EntryResponse
     public string? Name { get; init; }
     public string? Description { get; init; }
     public DocumentResponse? Document { get; init; }
+    public IReadOnlyList<CharacterResponse>? Characters { get; init; }
     public IReadOnlyList<CommentResponse>? Comments { get; init; }
     public IReadOnlyList<TagResponse>? Tags { get; set; }
 

@@ -1,3 +1,4 @@
+using Alexandria.Application.Characters.Responses;
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Entries.Responses;
@@ -16,9 +17,10 @@ namespace Alexandria.Application.Entries.Queries;
 public enum GetEntryOptions
 {
     None = 0,
-    IncludeComments = 1,
-    IncludeDocument = 2,
-    IncludeTags = 4
+    IncludeComments = 1 << 0,
+    IncludeDocument = 1 << 1,
+    IncludeTags = 1 << 2,
+    IncludeCharacters = 1 << 3
 }
 
 public record GetEntryQuery(Guid EntryId, GetEntryOptions Options) : IRequest<ErrorOr<GetEntryResponse>>;
@@ -66,6 +68,19 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
             Name = createdByUser.Name,
         };
         
+        // Create character response objects
+        List<CharacterResponse>? characters = null;
+        if (request.Options.HasFlag(GetEntryOptions.IncludeCharacters))
+        {
+            var characterResponsesResult = await GetCharacterResponses(entry, cancellationToken);
+            if (characterResponsesResult.IsError)
+            {
+                return characterResponsesResult.Errors;
+            }
+            
+            characters = characterResponsesResult.Value.ToList();
+        }
+        
         // Create comment response objects
         List<CommentResponse>? comments = null;
         if (request.Options.HasFlag(GetEntryOptions.IncludeComments))
@@ -112,6 +127,7 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
             Name = entry.Name,
             Description = entry.Description,
             Document = document,
+            Characters = characters,
             Comments = comments,
             CreatedBy = userResponse,
             CreatedAtUtc = entry.CreatedAtUtc,
@@ -129,11 +145,16 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
     {
         IQueryable<Entry> query = _context.Entries;
 
+        if (options.HasFlag(GetEntryOptions.IncludeCharacters))
+        {
+            query = query.Include(entry => entry.Characters);
+        }
+        
         if (options.HasFlag(GetEntryOptions.IncludeComments))
         {
             query = query.Include(entry => entry.Comments);
         }
-
+        
         if (options.HasFlag(GetEntryOptions.IncludeDocument))
         {
             query = query.Include(entry => entry.Document);
@@ -233,5 +254,52 @@ public class GetEntryHandler : IRequestHandler<GetEntryQuery, ErrorOr<GetEntryRe
             .ToList();
 
         return commentResponses;
+    }
+
+    private async Task<ErrorOr<IEnumerable<CharacterResponse>>> GetCharacterResponses(Entry entry,
+        CancellationToken cancellationToken)
+    {
+        if (entry.Characters.Count == 0)
+        {
+            return new List<CharacterResponse>();
+        }
+        
+        var createdById = entry.Characters
+            .Select(character => character.CreatedById);
+
+        var userIds = entry.Characters
+            .Where(character => character.UserId.HasValue)
+            .Select(character => character.UserId!.Value)
+            .ToList();
+        
+        userIds.AddRange(createdById);
+        
+        var users = await _context.Users
+            .Where(user => userIds.Contains(user.Id))
+            .Distinct()
+            .ToDictionaryAsync(user => user.Id, user => user, cancellationToken);
+
+        var getUserResponse = (Guid? userId) =>
+        {
+            if (userId == null || !users.TryGetValue((Guid)userId, out var user)) return null;
+            
+            return new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name.ShallowClone(),
+            };
+        };
+        
+        var characterResponses = entry.Characters.Select(character => new CharacterResponse
+        {
+            Id = character.Id,
+            Name = character.Name.ShallowClone(),
+            Description = character.Description,
+            CreatedAtUtc = character.CreatedAtUtc,
+            CreatedBy = getUserResponse(character.CreatedById),
+            User = getUserResponse(character.UserId),
+        }).ToList();
+
+        return characterResponses;
     }
 }

@@ -23,7 +23,8 @@ const EntryRoute = () => {
       options: [
         GetEntryOptions.IncludeComments,
         GetEntryOptions.IncludeDocument,
-        GetEntryOptions.IncludeTags
+        GetEntryOptions.IncludeTags,
+        GetEntryOptions.IncludeCharacters
       ]
     });
 
@@ -60,7 +61,7 @@ const EntryRoute = () => {
     if (entryId) {
       retrieveEntry(entryId);
     }
-  });
+  }, [entryId]);
 
   if (!entry) {
     return <div>Loading...</div>;
