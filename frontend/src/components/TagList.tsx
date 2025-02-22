@@ -1,19 +1,19 @@
 import { Tag } from '@/types/app';
 
-export interface TagListProps<T extends (...args: any[]) => void> {
+export interface TagListProps {
   tags:Tag[];
   tagListClassName?:string;
   tagClassName?:string;
-  onClick?: T;
+  onClick?: (tag:Tag) => void;
 }
 
-export interface ClickableTagProps<T extends (...args: any[]) => void> {
+export interface ClickableTagProps {
   tag:Tag;
   className?:string;
-  onClick?: T;
+  onClick?: (e:React.MouseEvent<HTMLDivElement>) => void;
 };
 
-export const ClickableTag = <T extends (...args: any[]) => void>({ tag, className, onClick }:ClickableTagProps<T>) => {
+export const ClickableTag = ({ tag, className, onClick }:ClickableTagProps) => {
   return (
     <span
       onClick={onClick}
@@ -24,18 +24,22 @@ export const ClickableTag = <T extends (...args: any[]) => void>({ tag, classNam
   );
 };
 
-const TagList = <T extends (...args: any[]) => void>({ tags, tagListClassName, tagClassName, onClick }:TagListProps<T>) => {
+const TagList = ({ tags, tagListClassName, tagClassName, onClick }:TagListProps) => {
   if (!tags || tags.length === 0) return null;
 
   return (
     <div className={`flex flex-wrap gap-2 pb-2 ${tagListClassName}`}>
       {tags.map((tag) => (
-        <ClickableTag key={tag.id} tag={tag} className={tagClassName} onClick={(e) => {
-          e.stopPropagation();
-          if (onClick) {
-            onClick(tag);
-          }
-        }} />
+        <ClickableTag 
+          key={tag.id}
+          tag={tag}
+          className={tagClassName}
+          onClick={(e:React.MouseEvent<HTMLDivElement>) => {
+            e.stopPropagation();
+            if (onClick) {
+              onClick(tag);
+            }
+          }} />
       ))}
     </div>
   );

@@ -1,5 +1,5 @@
 import { getDocumentParams, TokenPermissions } from '@/lib/document-service';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Button from '@/components/Button';
 
 interface MediaViewerProps {
@@ -16,7 +16,7 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   const [mediaSrc, setMediaSrc] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
 
-  const retrieveDocumentParams = async () => {
+  const retrieveDocumentParams = useCallback(async () => {
     const documentParams = await getDocumentParams({ 
       documentId,
       tokenPermission:TokenPermissions.Read 
@@ -34,11 +34,11 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
         setMediaType(MediaType.document); // Default to document type if not image/video
       }
     }
-  };
+  }, [documentId]);
 
   useEffect(() => {
     retrieveDocumentParams();
-  }, [documentId]);
+  }, [retrieveDocumentParams, documentId]);
 
   const handleDownload = () => {
     if (mediaSrc) {
@@ -54,10 +54,26 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   return (
     <div>
       {mediaType === MediaType.image && mediaSrc && (
-        <img className='rounded-md mx-auto' src={mediaSrc} alt='Document' style={{ maxWidth: '100%' }} />
+        <img 
+          className='rounded-md mx-auto'
+          src={mediaSrc} alt='Document'
+          style={{ 
+            maxWidth: '100%',
+            height: 'auto',
+            maxHeight: '80vh',
+            display: 'block'
+          }} />
       )}
       {mediaType === MediaType.video && mediaSrc && (
-        <video className='rounded-md mx-auto' controls style={{ maxWidth: '100%' }}>
+        <video 
+          className='rounded-md mx-auto'
+          controls 
+          style={{ 
+            maxWidth: '100%',
+            maxHeight: '80vh',
+            display: 'block',
+            objectFit: 'contain'
+          }}>
           <source src={mediaSrc} type='video/mp4' />
           Your browser does not support the video tag.
         </video>

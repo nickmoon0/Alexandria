@@ -1,4 +1,3 @@
-import EntryPopup from '@/features/entries/components/EntriesPopup';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import Button from '@/components/Button';
 import TagList from '@/components/TagList';
@@ -25,15 +24,12 @@ export const EntriesTable = () => {
     count,
     nextCursor,
     cursorStack,
-    entryPopup,
     newEntryPopup,
     setCount,
     handleEntryClick,
-    handleEntryPopupClose,
     fetchEntries,
     setCursorStack,
     setNewEntryPopup,
-    setNextCursor,
     refreshEntries
    } = useEntries();
   
@@ -77,7 +73,6 @@ export const EntriesTable = () => {
 
   return (
     <div className='col-span-full container mx-auto px-4'>
-      {entryPopup && <EntryPopup entry={entryPopup} onClose={handleEntryPopupClose} />}
       {newEntryPopup && <EntryUploadForm onClose={handleCloseUploadClick} />}
       
       {/* Top controls */}

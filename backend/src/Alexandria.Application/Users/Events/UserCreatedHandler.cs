@@ -5,7 +5,7 @@ using Alexandria.Domain.UserAggregate.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Alexandria.Application.Characters.Events;
+namespace Alexandria.Application.Users.Events;
 
 public class UserCreatedHandler : INotificationHandler<UserCreatedEvent>
 {

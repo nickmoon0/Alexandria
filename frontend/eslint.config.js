@@ -25,6 +25,7 @@ export default tseslint.config(
       ],
       semi: ['error', 'always'],
       quotes: ['error', 'single'],
+      'no-restricted-imports': ['error', 'always']
     },
   },
 )

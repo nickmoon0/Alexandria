@@ -1,4 +1,6 @@
+using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.EntryAggregate;
+using Alexandria.Infrastructure.Persistence.Models.CharacterEntry;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,6 +35,16 @@ public class EntryConfiguration : IEntityTypeConfiguration<Entry>
         builder.HasOne(e => e.Document)
             .WithOne()
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasMany(entry => entry.Characters)
+            .WithMany(character => character.Entries)
+            .UsingEntity<CharacterEntry>(
+                entityBuilder => entityBuilder.HasOne<Character>()
+                    .WithMany()
+                    .HasForeignKey(ce => ce.CharacterId),
+                entityBuilder => entityBuilder.HasOne<Entry>()
+                    .WithMany()
+                    .HasForeignKey(ce => ce.EntryId));
         
         // Create indexes
         builder
