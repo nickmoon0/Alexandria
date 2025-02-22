@@ -4,7 +4,7 @@ import { Entry } from '@/types/app';
 import { getEntry, GetEntryOptions } from '@/features/entries/api/get-entry';
 import { formatDateTime } from '@/lib/helpers';
 import MediaViewer from '@/components/MediaViewer';
-import TagList from '@/components/TagList';
+import TagList from '@/features/tags/components/TagList';
 import TextArea from '@/components/Input/TextArea';
 import Button from '@/components/Button';
 import CommentBlock from '@/features/comments/components/CommentBlock';

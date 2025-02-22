@@ -1,6 +1,6 @@
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import Button from '@/components/Button';
-import TagList from '@/components/TagList';
+import TagList from '@/features/tags/components/TagList';
 import EntryUploadForm from './EntryUploadForm';
 import { Plus } from 'lucide-react';
 import { CircleX } from 'lucide-react';
