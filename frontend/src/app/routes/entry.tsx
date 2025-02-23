@@ -7,12 +7,12 @@ import MediaViewer from '@/components/MediaViewer';
 import TagList from '@/features/tags/components/TagList';
 import TextArea from '@/components/Input/TextArea';
 import Button from '@/components/Button';
-import CommentBlock from '@/features/comments/components/CommentBlock';
 import { createComment } from '@/features/comments/api/create-comment';
 import { getComments } from '@/features/comments/api/get-comments';
 import { useToast } from '@/hooks/ToastContext';
 import { ToastType } from '@/components/Toast';
 import MetadataTag from '@/components/MetadataTag';
+import CommentList from '@/features/comments/components/CommentList';
 
 const EntryRoute = () => {
   const [entry, setEntry] = useState<Entry | null>(null);
@@ -87,7 +87,7 @@ const EntryRoute = () => {
   };
 
   return (
-    <div className='grid grid-cols-8 gap-4'>
+    <div className='h-full grid grid-cols-8 gap-4'>
       <div></div>
       <div className="col-span-3">
         <h1 className='text-2xl font-bold text-gray-800'>{entry.name}</h1>
@@ -103,18 +103,11 @@ const EntryRoute = () => {
             id={entry.id} />}
       </div>
       <div></div>
-      <div className="flex flex-col col-span-2">
+      <div className="flex flex-col col-span-2 h-full">
         <h1 className="text-2xl font-bold text-gray-800">Comments</h1>
-        { entry.comments && 
-          <ul>
-            { entry.comments
-              .sort((a,b) => new Date(b.createdAtUtc).getTime() - new Date(a.createdAtUtc).getTime())
-              .map(comment => 
-            <li key={comment.id}>
-              <CommentBlock comment={comment}/>
-            </li>) }
-          </ul>
-        }
+        <div>
+          <CommentList comments={entry.comments}/>
+        </div>
         <div className="mt-auto flex items-end gap-2">
           <TextArea 
             value={commentValue ?? ''}
