@@ -8,5 +8,9 @@ export const paths: Record<string, Route> = {
   entry: {
     path: '/entry/:entryId',
     getHref: (entryId?:string) => `/entry/${entryId}`
+  },
+  character: {
+    path: '/character/:characterId',
+    getHref: (characterId?:string) => `/character/${characterId}`
   }
 } as const;
