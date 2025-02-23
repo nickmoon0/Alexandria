@@ -25,6 +25,17 @@ public static class DependencyInjection
 
         return services;
     }
+
+    /// <summary>
+    /// Registers core hosted services. Public so that each API can decide if it wants to register services
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddCoreHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<RabbitMqConsumerService>();
+        return services;
+    }
     
     private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
@@ -50,8 +61,6 @@ public static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddHostedService<RabbitMqConsumerService>();
-        
         services.AddScoped<MessageProcessorService>();
         services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddScoped<ITaggingService, TaggingService>();

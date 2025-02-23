@@ -28,7 +28,8 @@ public static class ConfigureServices
 
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
-        
+        builder.Services.AddCoreHostedServices();
+            
         return builder;
     }
     
