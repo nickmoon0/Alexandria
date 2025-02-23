@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router';
 import { paths } from '@/config/paths';
 import LandingRoute from '@/app/routes/landing';
 import EntryRoute from '@/app/routes/entry';
+import CharacterRoute from '@/app/routes/character';
 
 const createAppRouter = () => 
   createBrowserRouter([
@@ -14,6 +15,10 @@ const createAppRouter = () =>
     {
       path: paths.entry.path,
       element: <EntryRoute />
+    },
+    {
+      path: paths.character.path,
+      element: <CharacterRoute />
     }
   ]);
 
