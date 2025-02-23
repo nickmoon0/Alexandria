@@ -1,3 +1,4 @@
+import React from 'react';
 export interface TextAreaProps {
   value: string;
   onChange?: (value: string) => void;

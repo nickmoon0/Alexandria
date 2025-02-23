@@ -1,9 +1,12 @@
+import React from 'react';
 import FileUpload from '@/features/entries/components/FileUpload';
 import TextArea from '@/components/Input/TextArea';
 import TextInput from '@/components/Input/TextInput';
 import Popup from '@/components/Popup';
 import { useState } from 'react';
-import { createEntry } from '../api/create-entry';
+import { createEntry } from '@/features/entries/api/create-entry';
+import { useToast } from '@/hooks/ToastContext';
+import { ToastType } from '@/components/Toast';
 
 export interface EntryUploadFormProps {
   onClose: () => void
@@ -13,6 +16,8 @@ const EntryUploadForm = ({ onClose }: EntryUploadFormProps) => {
   const [nameValue, setNameValue] = useState<string | null>(null);
   const [descValue, setDescValue] = useState<string | null>(null);
   const [fileValue, setFileValue] = useState<File | undefined>(undefined);
+
+  const { showToast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -34,15 +39,15 @@ const EntryUploadForm = ({ onClose }: EntryUploadFormProps) => {
     formData.append('file', fileValue);
 
     try {
-      await createEntry({ 
+      await createEntry({
         entryName:nameValue ?? '',
         description:descValue ?? '',
         file:fileValue });
 
       onClose();
     } catch (error) {
-      console.error('Upload error:', error);
-      alert('Error uploading file!');
+      console.error(error);
+      showToast('Failed to create entry', ToastType.Error);
     }
   };
 

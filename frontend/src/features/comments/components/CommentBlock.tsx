@@ -1,3 +1,4 @@
+import React from 'react';
 import { formatDateTime } from '@/lib/helpers';
 import { Comment } from '@/types/app';
 
