@@ -1,9 +1,10 @@
+import React from 'react';
 import FileUpload from '@/features/entries/components/FileUpload';
 import TextArea from '@/components/Input/TextArea';
 import TextInput from '@/components/Input/TextInput';
 import Popup from '@/components/Popup';
 import { useState } from 'react';
-import { createEntry } from '../api/create-entry';
+import { createEntry } from '@/features/entries/api/create-entry';
 import { useToast } from '@/hooks/ToastContext';
 import { ToastType } from '@/components/Toast';
 
@@ -45,6 +46,7 @@ const EntryUploadForm = ({ onClose }: EntryUploadFormProps) => {
 
       onClose();
     } catch (error) {
+      console.error(error);
       showToast('Failed to create entry', ToastType.Error);
     }
   };

@@ -1,5 +1,5 @@
 import { initializeToken } from '@/lib/api-client';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 
@@ -7,8 +7,7 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
-  const { children } = props;
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }:ProtectedRouteProps) => {
   const auth = useAuth();
   const [hasTriedSignin, setHasTriedSignin] = useState(false);
 
@@ -30,7 +29,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
     <>
       {auth.error ? (
         <>
-          <h1>We've hit a snag</h1>
+          <h1>{'We\'ve hit a snag'}</h1>
         </>
       ) : auth.isLoading ? (
         <>
@@ -40,7 +39,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
         children
       ) : (
         <>
-          <h1>We've hit a snag</h1>
+          <h1>{'We\'ve hit a snag'}</h1>
         </>
       )}
     </>

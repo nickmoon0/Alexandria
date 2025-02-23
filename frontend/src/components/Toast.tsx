@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from 'react';
 import '@/components/styles/toast.css';
 
 interface ToastProps {
@@ -12,7 +12,7 @@ export enum ToastType {
   Information
 };
 
-const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
+const Toast: React.FC<ToastProps> = ({ message, type, onClose }:ToastProps) => {
   useEffect(() => {
     const timer = setTimeout(onClose, 3000); // Auto-dismiss after 3s
     return () => clearTimeout(timer);

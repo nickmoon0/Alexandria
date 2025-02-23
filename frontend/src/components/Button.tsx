@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface ButtonProps<T extends (...args: unknown[]) => void> {
   onClick: T;
   children: React.ReactNode;

@@ -1,3 +1,4 @@
+import React from 'react';
 import { AppProvider } from '@/app/provider';
 import { AppRouter } from '@/app/router';
 

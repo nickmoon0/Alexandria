@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Entry } from '@/types/app';
@@ -34,6 +35,7 @@ const EntryRoute = () => {
   
       setEntry(response);
     } catch (error) {
+      console.error(error);
       showToast('Failed to retrieve entry', ToastType.Error);
     }
   };
@@ -49,6 +51,7 @@ const EntryRoute = () => {
         };
       });
     } catch (error) {
+      console.error(error);
       showToast('Failed to retrieve comments', ToastType.Error);
     }
 
@@ -62,6 +65,7 @@ const EntryRoute = () => {
         setCommentValue(null);
       };
     } catch (error) {
+      console.error(error);
       showToast('Failed to add comment', ToastType.Error);
     }
   };

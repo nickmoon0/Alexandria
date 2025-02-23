@@ -1,10 +1,9 @@
+import React from 'react';
 import Button from '@/components/Button';
-import { ToastType } from '@/components/Toast';
 import { EntriesTable } from '@/features/entries/components/EntriesTable';
 import EntryUploadForm from '@/features/entries/components/EntryUploadForm';
 import { useEntriesRefresh } from '@/features/entries/hooks/EntriesContext';
 import { useEntries } from '@/features/entries/hooks/useEntries';
-import { useToast } from '@/hooks/ToastContext';
 import { Plus } from 'lucide-react';
 
 const LandingRoute = () => {
@@ -15,7 +14,6 @@ const LandingRoute = () => {
   } = useEntries();
 
   const { triggerEntriesRefresh, setCount } = useEntriesRefresh();
-  const { showToast } = useToast();
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCount(Number(e.target.value));
@@ -34,7 +32,6 @@ const LandingRoute = () => {
     <div className='grid grid-cols-3 gap-4'>
       <div></div>
       <div className='col-span-full container mx-auto px-4'>
-        <Button onClick={() => showToast('Message Test', ToastType.Error) }>Error</Button>
         {newEntryPopup && <EntryUploadForm onClose={handleCloseUploadClick} />}
 
         {/* Top controls */}

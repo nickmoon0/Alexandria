@@ -1,8 +1,8 @@
+import React from 'react';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import Button from '@/components/Button';
 import TagList from '@/features/tags/components/TagList';
 import { CircleX } from 'lucide-react';
-import { deleteEntry } from '../api/delete-entry';
 
 interface DeleteButtonProps {
   onClick: (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;

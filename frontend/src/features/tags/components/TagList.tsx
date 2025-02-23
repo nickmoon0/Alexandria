@@ -1,5 +1,6 @@
+import React from 'react';
 import { Tag } from '@/types/app';
-import ClickableTag from './ClickableTag';
+import ClickableTag from '@/features/tags/components/ClickableTag';
 
 export interface TagListProps {
   tags:Tag[];

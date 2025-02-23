@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router';
 import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
 import { Entry } from '@/types/app';
 import { paths } from '@/config/paths';
-import { useEntriesRefresh } from './EntriesContext';
-import { deleteEntry } from '../api/delete-entry';
+import { useEntriesRefresh } from '@/features/entries/hooks/EntriesContext';
+import { deleteEntry } from '@/features/entries/api/delete-entry';
 import { useToast } from '@/hooks/ToastContext';
 import { ToastType } from '@/components/Toast';
 
@@ -33,7 +33,8 @@ export const useEntries = () => {
       if (!previous && cursorId !== null) {
         setCursorStack((prevStack) => [...prevStack, cursorId]);
       }
-    } catch (Error) {
+    } catch (error) {
+      console.error(error);
       showToast('Failed to fetch entries', ToastType.Error);
     }
   }, [count]);
@@ -59,6 +60,7 @@ export const useEntries = () => {
 
       refreshEntries();
     } catch (error) {
+      console.error(error);
       showToast('Failed to delete entry', ToastType.Error);
     }
   };

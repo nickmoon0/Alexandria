@@ -1,3 +1,4 @@
+import React from 'react';
 import { AuthProvider } from 'react-oidc-context';
 import { userManager, onSigninCallback } from '@/config/auth';
 import { ProtectedRoute } from '@/app/protectedRoute';
