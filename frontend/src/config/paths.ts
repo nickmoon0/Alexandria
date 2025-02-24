@@ -12,5 +12,9 @@ export const paths: Record<string, Route> = {
   character: {
     path: '/character/:characterId',
     getHref: (characterId?:string) => `/character/${characterId}`
+  },
+  characters: {
+    path: '/characters',
+    getHref: () => '/characters'
   }
 } as const;
