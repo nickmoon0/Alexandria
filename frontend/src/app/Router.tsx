@@ -2,10 +2,10 @@ import React, { useMemo } from 'react';
 import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router';
 import { paths } from '@/config/paths';
-import EntryTableRoute from '@/app/routes/entries/EntryTable';
+import EntriesRoute from '@/app/routes/entries/Entries';
 import EntryRoute from '@/app/routes/entries/Entry';
 import CharacterRoute from '@/app/routes/characters/Character';
-import CharacterTableRoute from '@/app/routes/characters/CharacterTable';
+import CharactersRoute from '@/app/routes/characters/Characters';
 import Layout from '@/app/Layout';
 
 const createAppRouter = () => 
@@ -16,7 +16,7 @@ const createAppRouter = () =>
       children: [
         {
           path: paths.home.path,
-          element: <EntryTableRoute />
+          element: <EntriesRoute />
         },
         {
           path: paths.entry.path,
@@ -28,7 +28,7 @@ const createAppRouter = () =>
         },
         {
           path: paths.characters.path,
-          element: <CharacterTableRoute />
+          element: <CharactersRoute />
         }
       ]
     },

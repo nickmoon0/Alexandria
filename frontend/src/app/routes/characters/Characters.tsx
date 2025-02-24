@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CharacterTableRoute = () => {
+const CharactersRoute = () => {
   return (
     <div>
       <h1>Characters table</h1>
@@ -8,4 +8,4 @@ const CharacterTableRoute = () => {
   );
 };
 
-export default CharacterTableRoute;
+export default CharactersRoute;

@@ -6,7 +6,7 @@ import { useEntriesRefresh } from '@/features/entries/hooks/EntriesContext';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import { Plus } from 'lucide-react';
 
-const EntryTableRoute = () => {
+const EntriesRoute = () => {
   const {
     count,
     newEntryPopup,
@@ -64,4 +64,4 @@ const EntryTableRoute = () => {
   );
 };
 
-export default EntryTableRoute;
+export default EntriesRoute;
