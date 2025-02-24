@@ -4,6 +4,7 @@ import Button from '@/components/Button';
 
 interface MediaViewerProps {
   documentId: string;
+  className?: string;
 }
 
 enum MediaType {
@@ -12,7 +13,7 @@ enum MediaType {
   document
 }
 
-const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
+const MediaViewer: React.FC<MediaViewerProps> = ({ documentId, className }:MediaViewerProps) => {
   const [mediaSrc, setMediaSrc] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
 
@@ -52,25 +53,23 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ documentId }) => {
   };
 
   return (
-    <div>
+    <div className='h-full'>
       {mediaType === MediaType.image && mediaSrc && (
         <img 
-          className='rounded-md mx-auto'
+          className={`rounded-md mx-auto ${className}`}
           src={mediaSrc} alt='Document'
           style={{ 
-            maxWidth: '100%',
-            height: 'auto',
-            maxHeight: '80vh',
-            display: 'block'
+            width: 'auto',
+            display: 'block',
+            objectFit: 'contain'
           }} />
       )}
       {mediaType === MediaType.video && mediaSrc && (
         <video 
-          className='rounded-md mx-auto'
+          className={`rounded-md mx-auto ${className}`}
           controls 
-          style={{ 
-            maxWidth: '100%',
-            maxHeight: '80vh',
+          style={{
+            width: 'auto',
             display: 'block',
             objectFit: 'contain'
           }}>

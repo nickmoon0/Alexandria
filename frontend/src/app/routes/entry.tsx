@@ -70,7 +70,8 @@ const EntryRoute = () => {
   };
 
   const textAreaKeyDown = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'enter' && !e.shiftKey) {
+    console.log(e.key);
+    if (e.key.toLowerCase() === 'enter' && !e.shiftKey) {
       e.preventDefault();
       addComment();
     }
@@ -87,38 +88,57 @@ const EntryRoute = () => {
   };
 
   return (
-    <div className='h-full grid grid-cols-8 gap-4'>
-      <div></div>
-      <div className="col-span-3">
+    <div className='grid grid-cols-2'>
+      
+      <div>
         <h1 className='text-2xl font-bold text-gray-800'>{entry.name}</h1>
-        { entry.tags && <TagList tags={entry.tags} /> }
-        <p className='text-gray-600 pb-3'>{entry.description}</p>
-        <div className="flex items-start">
-          <MediaViewer documentId={entry.document.id} />
-        </div>
-        {entry?.createdBy &&
-          <MetadataTag
-            createdBy={entry.createdBy}
-            createdAtUtc={entry.createdAtUtc}
-            id={entry.id} />}
       </div>
+
       <div></div>
-      <div className="flex flex-col col-span-2 h-full">
-        <h1 className="text-2xl font-bold text-gray-800">Comments</h1>
+
+      <div>
+        { entry.tags && <TagList tagListClassName={'pt-1'} tags={entry.tags} /> }
+        <p className='text-lg text-gray-700 pb-3'>{entry.description}</p>
+      </div>
+      
+      <div className='flex items-start'>
+        <p className="text-lg text-gray-700 self-end pb-3">Comments</p>
+      </div>
+      
+      <div className='pr-4 flex flex-col items-start'>
         <div>
-          <CommentList comments={entry.comments}/>
+          <MediaViewer 
+            className='max-h-[65vh]'
+            documentId={entry.document.id} />
         </div>
-        <div className="mt-auto flex items-end gap-2">
-          <TextArea 
+        {entry?.createdBy && (
+          <div className='w-full py-4'>
+            <MetadataTag
+              createdBy={entry.createdBy}
+              createdAtUtc={entry.createdAtUtc}
+              id={entry.id} />
+          </div>
+        )}
+      </div>
+
+      <div>
+        <div className='flex gap-2 items-start'>
+          <TextArea
+            className='flex-1 resize-none'
             value={commentValue ?? ''}
             onChange={setCommentValue}
-            onKeyDown={textAreaKeyDown} />
-          <Button onClick={() => addComment()}>Send</Button>
+            onKeyDown={textAreaKeyDown}
+          />
+          <Button className='self-start' onClick={addComment}>Post</Button>
+        </div>
+        <div className='mt-4'>
+          <CommentList 
+              className='max-h-[65vh]'
+              comments={entry.comments}/>
         </div>
       </div>
     </div>
   );
-
 };
 
 export default EntryRoute;

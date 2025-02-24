@@ -10,7 +10,7 @@ export interface MetadataTagProps {
 
 const MetadataTag = ({ createdBy, createdAtUtc, id }:MetadataTagProps) => {
   return (
-    <div className="bg-gray-100 p-4 rounded-lg mt-6 text-gray-700 text-sm">
+    <div className="bg-gray-100 p-4 rounded-lg text-gray-700 text-sm">
       <p className="mb-2">
         <span className="font-semibold">Created By: </span>{createdBy.firstName} {createdBy.lastName}
       </p>
