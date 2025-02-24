@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router';
 import { paths } from '@/config/paths';
-import LandingRoute from '@/app/routes/landing';
-import EntryRoute from '@/app/routes/entry';
+import EntryTableRoute from '@/app/routes/entries/entryTable';
+import EntryRoute from '@/app/routes/entries/entry';
 import CharacterRoute from '@/app/routes/characters/character';
 import CharacterTableRoute from '@/app/routes/characters/characterTable';
 import Layout from '@/app/Layout';
@@ -16,7 +16,7 @@ const createAppRouter = () =>
       children: [
         {
           path: paths.home.path,
-          element: <LandingRoute />
+          element: <EntryTableRoute />
         },
         {
           path: paths.entry.path,
