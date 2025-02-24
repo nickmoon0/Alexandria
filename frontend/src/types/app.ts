@@ -1,4 +1,6 @@
-export interface Character {
+import { TableRow } from '@/components/Table';
+
+export interface Character extends TableRow {
   id: string;
   firstName: string;
   lastName: string;
@@ -9,7 +11,7 @@ export interface Character {
   createdOnUtc: Date;
 };
 
-export interface Comment {
+export interface Comment extends TableRow {
   id:string;
   content:string;
   createdAtUtc:Date;
@@ -17,11 +19,11 @@ export interface Comment {
   createdBy:User;
 };
 
-export interface Document {
+export interface Document extends TableRow {
   id: string
 };
 
-export interface Entry {
+export interface Entry extends TableRow {
   id:string;
   name:string;
   description:string;
@@ -33,12 +35,12 @@ export interface Entry {
   tags:Tag[];
 };
 
-export interface Tag {
+export interface Tag extends TableRow {
   id:string;
   name:string;
 };
 
-export interface User {
+export interface User extends TableRow {
   id: string;
   firstName: string;
   lastName: string;
