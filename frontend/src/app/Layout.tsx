@@ -29,7 +29,7 @@ const Layout = () => {
       </header>
 
       {/* Main Content */}
-      <main className="w-full max-w-6xl flex-grow bg-white shadow-lg rounded-xl p-8">
+      <main className="w-full max-w-[65vw] flex-grow bg-white shadow-lg rounded-xl p-8">
         <Outlet />
       </main>
     </div>
