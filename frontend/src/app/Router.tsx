@@ -7,6 +7,7 @@ import EntryRoute from '@/app/routes/entries/Entry';
 import CharacterRoute from '@/app/routes/characters/Character';
 import CharactersRoute from '@/app/routes/characters/Characters';
 import Layout from '@/app/Layout';
+import LogoutRoute from '@/app/routes/auth/Logout';
 
 const createAppRouter = () => 
   createBrowserRouter([
@@ -33,6 +34,10 @@ const createAppRouter = () =>
         {
           path: paths.characters.path,
           element: <CharactersRoute />
+        },
+        {
+          path: paths.logout.path,
+          element: <LogoutRoute />
         }
       ]
     },

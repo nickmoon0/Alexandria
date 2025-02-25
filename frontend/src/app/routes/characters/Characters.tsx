@@ -1,5 +1,6 @@
 import Button from '@/components/Buttons/Button';
 import { CharactersTable } from '@/features/characters/components/CharactersTable';
+import CharacterUploadForm from '@/features/characters/components/CharacterUploadForm';
 import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import { Plus } from 'lucide-react';
 import React, { useState } from 'react';
@@ -30,7 +31,7 @@ const CharactersRoute = () => {
     <div className='grid grid-cols-3 gap-4'>
       <div></div>
       <div className='col-span-full container mx-auto px-4'>
-        {newCharacterPopup && <Button onClick={handleCloseUploadClick}>Click</Button>}
+        {newCharacterPopup && <CharacterUploadForm onClose={handleCloseUploadClick}/>}
         {/* Top controls */}
         <div className='flex justify-between items-center mb-4'>
           <div className='flex items-center space-x-2'>
@@ -43,9 +44,9 @@ const CharactersRoute = () => {
               onChange={handleItemsPerPageChange}
               value={count}
             >
+              <option value='10'>10</option>
               <option value='25'>25</option>
               <option value='50'>50</option>
-              <option value='75'>75</option>
               <option value='100'>100</option>
             </select>
           </div>

@@ -7,7 +7,6 @@ export interface GetCharactersProps {
 }
 
 export const getCharacters = async ({ pageRequest }:GetCharactersProps) => {
-  console.log(pageRequest);
   const queryString = `pageRequest=${encodeURIComponent(
     JSON.stringify(pageRequest)
   )}`;

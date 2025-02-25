@@ -7,6 +7,7 @@ import { Character } from '@/types/app';
 import { useNavigate } from 'react-router';
 import { paths } from '@/config/paths';
 import { useCharactersContext } from '@/features/characters/hooks/CharactersContext';
+import { deleteCharacter } from '@/features/characters/api/delete-character';
 
 export const useCharacters = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -19,9 +20,7 @@ export const useCharacters = () => {
     setCount,
     triggerCharactersRefresh 
   } = useCharactersContext();
-  
   const { showToast } = useToast();
-
   const navigate = useNavigate();
 
   const handleCharacterClick = (rowId:string) => {
@@ -43,9 +42,9 @@ export const useCharacters = () => {
       const pageRequest = { PageSize: count, CursorId: cursorId };
       const response = await getCharacters({ pageRequest });
 
-      console.log(response);
+      const sortedData = response.data.sort((a, b) => new Date(b.createdOnUtc).getTime() - new Date(a.createdOnUtc).getTime());
 
-      setCharacters(response.data);
+      setCharacters(sortedData);
       setNextCursor(response.paging.nextCursor);
 
       if (!previous && cursorId !== null) {
@@ -57,8 +56,15 @@ export const useCharacters = () => {
     }
   };
 
-  const deleteCharacter = async (characterId:string) => {
-    console.log(`Delete: ${characterId}`);
+  const handleDelete = async (characterId:string) => {
+    try {
+      const response = await deleteCharacter(characterId);
+      refreshCharacters();
+      return response;
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to delete character', ToastType.Error);
+    }
   };
 
   const refreshCharacters = () => {
@@ -73,7 +79,7 @@ export const useCharacters = () => {
     charactersRefresh,
     nextCursor,
     cursorStack,
-    deleteCharacter,
+    handleDelete,
     handleCharacterClick,
     fetchCharacter,
     fetchCharacters,

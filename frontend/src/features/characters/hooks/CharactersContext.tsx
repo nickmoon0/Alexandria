@@ -20,7 +20,7 @@ const CharactersContext = createContext<CharactersContextProps>({
 
 export const CharactersContextProvider = ({ children }:CharactersProviderProps) => {
   const [charactersRefresh, setCharactersRefresh] = useState<number>(0);
-  const [count, setCount] = useState<number>(25);
+  const [count, setCount] = useState<number>(10);
 
   const triggerCharactersRefresh = () => setCharactersRefresh((prev) => prev + 1);
 

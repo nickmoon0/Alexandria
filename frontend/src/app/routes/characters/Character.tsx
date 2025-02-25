@@ -23,7 +23,7 @@ const CharacterRoute = () => {
   }, [characterId]);
 
   return (
-    <div className="flex items-start justify-center min-h-screen p-6">
+    <div className="flex items-start justify-center max-h-screen p-6">
       <div className="p-12 max-w-4xl w-full">
         {character ? (
           <>

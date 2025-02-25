@@ -6,10 +6,17 @@ interface PopupProps {
   title?:string,
   children:React.ReactNode;
   controlChildren?:React.ReactNode;
+  controlChildrenOnLeft?:boolean
   onClose: () => void; // Function to close popup
 };
 
-const Popup = ({title, children, controlChildren, onClose}:PopupProps) => {
+const Popup = ({
+  title, 
+  children, 
+  controlChildren,
+  controlChildrenOnLeft = true,
+  onClose
+}:PopupProps) => {
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
       <div className='bg-white p-6 rounded-2xl shadow-2xl max-w-lg w-full relative animate-fadeIn'>
@@ -28,10 +35,14 @@ const Popup = ({title, children, controlChildren, onClose}:PopupProps) => {
         
         {/* Footer controls section */}
         <div className='flex justify-between items-center pt-4'>
-          { controlChildren }
+          {controlChildrenOnLeft && 
+            controlChildren
+          }
           <Button onClick={onClose} className='h-auto self-end'>
             Close
           </Button>
+          {!controlChildrenOnLeft &&
+            controlChildren}
         </div>
       </div>
     </div>

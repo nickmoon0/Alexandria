@@ -16,5 +16,9 @@ export const paths: Record<string, Route> = {
   characters: {
     path: '/characters',
     getHref: () => '/characters'
+  },
+  logout: {
+    path: '/logout',
+    getHref: () => '/logout'
   }
 } as const;

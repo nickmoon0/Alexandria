@@ -20,7 +20,7 @@ const EntriesContext = createContext<EntriesContextProps>({
 
 export const EntriesRefreshProvider = ({ children }:EntriesRefreshProviderProps) => {
   const [entriesRefresh, setEntriesRefresh] = useState<number>(0);
-  const [count, setCount] = useState<number>(25);
+  const [count, setCount] = useState<number>(10);
 
   const triggerEntriesRefresh = () => setEntriesRefresh((prev) => prev + 1);
 

@@ -13,7 +13,7 @@ export const CharactersTable = () => {
     cursorStack,
     charactersRefresh,
     nextCursor,
-    deleteCharacter,
+    handleDelete,
     handleCharacterClick,
     fetchCharacters,
     setCursorStack,
@@ -46,7 +46,7 @@ export const CharactersTable = () => {
       render: (character:Character) => (
         <DeleteButton onClick={(event) => {
           event.stopPropagation();
-          deleteCharacter(character.id);
+          handleDelete(character.id);
         }} />
       )
     },
