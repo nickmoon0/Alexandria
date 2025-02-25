@@ -38,7 +38,7 @@ const Table = <T extends TableRow>({ columns, data, onRowClick }: TableProps<T>)
             >
               {columns.map((col) => (
                 <td key={col.key as string} className='py-4 px-6 text-gray-600'>
-                  {col.render ? col.render(item) : String(item[col.key as keyof T])}
+                  {col.render ? col.render(item) : (item[col.key as keyof T] ?? '').toString()}
                 </td>
               ))}
             </tr>

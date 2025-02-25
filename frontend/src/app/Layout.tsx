@@ -1,4 +1,4 @@
-import NavButton from '@/components/NavButton';
+import NavButton from '@/components/Buttons/NavButton';
 import { paths } from '@/config/paths';
 import React from 'react';
 import { Outlet } from 'react-router';
@@ -9,7 +9,7 @@ const Layout = () => {
       <header className="relative w-full bg-white shadow-md rounded-xl py-4 mb-6 flex items-center justify-center">
         {/* Left Side Buttons */}
         <div className="absolute left-4 flex space-x-2">
-          <NavButton to={paths.home.path}>
+          <NavButton to={paths.entries.path}>
             Entries
           </NavButton>
           <NavButton to={paths.characters.path}>

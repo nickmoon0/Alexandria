@@ -1,13 +1,13 @@
 import { Route } from '@/types/config';
 
 export const paths: Record<string, Route> = {
-  home: {
-    path: '/',
-    getHref: () => '/',
-  },
   entry: {
     path: '/entry/:entryId',
     getHref: (entryId?:string) => `/entry/${entryId}`
+  },
+  entries: {
+    path: '/entries',
+    getHref: () => '/entries',
   },
   character: {
     path: '/character/:characterId',

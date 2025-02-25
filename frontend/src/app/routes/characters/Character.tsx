@@ -7,12 +7,12 @@ import MetadataTag from '@/components/MetadataTag';
 const CharacterRoute = () => {
   const [character, setCharacter] = useState<Character | null>(null);
   const { characterId } = useParams();
-  const { retrieveCharacter } = useCharacters();
+  const { fetchCharacter } = useCharacters();
 
   const getData = async () => {
     if (!characterId) return;
 
-    const retrievedCharacter = await retrieveCharacter(characterId);
+    const retrievedCharacter = await fetchCharacter(characterId);
     if (!retrievedCharacter) return;
 
     setCharacter(retrievedCharacter);

@@ -1,19 +1,18 @@
-import React from 'react';
-import Button from '@/components/Button';
+import React, { useState } from 'react';
+import Button from '@/components/Buttons/Button';
 import { EntriesTable } from '@/features/entries/components/EntriesTable';
 import EntryUploadForm from '@/features/entries/components/EntryUploadForm';
-import { useEntriesRefresh } from '@/features/entries/hooks/EntriesContext';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import { Plus } from 'lucide-react';
 
 const EntriesRoute = () => {
+  const [newEntryPopup, setNewEntryPopup] = useState<boolean>(false);
+
   const {
     count,
-    newEntryPopup,
-    setNewEntryPopup
+    triggerEntriesRefresh,
+    setCount
   } = useEntries();
-
-  const { triggerEntriesRefresh, setCount } = useEntriesRefresh();
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCount(Number(e.target.value));

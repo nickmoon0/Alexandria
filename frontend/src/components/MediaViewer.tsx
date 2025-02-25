@@ -1,6 +1,6 @@
 import { getDocumentParams, TokenPermissions } from '@/lib/document-service';
 import React, { useCallback, useEffect, useState } from 'react';
-import Button from '@/components/Button';
+import Button from '@/components/Buttons/Button';
 
 interface MediaViewerProps {
   documentId: string;

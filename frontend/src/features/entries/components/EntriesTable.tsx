@@ -1,32 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useEntries } from '@/features/entries/hooks/useEntries';
-import Button from '@/components/Button';
+import Button from '@/components/Buttons/Button';
 import TagList from '@/features/tags/components/TagList';
-import { CircleX } from 'lucide-react';
 import Table, { Column } from '@/components/Table';
 import { Entry } from '@/types/app';
-
-interface DeleteButtonProps {
-  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}
-
-const DeleteButton = ({ onClick }: DeleteButtonProps) => {
-  return (
-    <button onClick={onClick} className='px-2 py-2 text-red-600 font-medium rounded-lg shadow-md hover:bg-red-700 hover:text-white transition'>
-      <CircleX />
-    </button>
-  );
-};
+import DeleteButton from '@/components/Buttons/DeleteButton';
 
 export const EntriesTable = () => {
   const {
+    count,
     entries,
+    entriesRefresh,
     nextCursor,
     cursorStack,
     handleEntryClick,
     fetchEntries,
     setCursorStack,
-    handleDelete
+    handleDelete,
+    refreshEntries
   } = useEntries();
 
   const handleNextPage = () => {
@@ -56,6 +47,11 @@ export const EntriesTable = () => {
     { key: 'description', label: 'Description' },
     { key: 'tags', label: 'Tags', render: (entry: Entry) => <TagList tags={entry.tags} /> },
   ];
+
+  // Refresh entries when count changes
+  useEffect(() => {
+    refreshEntries();
+  }, [refreshEntries, count, entriesRefresh]);
 
   return (
     <div>

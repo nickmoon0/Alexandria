@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router';
 import { paths } from '@/config/paths';
 import EntriesRoute from '@/app/routes/entries/Entries';
@@ -15,7 +15,11 @@ const createAppRouter = () =>
       element: <Layout />,
       children: [
         {
-          path: paths.home.path,
+          index: true,
+          element: <Navigate to={paths.entries.path} replace />
+        },
+        {
+          path: paths.entries.path,
           element: <EntriesRoute />
         },
         {
