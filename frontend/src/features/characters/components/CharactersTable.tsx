@@ -4,6 +4,7 @@ import { Character } from '@/types/app';
 import React, { useEffect } from 'react';
 import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import Button from '@/components/Buttons/Button';
+import { formatDateTime } from '@/lib/helpers';
 
 export const CharactersTable = () => {
   // State management/hooks
@@ -44,18 +45,35 @@ export const CharactersTable = () => {
       key: 'delete',
       label: 'Delete',
       render: (character:Character) => (
-        <DeleteButton onClick={(event) => {
-          event.stopPropagation();
-          handleDelete(character.id);
-        }} />
+        <DeleteButton 
+          disabled={!!character.user}
+          onClick={(event) => {
+            event.stopPropagation();
+            handleDelete(character.id);
+          }}/>
       )
     },
-    { 
+    {
       key: 'name',
       label: 'Fullname',
       render: (character:Character) => `${character.firstName} ${character.lastName}`
     },
-    { key: 'description', label: 'Description' }
+    { key: 'description', label: 'Description' },
+    {
+      key: 'createdBy',
+      label: 'Created By',
+      render: (character:Character) => `${character.createdBy.firstName} ${character.createdBy.lastName}`
+    },
+    {
+      key: 'createdOn',
+      label: 'Created On',
+      render: (character:Character) => formatDateTime(character.createdOnUtc)
+    },
+    {
+      key: 'createdFromUser',
+      label: 'Created From User',
+      render: (character:Character) => character.user ? 'Yes' : 'No'
+    }
   ];
 
   return (

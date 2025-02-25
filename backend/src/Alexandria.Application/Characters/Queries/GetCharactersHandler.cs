@@ -99,16 +99,15 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
 
         var createdByUserIds = characters
             .Select(x => x.CreatedById)
-            .Distinct()
             .ToList();
 
         var userIds = characters
             .Where(character => character.UserId.HasValue)
             .Select(x => x.UserId!.Value)
-            .Distinct()
             .ToList();
-        
+
         userIds.AddRange(createdByUserIds);
+        userIds = userIds.Distinct().ToList();
         
         var users = await _context.Users
             .Where(character => userIds.Contains(character.Id))
@@ -124,7 +123,10 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
                 Name = character.Name,
                 Description = character.Description,
                 CreatedAtUtc = character.CreatedAtUtc,
-                CreatedBy = GetUserResponse(character.CreatedById)
+                CreatedBy = GetUserResponse(character.CreatedById),
+                User = character.UserId != null 
+                    ? GetUserResponse((Guid)character.UserId) 
+                    : null,
             });
 
         return characterResponses;

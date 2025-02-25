@@ -5,6 +5,7 @@ import TagList from '@/features/tags/components/TagList';
 import Table, { Column } from '@/components/Table';
 import { Entry } from '@/types/app';
 import DeleteButton from '@/components/Buttons/DeleteButton';
+import { formatDateTime } from '@/lib/helpers';
 
 export const EntriesTable = () => {
   const {
@@ -46,6 +47,16 @@ export const EntriesTable = () => {
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' },
     { key: 'tags', label: 'Tags', render: (entry: Entry) => <TagList tags={entry.tags} /> },
+    {
+      key: 'createdBy',
+      label: 'Created By',
+      render: (entry:Entry) => `${entry.createdBy.firstName} ${entry.createdBy.lastName}`
+    },
+    {
+      key: 'createdOn',
+      label: 'Created On',
+      render: (entry:Entry) => formatDateTime(entry.createdAtUtc)
+    }
   ];
 
   // Refresh entries when count changes
