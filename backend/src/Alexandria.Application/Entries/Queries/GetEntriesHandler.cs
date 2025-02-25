@@ -26,15 +26,15 @@ public enum GetEntriesOptions
 public record GetEntriesQuery(
     PaginatedRequest PaginatedParams,
     GetEntriesOptions Options = GetEntriesOptions.None) : IRequest<ErrorOr<GetEntriesResponse>>;
-public record GetEntriesResponse(PaginationResponse<EntryResponse> Entries);
+public record GetEntriesResponse(PaginatedResponse<EntryResponse> Entries);
 public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEntriesResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<GetEntriesHandler> _logger;
     private readonly ITaggingService _taggingService;
 
-    private static readonly int _maxPageSize = 100;
-    
+    private const int MAX_PAGE_SIZE = 100;
+
     public GetEntriesHandler(
         IAppDbContext context,
         ILogger<GetEntriesHandler> logger,
@@ -48,12 +48,12 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
     public async Task<ErrorOr<GetEntriesResponse>> Handle(GetEntriesQuery request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("GetEntriesHandler processing request...");
-        if (request.PaginatedParams.PageSize > 100)
+        if (request.PaginatedParams.PageSize > MAX_PAGE_SIZE)
         {
             _logger.LogInformation(
                 "User attempted to retrieve more than {PageSize} entries (exceeds maximum of {MaxPageSize}).",
                 request.PaginatedParams.PageSize,
-                _maxPageSize);
+                MAX_PAGE_SIZE);
             return ApplicationErrors.BadQueryError;
         }
         if (request.Options.HasFlag(GetEntriesOptions.IncludeThumbnails))
@@ -111,7 +111,7 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
             }
         }
         
-        var pagedResponse = new PaginationResponse<EntryResponse>()
+        var pagedResponse = new PaginatedResponse<EntryResponse>()
         {
             Data = entryResponses.ToList(),
             Paging = new PagingData { NextCursor = nextCursor }

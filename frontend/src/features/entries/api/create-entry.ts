@@ -1,13 +1,13 @@
 import { api } from '@/lib/api-client';
 import { getDocumentUrl, TokenPermissions } from '@/lib/document-service';
 
-export interface createEntryProps {
+export interface CreateEntryProps {
   entryName:string;
   description:string;
   file:File;
 };
 
-export const createEntry = async ({ entryName, description, file }:createEntryProps) => {
+export const createEntry = async ({ entryName, description, file }:CreateEntryProps) => {
   // Create entry
   const createEntryResponse = await api.post('/entry', {
     FileName:file.name,

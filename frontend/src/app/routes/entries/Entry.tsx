@@ -6,7 +6,7 @@ import { getEntry, GetEntryOptions } from '@/features/entries/api/get-entry';
 import MediaViewer from '@/components/MediaViewer';
 import TagList from '@/features/tags/components/TagList';
 import TextArea from '@/components/Input/TextArea';
-import Button from '@/components/Button';
+import Button from '@/components/Buttons/Button';
 import { createComment } from '@/features/comments/api/create-comment';
 import { getComments } from '@/features/comments/api/get-comments';
 import { useToast } from '@/hooks/ToastContext';

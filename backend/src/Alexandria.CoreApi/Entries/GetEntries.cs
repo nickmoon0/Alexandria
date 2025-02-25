@@ -48,7 +48,7 @@ public abstract class GetEntries : EndpointBase, IEndpoint
             .Cast<EntryDto>()
             .ToList();
         
-        var pageResponse = new PaginationResponse<EntryDto>
+        var pageResponse = new PaginatedResponse<EntryDto>
         {
             Data = entryDtoList,
             Paging = entriesPageResult.Paging,

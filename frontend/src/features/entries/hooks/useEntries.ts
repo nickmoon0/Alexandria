@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
 import { Entry } from '@/types/app';
@@ -12,10 +12,13 @@ export const useEntries = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [cursorStack, setCursorStack] = useState<string[]>([]);
-  const [entryPopup, setEntryPopup] = useState<Entry | null>(null);
-  const [newEntryPopup, setNewEntryPopup] = useState<boolean>(false);
 
-  const { count, entriesRefresh } = useEntriesRefresh();
+  const { 
+    count,
+    entriesRefresh,
+    setCount,
+    triggerEntriesRefresh 
+  } = useEntriesRefresh();
   const { showToast } = useToast();
 
   const navigate = useNavigate();
@@ -44,9 +47,6 @@ export const useEntries = () => {
     navigate(paths.entry.getHref(rowId));
   };
 
-  const handleEntryPopupClose = () => {
-    setEntryPopup(null);
-  };
 
   const refreshEntries = useCallback(() => {
     setCursorStack([]);
@@ -65,25 +65,19 @@ export const useEntries = () => {
     }
   };
 
-  // Refresh entries when count changes
-  useEffect(() => {
-    refreshEntries();
-  }, [refreshEntries, count, entriesRefresh]);
-
   return {
     entries,
+    entriesRefresh,
     count,
     nextCursor,
     cursorStack,
-    entryPopup,
-    newEntryPopup,
     handleEntryClick,
-    handleEntryPopupClose,
     handleDelete,
     fetchEntries,
+    setCount,
     setCursorStack,
-    setNewEntryPopup,
     setNextCursor,
-    refreshEntries
+    refreshEntries,
+    triggerEntriesRefresh
   };
 };
