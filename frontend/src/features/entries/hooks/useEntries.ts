@@ -7,6 +7,7 @@ import { useEntriesRefresh } from '@/features/entries/hooks/EntriesContext';
 import { deleteEntry } from '@/features/entries/api/delete-entry';
 import { useToast } from '@/hooks/ToastContext';
 import { ToastType } from '@/components/Toast';
+import { updateEntry } from '@/features/entries/api/update-entry';
 
 export const useEntries = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -65,6 +66,15 @@ export const useEntries = () => {
     }
   };
 
+  const handleEntryUpdate = async (entry:Entry) => {
+    try {
+      await updateEntry({ entry });
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to update entry', ToastType.Error);
+    }
+  };
+
   return {
     entries,
     entriesRefresh,
@@ -78,6 +88,7 @@ export const useEntries = () => {
     setCursorStack,
     setNextCursor,
     refreshEntries,
-    triggerEntriesRefresh
+    triggerEntriesRefresh,
+    handleEntryUpdate
   };
 };
