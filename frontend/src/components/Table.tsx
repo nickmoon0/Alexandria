@@ -30,19 +30,27 @@ const Table = <T extends TableRow>({ columns, data, onRowClick }: TableProps<T>)
           </tr>
         </thead>
         <tbody className='divide-y divide-gray-200'>
-          {data.map((item, index) => (
-            <tr
-              key={index}
-              onClick={() => onRowClick && onRowClick(item)}
-              className='hover:bg-gray-50'
-            >
-              {columns.map((col) => (
-                <td key={col.key as string} className='py-4 px-6 text-gray-600'>
-                  {col.render ? col.render(item) : (item[col.key as keyof T] ?? '').toString()}
+          {data.length > 0 ? (
+            data.map((item, index) => (
+              <tr
+                key={index}
+                onClick={() => onRowClick && onRowClick(item)}
+                className='hover:bg-gray-50'
+              >
+                {columns.map((col) => (
+                  <td key={col.key as string} className='py-4 px-6 text-gray-600'>
+                    {col.render ? col.render(item) : (item[col.key as keyof T] ?? '').toString()}
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : (
+              <tr className='hover:bg-gray-50'>
+                <td colSpan={columns.length} className='py-2 px-6 text-center text-gray-500'>
+                  No records found
                 </td>
-              ))}
-            </tr>
-          ))}
+              </tr>
+            )}
         </tbody>
       </table>
     </div>
