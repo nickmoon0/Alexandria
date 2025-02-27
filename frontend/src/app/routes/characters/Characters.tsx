@@ -1,9 +1,11 @@
 import Button from '@/components/Buttons/Button';
+import { Roles } from '@/config/constants';
 import { CharactersTable } from '@/features/characters/components/CharactersTable';
 import CharacterUploadForm from '@/features/characters/components/CharacterUploadForm';
 import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import { Plus } from 'lucide-react';
 import React, { useState } from 'react';
+import { useAuth } from 'react-oidc-context';
 
 const CharactersRoute = () => {
   const [newCharacterPopup, setNewCharacterPopup] = useState<boolean>(false);
@@ -13,6 +15,9 @@ const CharactersRoute = () => {
     triggerCharactersRefresh,
     setCount
   } = useCharacters();
+
+  const auth = useAuth();
+  const roles = auth.user?.profile.roles as string[] || [];
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCount(Number(e.target.value));
@@ -50,7 +55,10 @@ const CharactersRoute = () => {
               <option value='100'>100</option>
             </select>
           </div>
-          <Button onClick={handleUploadClick} className="flex items-center space-x-1">
+          <Button
+            disabled={!roles.includes(Roles.ADMIN)} // Only admins can create entries
+            onClick={handleUploadClick}
+            className="flex items-center space-x-1">
             <Plus size={17} />
             <span>New</span>
           </Button>

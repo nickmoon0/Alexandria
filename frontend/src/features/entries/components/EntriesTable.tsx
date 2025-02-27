@@ -43,6 +43,7 @@ export const EntriesTable = () => {
     const createdByCurrentUser = entry.createdBy.id === currentUserId;
     const isAdmin = roles.includes(Roles.ADMIN);
 
+    // User can delete their own entries, admins can delete any entries
     return createdByCurrentUser || isAdmin;
   };
 

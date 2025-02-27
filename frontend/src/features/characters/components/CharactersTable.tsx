@@ -5,6 +5,8 @@ import React, { useEffect } from 'react';
 import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import Button from '@/components/Buttons/Button';
 import { formatDateTime } from '@/lib/helpers';
+import { useAuth } from 'react-oidc-context';
+import { Roles } from '@/config/constants';
 
 export const CharactersTable = () => {
   // State management/hooks
@@ -20,6 +22,9 @@ export const CharactersTable = () => {
     setCursorStack,
     refreshCharacters
   } = useCharacters();
+
+  const auth = useAuth();
+  const roles = auth.user?.profile.roles as string[] || [];
 
   useEffect(() => {
     refreshCharacters();
@@ -46,7 +51,7 @@ export const CharactersTable = () => {
       label: 'Delete',
       render: (character:Character) => (
         <DeleteButton 
-          disabled={!!character.user}
+          disabled={!roles.includes(Roles.ADMIN)} // Only admins can delete characters
           onClick={(event) => {
             event.stopPropagation();
             handleDelete(character.id);
