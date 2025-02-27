@@ -5,6 +5,8 @@ import React, { useEffect } from 'react';
 import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import Button from '@/components/Buttons/Button';
 import { formatDateTime } from '@/lib/helpers';
+import { useAuth } from 'react-oidc-context';
+import { Roles } from '@/config/constants';
 
 export const CharactersTable = () => {
   // State management/hooks
@@ -20,6 +22,9 @@ export const CharactersTable = () => {
     setCursorStack,
     refreshCharacters
   } = useCharacters();
+
+  const auth = useAuth();
+  const roles = auth.user?.profile.roles as string[] || [];
 
   useEffect(() => {
     refreshCharacters();
@@ -39,6 +44,13 @@ export const CharactersTable = () => {
     }
   };
 
+  const canDeleteCharacter = (character:Character) => {
+    // Can only delete character if you are an admin AND the character is not created from a user
+    // (Deleting character created from user will cause inconsistency with Keycloak)
+    return roles.includes(Roles.ADMIN) && !character.user;
+  };
+
+
   // Table setup
   const columns: Column<Character>[] = [
     {
@@ -46,7 +58,7 @@ export const CharactersTable = () => {
       label: 'Delete',
       render: (character:Character) => (
         <DeleteButton 
-          disabled={!!character.user}
+          disabled={!canDeleteCharacter(character)} // Only admins can delete characters
           onClick={(event) => {
             event.stopPropagation();
             handleDelete(character.id);

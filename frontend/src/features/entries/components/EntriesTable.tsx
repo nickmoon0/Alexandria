@@ -6,6 +6,8 @@ import Table, { Column } from '@/components/Table';
 import { Entry } from '@/types/app';
 import DeleteButton from '@/components/Buttons/DeleteButton';
 import { formatDateTime } from '@/lib/helpers';
+import { useAuth } from 'react-oidc-context';
+import { Roles } from '@/config/constants';
 
 export const EntriesTable = () => {
   const {
@@ -21,6 +23,10 @@ export const EntriesTable = () => {
     refreshEntries
   } = useEntries();
 
+  const auth = useAuth();
+  const currentUserId = auth.user?.profile.sub ?? '';
+  const roles = auth.user?.profile.roles as string[] || [];
+
   const handleNextPage = () => {
     if (nextCursor) fetchEntries(nextCursor);
   };
@@ -33,15 +39,25 @@ export const EntriesTable = () => {
     }
   };
 
+  const canDeleteEntry = (entry:Entry, currentUserId:string, roles:string[]) => {
+    const createdByCurrentUser = entry.createdBy.id === currentUserId;
+    const isAdmin = roles.includes(Roles.ADMIN);
+
+    // User can delete their own entries, admins can delete any entries
+    return createdByCurrentUser || isAdmin;
+  };
+
   const columns: Column<Entry>[] = [
     {
       key: 'delete',
       label: 'Delete',
       render: (entry: Entry) => (
-        <DeleteButton onClick={(event) => {
-          event.stopPropagation();
-          handleDelete(entry.id);
-        }} />
+        <DeleteButton
+          disabled={!canDeleteEntry(entry, currentUserId, roles)}
+          onClick={(event) => {
+            event.stopPropagation();
+            handleDelete(entry.id);
+          }} />
       ),
     },
     { key: 'name', label: 'Name' },
