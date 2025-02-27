@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { paths } from '@/config/paths';
 import { useCharactersContext } from '@/features/characters/hooks/CharactersContext';
 import { deleteCharacter } from '@/features/characters/api/delete-character';
+import { updateCharacter } from '@/features/characters/api/update-character';
 
 export const useCharacters = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -67,6 +68,15 @@ export const useCharacters = () => {
     }
   };
 
+  const handleCharacterUpdate = async (character:Character) => {
+    try {
+      await updateCharacter({ character });
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to update character', ToastType.Error);
+    }
+  };
+
   const refreshCharacters = () => {
     setCursorStack([]);
     setNextCursor(null);
@@ -86,6 +96,7 @@ export const useCharacters = () => {
     setCount,
     setCursorStack,
     triggerCharactersRefresh,
+    handleCharacterUpdate,
     refreshCharacters
   };
 };

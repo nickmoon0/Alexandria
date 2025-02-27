@@ -122,7 +122,7 @@ const EntryRoute = () => {
       
       <div className='pr-4 flex flex-col items-start'>
         <div>
-          <MediaViewer 
+          <MediaViewer
             className='max-h-[65vh]'
             documentId={entry.document.id} />
         </div>
