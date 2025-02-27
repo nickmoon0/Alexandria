@@ -13,17 +13,23 @@ import { useToast } from '@/hooks/ToastContext';
 import { ToastType } from '@/components/Toast';
 import MetadataTag from '@/components/MetadataTag';
 import CommentList from '@/features/comments/components/CommentList';
+import EditableField from '@/components/Input/EditableField';
+import { useEntries } from '@/features/entries/hooks/useEntries';
 
 const EntryRoute = () => {
+  // Hooks/state management
   const [entry, setEntry] = useState<Entry | null>(null);
   const [commentValue, setCommentValue] = useState<string | null>(null);
 
   const { entryId } = useParams();
   const { showToast } = useToast();
+  const { handleEntryUpdate } = useEntries();
+
+  // Functions
 
   const retrieveEntry = async (entryId:string) => {
     try {
-      const response = await getEntry({
+      const entry = await getEntry({
         entryId,
         options: [
           GetEntryOptions.IncludeComments,
@@ -33,7 +39,7 @@ const EntryRoute = () => {
         ]
       });
   
-      setEntry(response);
+      setEntry(entry);
     } catch (error) {
       console.error(error);
       showToast('Failed to retrieve entry', ToastType.Error);
@@ -69,11 +75,14 @@ const EntryRoute = () => {
     }
   };
 
-  const textAreaKeyDown = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
-    console.log(e.key);
+  const textAreaEnterKeyDown = (
+    e:React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    callback:() => void | Promise<void>
+  ) => {
     if (e.key.toLowerCase() === 'enter' && !e.shiftKey) {
       e.preventDefault();
-      addComment();
+      e.currentTarget.blur();
+      callback();
     }
   };
 
@@ -91,14 +100,20 @@ const EntryRoute = () => {
     <div className='grid grid-cols-2'>
       
       <div>
-        <h1 className='text-2xl font-bold text-gray-800'>{entry.name}</h1>
+        <EditableField 
+          value={entry.name ?? ''}       
+          onChange={(value) => handleEntryUpdate({ ...entry, name: value ?? '' })}
+          textClassName='text-2xl font-bold text-gray-800' />
       </div>
 
       <div></div>
 
       <div>
         { entry.tags && <TagList tagListClassName={'pt-1'} tags={entry.tags} /> }
-        <p className='text-lg text-gray-700 pb-3'>{entry.description}</p>
+        <EditableField
+          value={entry.description ?? ''}       
+          onChange={(value) => handleEntryUpdate({ ...entry, description: value ?? '' })}
+          textClassName='text-lg text-gray-700'/>
       </div>
       
       <div className='flex items-start'>
@@ -107,7 +122,7 @@ const EntryRoute = () => {
       
       <div className='pr-4 flex flex-col items-start'>
         <div>
-          <MediaViewer 
+          <MediaViewer
             className='max-h-[65vh]'
             documentId={entry.document.id} />
         </div>
@@ -127,7 +142,7 @@ const EntryRoute = () => {
             className='flex-1 resize-none'
             value={commentValue ?? ''}
             onChange={setCommentValue}
-            onKeyDown={textAreaKeyDown}
+            onKeyDown={(e) => textAreaEnterKeyDown(e, addComment)}
           />
           <Button className='self-start' onClick={addComment}>Post</Button>
         </div>

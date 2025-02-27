@@ -3,11 +3,12 @@ import { useParams } from 'react-router';
 import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import { Character } from '@/types/app';
 import MetadataTag from '@/components/MetadataTag';
+import EditableField from '@/components/Input/EditableField';
 
 const CharacterRoute = () => {
   const [character, setCharacter] = useState<Character | null>(null);
   const { characterId } = useParams();
-  const { fetchCharacter } = useCharacters();
+  const { fetchCharacter, handleCharacterUpdate } = useCharacters();
 
   const getData = async () => {
     if (!characterId) return;
@@ -27,11 +28,21 @@ const CharacterRoute = () => {
       <div className="p-12 max-w-4xl w-full">
         {character ? (
           <>
-            <h1 className="text-3xl font-extrabold text-gray-800">
-              {character.firstName} {character.lastName}
-            </h1>
-            <div className="space-y-4 text-gray-700 text-lg">
-              <p>{character.description}</p>
+            <EditableField
+              value={character.firstName}
+              onChange={(value) => handleCharacterUpdate({ ...character, firstName: value ?? '' })}
+              textClassName='text-3xl font-extrabold text-gray-800' />
+              {'    '}
+            <EditableField
+              value={character.lastName}
+              onChange={(value) => handleCharacterUpdate({ ...character, lastName: value ?? '' })}
+              textClassName='text-3xl font-extrabold text-gray-800' />
+              
+            <div className="space-y-4">
+              <EditableField
+                value={character.description ?? ''}
+                onChange={(value) => handleCharacterUpdate({ ...character, description: value ?? '' })}
+                textClassName='text-gray-700 text-lg' />
               
               {character?.user && (
                 <p className="text-sm text-gray-500 italic mt-1">

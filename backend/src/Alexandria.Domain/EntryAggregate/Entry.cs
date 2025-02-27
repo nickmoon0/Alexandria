@@ -59,6 +59,40 @@ public class Entry : AggregateRoot, IAuditable, ISoftDeletable
         return new Entry(name, description, createdById, dateTimeProvider.UtcNow);
     }
     
+    /// <summary>
+    /// Updates the entry's name.
+    /// </summary>
+    /// <param name="newName">The new name for the entry.</param>
+    /// <returns>An ErrorOr indicating success or a domain error.</returns>
+    public ErrorOr<Updated> UpdateName(string newName)
+    {
+        newName = newName?.Trim() ?? string.Empty;
+        if (string.IsNullOrEmpty(newName))
+        {
+            return EntryErrors.InvalidName;
+        }
+        
+        Name = newName;
+        return Result.Updated;
+    }
+    
+    /// <summary>
+    /// Updates the entry's description.
+    /// </summary>
+    /// <param name="newDescription">The new description for the entry. An empty value is treated as null.</param>
+    /// <returns>An ErrorOr indicating success.</returns>
+    public ErrorOr<Updated> UpdateDescription(string? newDescription)
+    {
+        newDescription = newDescription?.Trim();
+        if (newDescription is { Length: 0 })
+        {
+            newDescription = null;
+        }
+        
+        Description = newDescription;
+        return Result.Updated;
+    }
+    
     public ErrorOr<Updated> AddCharacter(Character character)
     {
         if (Characters.Contains(character))
