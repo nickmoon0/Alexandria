@@ -44,6 +44,13 @@ export const CharactersTable = () => {
     }
   };
 
+  const canDeleteCharacter = (character:Character) => {
+    // Can only delete character if you are an admin AND the character is not created from a user
+    // (Deleting character created from user will cause inconsistency with Keycloak)
+    return roles.includes(Roles.ADMIN) && !character.user;
+  };
+
+
   // Table setup
   const columns: Column<Character>[] = [
     {
@@ -51,7 +58,7 @@ export const CharactersTable = () => {
       label: 'Delete',
       render: (character:Character) => (
         <DeleteButton 
-          disabled={!roles.includes(Roles.ADMIN)} // Only admins can delete characters
+          disabled={!canDeleteCharacter(character)} // Only admins can delete characters
           onClick={(event) => {
             event.stopPropagation();
             handleDelete(character.id);

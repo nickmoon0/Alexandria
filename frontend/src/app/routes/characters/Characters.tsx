@@ -3,6 +3,7 @@ import { Roles } from '@/config/constants';
 import { CharactersTable } from '@/features/characters/components/CharactersTable';
 import CharacterUploadForm from '@/features/characters/components/CharacterUploadForm';
 import { useCharacters } from '@/features/characters/hooks/useCharacters';
+import { Character } from '@/types/app';
 import { Plus } from 'lucide-react';
 import React, { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
