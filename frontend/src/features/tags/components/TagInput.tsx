@@ -62,18 +62,18 @@ const TagInput: FC<TagInputProps> = ({ initialTags }) => {
   };
 
   return (
-    <div className="">
+    <div>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag: Tag, index: number) => (
           <div
             key={index}
-            className="flex items-center bg-blue-100 text-blue-800 rounded-full px-3 py-1"
+            className="flex items-center bg-blue-600 text-white rounded-full px-3 py-1"
           >
             <span>{tag.name}</span>
             <button
               type="button"
               onClick={() => removeTag(index)}
-              className="ml-2 text-blue-600 hover:text-blue-900 focus:outline-none"
+              className="ml-2 text-white focus:outline-none"
             >
               &times;
             </button>
