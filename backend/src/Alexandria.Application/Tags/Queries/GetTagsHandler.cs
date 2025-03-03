@@ -32,6 +32,7 @@ public class GetTagsHandler : IRequestHandler<GetTagsQuery, ErrorOr<GetTagsRespo
         }
         
         var tags = await query
+            .OrderBy(tag => tag.Name)
             .Take(request.MaxCount)
             .ToListAsync(cancellationToken);
 

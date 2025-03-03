@@ -58,7 +58,7 @@ public class TaggingService : ITaggingService
             tag.Name, typeName, entity.Id);
         
         var tagging = await _dbContext.Taggings
-            .Where(t => t.EntityType == typeName && t.EntityId == entityId)
+            .Where(t => t.EntityType == typeName && t.EntityId == entityId && t.TagId == tag.Id)
             .SingleOrDefaultAsync();
 
         if (tagging == null) return Error.NotFound();

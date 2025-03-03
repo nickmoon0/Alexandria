@@ -9,7 +9,12 @@ import TagInput from '@/features/tags/components/TagInput';
 const CharacterRoute = () => {
   const [character, setCharacter] = useState<Character | null>(null);
   const { characterId } = useParams();
-  const { fetchCharacter, handleCharacterUpdate } = useCharacters();
+  const { 
+    fetchCharacter,
+    handleCharacterUpdate,
+    handleTagCharacter,
+    handleRemoveTagCharacter
+  } = useCharacters();
 
   const getData = async () => {
     if (!characterId) return;
@@ -40,7 +45,9 @@ const CharacterRoute = () => {
               textClassName='text-3xl font-extrabold text-gray-800' />
             
             <TagInput
-              initialTags={character.tags} />
+              initialTags={character.tags}
+              onTag={(tag) => handleTagCharacter(character, tag)}
+              onTagRemove={(tag) => handleRemoveTagCharacter(character, tag)} />
             
             <div className="space-y-4">
               <EditableField
@@ -53,7 +60,7 @@ const CharacterRoute = () => {
                   Character created from user
                 </p>
               )}
-              {character.createdBy && 
+              {character.createdBy &&
                 <MetadataTag
                   createdBy={character?.createdBy}
                   createdAtUtc={character?.createdOnUtc}

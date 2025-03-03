@@ -4,9 +4,11 @@ import { Tag } from '@/types/app';
 
 export interface TagInputProps {
   initialTags:Tag[];
+  onTag: (tag:Tag) => Promise<boolean>;
+  onTagRemove: (tag:Tag) => Promise<boolean>;
 }
 
-const TagInput: FC<TagInputProps> = ({ initialTags }) => {
+const TagInput: FC<TagInputProps> = ({ initialTags, onTag, onTagRemove }) => {
   const [tags, setTags] = useState<Tag[]>(initialTags);
   const [input, setInput] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
@@ -34,12 +36,20 @@ const TagInput: FC<TagInputProps> = ({ initialTags }) => {
           : suggestions[0];
   
       if (!tags.map(tag => tag.name).includes(tagToAdd.name)) {
-        setTags([...tags, tagToAdd]);
+        onTag(tagToAdd).then(success => {
+          if (success) {
+            setTags([...tags, tagToAdd]);
+          }
+        });
       }
       setInput('');
       setSuggestions([]);
     } else if (e.key === 'Backspace' && input === '' && tags.length > 0) {
-      setTags(tags.slice(0, tags.length - 1));
+      onTagRemove(tags[tags.length - 1]).then(success => {
+        if (success) {
+          setTags(tags.slice(0, tags.length - 1));
+        }
+      });
     }
   };
   
@@ -49,13 +59,21 @@ const TagInput: FC<TagInputProps> = ({ initialTags }) => {
     searchTags(newValue);
   };
 
-  const removeTag = (indexToRemove: number): void => {
-    setTags(tags.filter((_, index) => index !== indexToRemove));
+  const removeTag = (tagToRemove: Tag): void => {
+    onTagRemove(tagToRemove).then(success => {
+      if (success) {
+        setTags(tags.filter(tag => tag.name !== tagToRemove.name));
+      }
+    });
   };
 
   const handleSuggestionClick = (suggestion: Tag): void => {
     if (!tags.includes(suggestion)) {
-      setTags([...tags, suggestion]);
+      onTag(suggestion).then(success => {
+        if (success) {
+          setTags([...tags, suggestion]);
+        }
+      });
     }
     setInput('');
     setSuggestions([]);
@@ -72,7 +90,7 @@ const TagInput: FC<TagInputProps> = ({ initialTags }) => {
             <span>{tag.name}</span>
             <button
               type="button"
-              onClick={() => removeTag(index)}
+              onClick={() => removeTag(tag)}
               className="ml-2 text-white focus:outline-none"
             >
               &times;

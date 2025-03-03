@@ -32,9 +32,7 @@ public class TaggingConfigurations : IEntityTypeConfiguration<Tagging>
             .OnDelete(DeleteBehavior.NoAction);
 
         // Composite Index for fast lookups
-        builder
-            .HasIndex(tg => new { tg.TagId, tg.EntityId })
-            .IsUnique();
+        builder.HasIndex(tg => new { tg.TagId, tg.EntityId });
         builder.HasIndex(tg => new { tg.EntityType, tg.EntityId });
         builder.HasIndex(tg => new { tg.TagId });
     }

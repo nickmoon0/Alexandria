@@ -3,12 +3,13 @@ import { useToast } from '@/hooks/ToastContext';
 import { getCharacter } from '@/features/characters/api/get-character';
 import { getCharacters } from '@/features/characters/api/get-characters';
 import { useState } from 'react';
-import { Character } from '@/types/app';
+import { Character, Tag } from '@/types/app';
 import { useNavigate } from 'react-router';
 import { paths } from '@/config/paths';
 import { useCharactersContext } from '@/features/characters/hooks/CharactersContext';
 import { deleteCharacter } from '@/features/characters/api/delete-character';
 import { updateCharacter } from '@/features/characters/api/update-character';
+import { removeTagCharacter, tagCharacter } from '@/features/characters/api/tag-character';
 
 export const useCharacters = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -77,6 +78,28 @@ export const useCharacters = () => {
     }
   };
 
+  const handleTagCharacter = async (character:Character, tag:Tag) => {
+    try {
+      await tagCharacter({ characterId:character.id, tagId:tag.id });
+      return true;
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to tag character', ToastType.Error);
+      return false;
+    }
+  };
+
+  const handleRemoveTagCharacter = async (character:Character, tag:Tag) => {
+    try {
+      await removeTagCharacter({ characterId:character.id, tagId:tag.id });
+      return true;
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to remove tag on character', ToastType.Error);
+      return false;
+    }
+  };
+
   const refreshCharacters = () => {
     setCursorStack([]);
     setNextCursor(null);
@@ -91,6 +114,8 @@ export const useCharacters = () => {
     cursorStack,
     handleDelete,
     handleCharacterClick,
+    handleTagCharacter,
+    handleRemoveTagCharacter,
     fetchCharacter,
     fetchCharacters,
     setCount,
