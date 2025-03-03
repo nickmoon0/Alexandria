@@ -7,6 +7,7 @@ import Button from '@/components/Buttons/Button';
 import { formatDateTime } from '@/lib/helpers';
 import { useAuth } from 'react-oidc-context';
 import { Roles } from '@/config/constants';
+import TagList from '@/features/tags/components/TagList';
 
 export const CharactersTable = () => {
   // State management/hooks
@@ -71,6 +72,7 @@ export const CharactersTable = () => {
       render: (character:Character) => `${character.firstName} ${character.lastName}`
     },
     { key: 'description', label: 'Description' },
+    { key: 'tags', label: 'Tags', render: (character: Character) => <TagList tags={character.tags} /> },
     {
       key: 'createdBy',
       label: 'Created By',

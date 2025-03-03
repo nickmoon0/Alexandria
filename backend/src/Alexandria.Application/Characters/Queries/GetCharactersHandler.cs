@@ -2,8 +2,10 @@ using Alexandria.Application.Characters.Responses;
 using Alexandria.Application.Common;
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Application.Common.Pagination;
+using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
 using Alexandria.Domain.CharacterAggregate;
+using Alexandria.Domain.Common.Entities.Tag;
 using ErrorOr;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +20,15 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<GetCharactersHandler> _logger;
-
+    private readonly ITaggingService _taggingService;
+    
     private const int MAX_PAGE_SIZE = 100;
 
-    public GetCharactersHandler(IAppDbContext context, ILogger<GetCharactersHandler> logger)
+    public GetCharactersHandler(IAppDbContext context, ILogger<GetCharactersHandler> logger, ITaggingService taggingService)
     {
         _context = context;
         _logger = logger;
+        _taggingService = taggingService;
     }
 
     public async Task<ErrorOr<GetCharactersResponse>> Handle(GetCharactersQuery request, CancellationToken cancellationToken)
@@ -116,6 +120,8 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
                 user => user,
                 cancellationToken);
 
+        var tags = await _taggingService.GetEntitiesTags(characters, cancellationToken);
+        
         var characterResponses = characters
             .Select(character => new CharacterResponse
             {
@@ -127,9 +133,19 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
                 User = character.UserId != null 
                     ? GetUserResponse((Guid)character.UserId) 
                     : null,
+                Tags = GetTagResponses(character.Id)
             });
 
         return characterResponses;
+
+        List<TagResponse>? GetTagResponses(Guid characterId) =>
+            tags.TryGetValue(characterId, out var characterTags)
+                ? characterTags.Select(tag => new TagResponse
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                }).ToList()
+                : null;
         
         UserResponse? GetUserResponse(Guid userId) =>
             users.TryGetValue(userId, out var user)
