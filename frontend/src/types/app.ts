@@ -9,6 +9,7 @@ export interface Character extends TableRow {
   user?: User;
   createdBy: User;
   createdOnUtc: Date;
+  tags:Tag[];
 };
 
 export interface Comment extends TableRow {

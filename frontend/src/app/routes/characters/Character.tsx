@@ -40,7 +40,7 @@ const CharacterRoute = () => {
               textClassName='text-3xl font-extrabold text-gray-800' />
             
             <TagInput
-              initialTags={[]} />
+              initialTags={character.tags} />
             
             <div className="space-y-4">
               <EditableField
