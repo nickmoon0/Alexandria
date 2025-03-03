@@ -21,6 +21,7 @@ public class GetCharacters : EndpointBase, IEndpoint
 
     private static async Task<IResult> Handle(
         [FromServices] IMediator mediator,
+        [FromQuery] Guid? tagId = null,
         [FromQuery] string? pageRequest = null)
     {
         var paginatedRequest = pageRequest == null
@@ -29,7 +30,7 @@ public class GetCharacters : EndpointBase, IEndpoint
         
         if (paginatedRequest == null) return Results.InternalServerError("Error parsing pageRequest");
 
-        var query = new GetCharactersQuery(paginatedRequest);
+        var query = new GetCharactersQuery(paginatedRequest, tagId);
         var result = await mediator.Send(query);
         if (result.IsError)
         {

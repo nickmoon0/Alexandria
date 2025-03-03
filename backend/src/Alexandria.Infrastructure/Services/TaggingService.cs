@@ -113,4 +113,18 @@ public class TaggingService : ITaggingService
         return result;
     }
 
+    public async Task<IReadOnlyList<Guid>> GetEntityIdsWithTag<TEntity>(
+        Tag tag,
+        CancellationToken cancellationToken) where TEntity : Entity
+    {
+        var entityName = typeof(TEntity).Name;
+        var taggings = await _dbContext.Taggings
+            .Where(x => x.EntityType == entityName && x.TagId == tag.Id)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+        
+        return taggings
+            .Select(tagging => tagging.EntityId)
+            .ToList();
+    }
 }

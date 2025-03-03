@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Alexandria.Application.Characters.Queries;
 
-public record GetCharactersQuery(PaginatedRequest PaginatedParams) : IRequest<ErrorOr<GetCharactersResponse>>;
+public record GetCharactersQuery(PaginatedRequest PaginatedParams, Guid? TagId = null) : IRequest<ErrorOr<GetCharactersResponse>>;
 public record GetCharactersResponse(PaginatedResponse<CharacterResponse> Characters);
 
 public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<GetCharactersResponse>>
@@ -45,6 +45,21 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
         Character? cursorCharacter;
         IQueryable<Character> query = _context.Characters;
 
+        // Only retrieve entities that have been tagged with specific tag
+        if (request.TagId != null)
+        {
+            _logger.LogInformation("TagId set to: {TagId}", request.TagId);
+
+            var tag = await _context.Tags.FindAsync([request.TagId], cancellationToken);
+            if (tag == null)
+            {
+                _logger.LogInformation("Tag not found with ID {TagID}", request.TagId);
+                return TagErrors.TagNotFound;
+            }
+            var characterIds = await _taggingService.GetEntityIdsWithTag<Character>(tag, cancellationToken);
+            query = query.Where(character => characterIds.Contains(character.Id));
+        }
+        
         if (request.PaginatedParams.CursorId != null)
         {
             _logger.LogInformation("CursorId set to: {CursorId}", request.PaginatedParams.CursorId);

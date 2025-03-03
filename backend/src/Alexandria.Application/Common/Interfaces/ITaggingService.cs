@@ -24,4 +24,14 @@ public interface ITaggingService
     public Task<IReadOnlyDictionary<Guid, IEnumerable<Tag>>> GetEntitiesTags<TEntity>(
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken) where TEntity : Entity;
+
+    /// <summary>
+    /// Retrieves a list of entity's IDs which have the associated tag
+    /// </summary>
+    /// <param name="tagId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
+    public Task<IReadOnlyList<Guid>> GetEntityIdsWithTag<TEntity>(Tag tag, CancellationToken cancellationToken) 
+        where TEntity : Entity;
 }
