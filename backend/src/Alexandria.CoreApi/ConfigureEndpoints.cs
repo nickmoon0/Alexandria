@@ -67,6 +67,7 @@ public static class ConfigureEndpoints
             .MapEndpoint<GetComments>()
             .MapEndpoint<GetEntries>()
             .MapEndpoint<GetEntry>()
+            .MapEndpoint<RemoveEntryTag>()
             .MapEndpoint<TagEntry>()
             .MapEndpoint<UpdateEntry>();
 

@@ -9,3 +9,8 @@ export const tagEntry = async ({ entryId, tagId }:TagEntryProps) => {
   const response = await api.post(`/entry/${entryId}/tag/${tagId}`);
   return response;
 };
+
+export const removeTagEntry = async ({ entryId, tagId }:TagEntryProps) => {
+  const response = await api.delete(`/entry/${entryId}/tag/${tagId}`);
+  return response;
+};

@@ -1,13 +1,14 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
-import { Entry } from '@/types/app';
+import { Entry, Tag } from '@/types/app';
 import { paths } from '@/config/paths';
 import { useEntriesRefresh } from '@/features/entries/hooks/EntriesContext';
 import { deleteEntry } from '@/features/entries/api/delete-entry';
 import { useToast } from '@/hooks/ToastContext';
 import { ToastType } from '@/components/Toast';
 import { updateEntry } from '@/features/entries/api/update-entry';
+import { tagEntry, removeTagEntry } from '@/features/entries/api/tag-entry';
 
 export const useEntries = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -75,6 +76,28 @@ export const useEntries = () => {
     }
   };
 
+  const handleTagEntry = async (entry:Entry, tag:Tag): Promise<boolean> => {
+    try {
+      await tagEntry({ entryId:entry.id, tagId:tag.id });
+      return true;
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to tag entry', ToastType.Error);
+      return false;
+    }
+  };
+
+  const handleRemoveTagEntry = async (entry:Entry, tag:Tag): Promise<boolean> => {
+    try {
+      await removeTagEntry({ entryId:entry.id, tagId:tag.id });
+      return true;
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to remove tag from entry', ToastType.Error);
+      return false;
+    }
+  };
+
   return {
     entries,
     entriesRefresh,
@@ -83,6 +106,8 @@ export const useEntries = () => {
     cursorStack,
     handleEntryClick,
     handleDelete,
+    handleTagEntry,
+    handleRemoveTagEntry,
     fetchEntries,
     setCount,
     setCursorStack,

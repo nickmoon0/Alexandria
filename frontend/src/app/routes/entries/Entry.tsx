@@ -4,7 +4,6 @@ import { useParams } from 'react-router';
 import { Entry } from '@/types/app';
 import { getEntry, GetEntryOptions } from '@/features/entries/api/get-entry';
 import MediaViewer from '@/components/MediaViewer';
-import TagList from '@/features/tags/components/TagList';
 import TextArea from '@/components/Input/TextArea';
 import Button from '@/components/Buttons/Button';
 import { createComment } from '@/features/comments/api/create-comment';
@@ -15,6 +14,7 @@ import MetadataTag from '@/components/MetadataTag';
 import CommentList from '@/features/comments/components/CommentList';
 import EditableField from '@/components/Input/EditableField';
 import { useEntries } from '@/features/entries/hooks/useEntries';
+import TagInput from '@/features/tags/components/TagInput';
 
 const EntryRoute = () => {
   // Hooks/state management
@@ -23,7 +23,11 @@ const EntryRoute = () => {
 
   const { entryId } = useParams();
   const { showToast } = useToast();
-  const { handleEntryUpdate } = useEntries();
+  const { 
+    handleEntryUpdate,
+    handleTagEntry,
+    handleRemoveTagEntry
+  } = useEntries();
 
   // Functions
 
@@ -109,7 +113,6 @@ const EntryRoute = () => {
       <div></div>
 
       <div>
-        { entry.tags && <TagList tagListClassName={'pt-1'} tags={entry.tags} /> }
         <EditableField
           value={entry.description ?? ''}       
           onChange={(value) => handleEntryUpdate({ ...entry, description: value ?? '' })}
@@ -126,8 +129,14 @@ const EntryRoute = () => {
             className='max-h-[65vh]'
             documentId={entry.document.id} />
         </div>
+        <div className='pt-2'>
+          <TagInput
+            initialTags={entry.tags}
+            onTag={(tag) => handleTagEntry(entry, tag)}
+            onTagRemove={(tag) => handleRemoveTagEntry(entry, tag)} />
+        </div>
         {entry?.createdBy && (
-          <div className='w-full py-4'>
+          <div className='w-full py-2'>
             <MetadataTag
               createdBy={entry.createdBy}
               createdAtUtc={entry.createdAtUtc}
@@ -147,7 +156,7 @@ const EntryRoute = () => {
           <Button className='self-start' onClick={addComment}>Post</Button>
         </div>
         <div className='mt-4'>
-          <CommentList 
+          <CommentList
               className='max-h-[65vh]'
               comments={entry.comments}/>
         </div>
