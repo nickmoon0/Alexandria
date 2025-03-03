@@ -1,6 +1,9 @@
 import React, { FC, useState, ChangeEvent, KeyboardEvent } from 'react';
-import { getTags } from '@/features/tags/api/get-tags';
+import { getTag, getTags } from '@/features/tags/api/get-tags';
 import { Tag } from '@/types/app';
+import { useToast } from '@/hooks/ToastContext';
+import { ToastType } from '@/components/Toast';
+import { createTag } from '@/features/tags/api/create-tag';
 
 export interface TagInputProps {
   initialTags:Tag[];
@@ -13,16 +16,34 @@ const TagInput: FC<TagInputProps> = ({ initialTags, onTag, onTagRemove }) => {
   const [input, setInput] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
 
+  const { showToast } = useToast();
+
   // Stub function to simulate an API call for tag suggestions.
-  const searchTags = async (query: string): Promise<void> => {
-    console.log('Searching for tags:', query);
-    
+  const searchTags = async (query: string): Promise<void> => {    
     const tags = await getTags({ searchString:query, maxCount:3 });
 
     if (query.trim().length > 0) {
       setSuggestions(tags);
     } else {
       setSuggestions([]);
+    }
+  };
+
+  const handleCreateTag = async (name:string): Promise<void> => {
+    try {
+      const response = await createTag({ name });
+      const id = response.id;
+      const tag = await getTag({ id });
+
+      onTag(tag).then(success => {
+        if (success) {
+          setTags([...tags, tag]);
+        }
+      });
+
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to create tag', ToastType.Error);
     }
   };
 
@@ -33,9 +54,11 @@ const TagInput: FC<TagInputProps> = ({ initialTags, onTag, onTagRemove }) => {
       const tagToAdd =
         suggestions.length > 0 && suggestions[0].name === newTagText
           ? suggestions[0]
-          : suggestions[0];
+          : null;
   
-      if (!tags.map(tag => tag.name).includes(tagToAdd.name)) {
+      if (tagToAdd === null) {
+        handleCreateTag(newTagText);
+      } else if (!tags.map(tag => tag.name).includes(tagToAdd.name)) {
         onTag(tagToAdd).then(success => {
           if (success) {
             setTags([...tags, tagToAdd]);
