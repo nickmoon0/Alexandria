@@ -4,6 +4,7 @@ import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import { Character } from '@/types/app';
 import MetadataTag from '@/components/MetadataTag';
 import EditableField from '@/components/Input/EditableField';
+import TagInput from '@/features/tags/components/TagInput';
 
 const CharacterRoute = () => {
   const [character, setCharacter] = useState<Character | null>(null);
@@ -37,7 +38,10 @@ const CharacterRoute = () => {
               value={character.lastName}
               onChange={(value) => handleCharacterUpdate({ ...character, lastName: value ?? '' })}
               textClassName='text-3xl font-extrabold text-gray-800' />
-              
+            
+            <TagInput
+              initialTags={[]} />
+            
             <div className="space-y-4">
               <EditableField
                 value={character.description ?? ''}
