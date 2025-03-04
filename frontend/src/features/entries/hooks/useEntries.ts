@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
 import { Entry, Tag } from '@/types/app';
@@ -9,6 +9,13 @@ import { useToast } from '@/hooks/ToastContext';
 import { ToastType } from '@/components/Toast';
 import { updateEntry } from '@/features/entries/api/update-entry';
 import { tagEntry, removeTagEntry } from '@/features/entries/api/tag-entry';
+import { PaginatedRequest } from '@/types/pagination';
+
+export interface FetchEntriesProps {
+  cursorId?: string;
+  previous?: boolean;
+  tagId?: string;
+};
 
 export const useEntries = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -26,23 +33,31 @@ export const useEntries = () => {
   const navigate = useNavigate();
 
   // Fetch Entries
-  const fetchEntries = useCallback(async (cursorId: string | null, previous: boolean = false) => {
+  const fetchEntries = async ({
+    cursorId,
+    previous,
+    tagId,
+  }:FetchEntriesProps) => {
     try {
-      const pageRequest = { PageSize: count, CursorId: cursorId };
-      const response = await getEntries({ pageRequest, options: [ GetEntriesOptions.IncludeDocument, GetEntriesOptions.IncludeTags ] });
+      const pageRequest:PaginatedRequest = { PageSize: count, CursorId: cursorId };
+      const response = await getEntries({ 
+        pageRequest, 
+        options: [ GetEntriesOptions.IncludeDocument, GetEntriesOptions.IncludeTags ],
+        tagId
+      });
   
       setEntries(response.data);
       setNextCursor(response.paging.nextCursor);
   
       // Don't add cursor to stack if moving backwards
-      if (!previous && cursorId !== null) {
+      if (!previous && cursorId) {
         setCursorStack((prevStack) => [...prevStack, cursorId]);
       }
     } catch (error) {
       console.error(error);
       showToast('Failed to fetch entries', ToastType.Error);
     }
-  }, [count]);
+  };
 
   // Handle Entry Click
   const handleEntryClick = (rowId: string) => {
@@ -50,11 +65,11 @@ export const useEntries = () => {
   };
 
 
-  const refreshEntries = useCallback(() => {
+  const refreshEntries = (tagId?:string) => {
     setCursorStack([]);
     setNextCursor(null);
-    fetchEntries(null);
-  }, [fetchEntries]);
+    fetchEntries({ tagId });
+  };
 
   const handleDelete = async (entryId:string) => {
     try {

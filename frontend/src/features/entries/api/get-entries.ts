@@ -12,15 +12,20 @@ export enum GetEntriesOptions {
 export interface GetEntriesProps {
   options?: GetEntriesOptions[];
   pageRequest?: PaginatedRequest;
+  tagId?: string;
 };
 
-export const getEntries = async ({ options, pageRequest }:GetEntriesProps) => {
+export const getEntries = async ({ options, pageRequest, tagId }:GetEntriesProps) => {
   let queryString = `pageRequest=${encodeURIComponent(
     JSON.stringify(pageRequest)
   )}`;
 
   if (options) {
     queryString += `&options=${options.join('|')}`;
+  }
+
+  if (tagId) {
+    queryString += `&tagId=${tagId}`;
   }
 
   const response = await api.get<PaginatedResponse<Entry>>(`/entry?${queryString}`);
