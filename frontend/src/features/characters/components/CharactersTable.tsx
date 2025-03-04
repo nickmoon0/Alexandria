@@ -35,14 +35,14 @@ export const CharactersTable = () => {
 
   // Functions
   const handleNextPage = () => {
-    if (nextCursor) fetchCharacters({ cursorId: nextCursor });
+    if (nextCursor) fetchCharacters({ cursorId: nextCursor, tagId: tagFilter?.id });
   };
 
   const handlePreviousPage = () => {
     if (cursorStack.length > 0) {
       const prevCursor = cursorStack[cursorStack.length - 2];
       setCursorStack((prevStack) => prevStack.slice(0, -1));
-      fetchCharacters({ cursorId: prevCursor, previous: true });
+      fetchCharacters({ cursorId: prevCursor, previous: true, tagId: tagFilter?.id });
     }
   };
 

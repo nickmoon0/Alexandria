@@ -75,28 +75,21 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
                 .Where(character => character.CreatedAtUtc < cursorCharacter.CreatedAtUtc ||
                                     (character.CreatedAtUtc == cursorCharacter.CreatedAtUtc && character.Id < cursorCharacter.Id));
         }
-
+        
         var characters = await query
             .OrderByDescending(character => character.CreatedAtUtc)
             .ThenByDescending(character => character.Id)
-            .Take(request.PaginatedParams.PageSize)
+            .Take(request.PaginatedParams.PageSize + 1) // Retrieve extra record to check if next page exists
             .ToListAsync(cancellationToken);
         
         _logger.LogInformation("Retrieved {CharacterCount} characters", characters.Count);
 
         Guid? nextCursor = null;
-        if (characters.Count != 0)
+        if (characters.Count > request.PaginatedParams.PageSize)
         {
-            var lastCharacter = characters.Last();
-            var hasNextPage = await _context.Characters.AnyAsync(character =>
-                character.CreatedAtUtc < lastCharacter.CreatedAtUtc ||
-                (character.CreatedAtUtc == lastCharacter.CreatedAtUtc && character.Id < lastCharacter.Id),
-                cancellationToken);
-            if (hasNextPage)
-            {
-                nextCursor = lastCharacter.Id;
-                _logger.LogInformation("NextCursor set to {CursorId}", nextCursor);
-            }
+            nextCursor = characters[^2].Id; // Use last record on page as cursor, not first record on next page
+            characters = characters.Take(request.PaginatedParams.PageSize).ToList();
+            _logger.LogInformation("NextCursor set to {CursorId}", nextCursor);
         }
 
         var characterResponses = (await GetCharacterResponses(characters, cancellationToken)).ToList();
