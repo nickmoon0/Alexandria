@@ -4,11 +4,17 @@ import { useCharacters } from '@/features/characters/hooks/useCharacters';
 import { Character } from '@/types/app';
 import MetadataTag from '@/components/MetadataTag';
 import EditableField from '@/components/Input/EditableField';
+import TagInput from '@/features/tags/components/TagInput';
 
 const CharacterRoute = () => {
   const [character, setCharacter] = useState<Character | null>(null);
   const { characterId } = useParams();
-  const { fetchCharacter, handleCharacterUpdate } = useCharacters();
+  const { 
+    fetchCharacter,
+    handleCharacterUpdate,
+    handleTagCharacter,
+    handleRemoveTagCharacter
+  } = useCharacters();
 
   const getData = async () => {
     if (!characterId) return;
@@ -37,7 +43,12 @@ const CharacterRoute = () => {
               value={character.lastName}
               onChange={(value) => handleCharacterUpdate({ ...character, lastName: value ?? '' })}
               textClassName='text-3xl font-extrabold text-gray-800' />
-              
+            
+            <TagInput
+              initialTags={character.tags}
+              onTag={(tag) => handleTagCharacter(character, tag)}
+              onTagRemove={(tag) => handleRemoveTagCharacter(character, tag)} />
+            
             <div className="space-y-4">
               <EditableField
                 value={character.description ?? ''}
@@ -49,7 +60,7 @@ const CharacterRoute = () => {
                   Character created from user
                 </p>
               )}
-              {character.createdBy && 
+              {character.createdBy &&
                 <MetadataTag
                   createdBy={character?.createdBy}
                   createdAtUtc={character?.createdOnUtc}

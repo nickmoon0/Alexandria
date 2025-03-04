@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import Button from '@/components/Buttons/Button';
 import TagList from '@/features/tags/components/TagList';
 import Table, { Column } from '@/components/Table';
-import { Entry } from '@/types/app';
+import { Entry, Tag } from '@/types/app';
 import DeleteButton from '@/components/Buttons/DeleteButton';
 import { formatDateTime } from '@/lib/helpers';
 import { useAuth } from 'react-oidc-context';
 import { Roles } from '@/config/constants';
 
 export const EntriesTable = () => {
+  const [tagFilter, setTagFilter] = useState<Tag | null>(null);
+
   const {
     count,
     entries,
@@ -28,14 +30,14 @@ export const EntriesTable = () => {
   const roles = auth.user?.profile.roles as string[] || [];
 
   const handleNextPage = () => {
-    if (nextCursor) fetchEntries(nextCursor);
+    if (nextCursor) fetchEntries({ cursorId: nextCursor });
   };
 
   const handlePreviousPage = () => {
     if (cursorStack.length > 0) {
       const prevCursor = cursorStack[cursorStack.length - 2];
       setCursorStack((prevStack) => prevStack.slice(0, -1));
-      fetchEntries(prevCursor, true);
+      fetchEntries({cursorId: prevCursor, previous: true});
     }
   };
 
@@ -62,7 +64,7 @@ export const EntriesTable = () => {
     },
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' },
-    { key: 'tags', label: 'Tags', render: (entry: Entry) => <TagList tags={entry.tags} /> },
+    { key: 'tags', label: 'Tags', render: (entry: Entry) => <TagList tags={entry.tags} onClick={setTagFilter} /> },
     {
       key: 'createdBy',
       label: 'Created By',
@@ -77,11 +79,19 @@ export const EntriesTable = () => {
 
   // Refresh entries when count changes
   useEffect(() => {
-    refreshEntries();
-  }, [refreshEntries, count, entriesRefresh]);
+    refreshEntries(tagFilter?.id);
+  }, [count, entriesRefresh, tagFilter]);
 
   return (
     <div>
+      {tagFilter && (
+        <div className="flex flex-row mb-4 items-center gap-2">
+          <Button onClick={() => setTagFilter(null)}>
+            Clear Filter
+          </Button>
+          <p className='text-gray-700'>{tagFilter.name}</p>
+        </div>
+      )}
       <Table columns={columns} data={entries} onRowClick={(entry) => handleEntryClick(entry.id)} />
 
       <div className='flex justify-between items-center mt-4'>

@@ -1,5 +1,6 @@
 using Alexandria.Application.Characters.Responses;
 using Alexandria.Application.Common.Interfaces;
+using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
 using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.UserAggregate;
@@ -16,11 +17,12 @@ public class GetCharacterHandler : IRequestHandler<GetCharacterQuery, ErrorOr<Ge
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<GetCharacterHandler> _logger;
-
-    public GetCharacterHandler(IAppDbContext context, ILogger<GetCharacterHandler> logger)
+    private readonly ITaggingService _taggingService;
+    public GetCharacterHandler(IAppDbContext context, ILogger<GetCharacterHandler> logger, ITaggingService taggingService)
     {
         _context = context;
         _logger = logger;
+        _taggingService = taggingService;
     }
 
     public async Task<ErrorOr<GetCharacterResult>> Handle(GetCharacterQuery request, CancellationToken cancellationToken)
@@ -57,6 +59,20 @@ public class GetCharacterHandler : IRequestHandler<GetCharacterQuery, ErrorOr<Ge
             };
         }
         
+        // Get character tags
+        var tagsResult = await _taggingService.GetEntityTags(character, cancellationToken);
+        if (tagsResult.IsError)
+        {
+            _logger.LogError("Failed to retrieve tags for character with ID: {ID}", character.Id);
+            return tagsResult.Errors;
+        }
+
+        var tagsResponses = tagsResult.Value.Select(tag => new TagResponse
+        {
+            Id = tag.Id,
+            Name = tag.Name,
+        }).ToList();
+        
         var createdByResponse = new UserResponse
         {
             Id = createdByUser.Id,
@@ -68,6 +84,7 @@ public class GetCharacterHandler : IRequestHandler<GetCharacterQuery, ErrorOr<Ge
             Id = character.Id,
             Name = character.Name,
             Description = character.Description,
+            Tags = tagsResponses,
             User = charUserResponse,
             CreatedBy = createdByResponse,
             CreatedAtUtc = character.CreatedAtUtc,

@@ -1,4 +1,5 @@
 using Alexandria.Application.Characters.Responses;
+using Alexandria.CoreApi.Tags.DTOs;
 using Alexandria.CoreApi.Users.DTOs;
 
 namespace Alexandria.CoreApi.Characters.DTOs;
@@ -10,6 +11,7 @@ public class CharacterDto
     public string? LastName { get; set; }
     public string? MiddleNames { get; set; }
     public string? Description { get; set; }
+    public IReadOnlyList<TagDto>? Tags { get; set; }
     public UserDto? User { get; set; }
 
     public UserDto? CreatedBy { get; set; }
@@ -25,6 +27,7 @@ public class CharacterDto
                 LastName = characterResponse.Name?.LastName,
                 MiddleNames = characterResponse.Name?.MiddleNames,
                 Description = characterResponse.Description,
+                Tags = (IReadOnlyList<TagDto>?)characterResponse.Tags?.Select(TagDto.FromTagResponse).ToList(),
                 User = UserDto.FromUserResponse(characterResponse.User),
                 CreatedBy = UserDto.FromUserResponse(characterResponse.CreatedBy),
                 CreatedOnUtc = characterResponse.CreatedAtUtc

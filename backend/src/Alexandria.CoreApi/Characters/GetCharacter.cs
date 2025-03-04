@@ -31,37 +31,7 @@ public abstract class GetCharacter : EndpointBase, IEndpoint
         }
         
         var character = result.Value.Character;
-
-        UserDto? userDto = null;
-
-        if (character.User != null)
-        {
-            userDto = new UserDto
-            {
-                Id = character.User.Id,
-                FirstName = character.User.Name.FirstName,
-                LastName = character.User.Name.LastName,
-            };
-        }
-
-        var createdByDto = new UserDto
-        {
-            Id = character.CreatedBy!.Id,
-            FirstName = character.CreatedBy.Name.FirstName,
-            LastName = character.CreatedBy.Name.LastName,
-        };
-        
-        var response = new CharacterDto
-        {
-            Id = character.Id,
-            FirstName = character.Name!.FirstName,
-            LastName = character.Name.LastName,
-            MiddleNames = character.Name.MiddleNames,
-            Description = character.Description,
-            User = userDto,
-            CreatedBy = createdByDto,
-            CreatedOnUtc = character.CreatedAtUtc
-        };
+        var response = CharacterDto.FromCharacterResponse(character);
         
         return Results.Ok(response);
     }

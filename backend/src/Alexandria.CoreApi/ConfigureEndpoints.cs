@@ -37,6 +37,8 @@ public static class ConfigureEndpoints
             .MapEndpoint<DeleteCharacter>()
             .MapEndpoint<GetCharacter>()
             .MapEndpoint<GetCharacters>()
+            .MapEndpoint<RemoveTagOnCharacter>()
+            .MapEndpoint<TagCharacter>()
             .MapEndpoint<UpdateCharacter>();
         
         return app;
@@ -65,6 +67,7 @@ public static class ConfigureEndpoints
             .MapEndpoint<GetComments>()
             .MapEndpoint<GetEntries>()
             .MapEndpoint<GetEntry>()
+            .MapEndpoint<RemoveEntryTag>()
             .MapEndpoint<TagEntry>()
             .MapEndpoint<UpdateEntry>();
 

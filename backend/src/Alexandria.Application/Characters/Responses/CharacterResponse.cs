@@ -1,3 +1,4 @@
+using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
 using Alexandria.Domain.Common.ValueObjects.Name;
 
@@ -9,6 +10,7 @@ public class CharacterResponse
     public Name? Name { get; set; }
 
     public string? Description { get; set; }
+    public IReadOnlyList<TagResponse>? Tags { get; set; }
     public UserResponse? User { get; set; }
     public UserResponse? CreatedBy { get; set; }
 

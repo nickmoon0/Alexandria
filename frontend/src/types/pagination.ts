@@ -4,7 +4,7 @@ export interface PagingState {
 };
 
 export interface PaginatedRequest {
-  CursorId: string | null;
+  CursorId?: string;
   PageSize: number;
 };
 

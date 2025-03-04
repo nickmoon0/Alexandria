@@ -17,9 +17,16 @@ public abstract class GetTags : EndpointBase, IEndpoint
         .WithName(nameof(GetTags))
         .RequireAuthorization<User>();
 
-    private static async Task<IResult> Handle([FromServices] IMediator mediator)
+    private static async Task<IResult> Handle(
+        [FromQuery] string? searchString,
+        [FromQuery] int? maxCount,
+        [FromServices] IMediator mediator)
     {
-        var result = await mediator.Send(new GetTagQuery());
+        var query = maxCount == null
+            ? new GetTagsQuery(searchString)
+            : new GetTagsQuery(searchString, (int)maxCount);
+        
+        var result = await mediator.Send(query);
         var tagResponses = result.Value.Tags;
 
         var response = tagResponses.Select(x => new TagDto

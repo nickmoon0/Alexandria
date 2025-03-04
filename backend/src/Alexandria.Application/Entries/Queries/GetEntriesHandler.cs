@@ -25,7 +25,8 @@ public enum GetEntriesOptions
 
 public record GetEntriesQuery(
     PaginatedRequest PaginatedParams,
-    GetEntriesOptions Options = GetEntriesOptions.None) : IRequest<ErrorOr<GetEntriesResponse>>;
+    GetEntriesOptions Options = GetEntriesOptions.None,
+    Guid? TagId = null) : IRequest<ErrorOr<GetEntriesResponse>>;
 public record GetEntriesResponse(PaginatedResponse<EntryResponse> Entries);
 public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEntriesResponse>>
 {
@@ -63,7 +64,22 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
         }
         
         Entry? cursorEntry;
-        IQueryable<Entry> entriesQuery = _context.Entries;
+        var query = _context.Entries.AsQueryable();
+
+        // Only retrieve entries with tag, if one specified
+        if (request.TagId != null)
+        {
+            _logger.LogInformation("TagId set to: {TagId}", request.TagId);
+            
+            var tag = await _context.Tags.FindAsync([request.TagId], cancellationToken);
+            if (tag == null)
+            {
+                _logger.LogInformation("Tag not found with ID {TagID}", request.TagId);
+                return TagErrors.TagNotFound;
+            }
+            var entryIds = await _taggingService.GetEntityIdsWithTag<Entry>(tag, cancellationToken);
+            query = query.Where(e => entryIds.Contains(e.Id));
+        }
         
         if (request.PaginatedParams.CursorId != null)
         {
@@ -76,40 +92,34 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
                 return EntryErrors.NotFound;
             }
             
-            entriesQuery = entriesQuery
+            query = query
                 .Where(entry => entry.CreatedAtUtc < cursorEntry.CreatedAtUtc ||
                                 (entry.CreatedAtUtc == cursorEntry.CreatedAtUtc && entry.Id < cursorEntry.Id));
         }
 
         if (request.Options.HasFlag(GetEntriesOptions.IncludeDocument))
         {
-            entriesQuery = entriesQuery.Include(entry => entry.Document);
+            query = query.Include(entry => entry.Document);
         }
         
-        var entries = await entriesQuery
+        // Replace the existing query execution and nextCursor block with:
+        var entries = await query
             .OrderByDescending(entry => entry.CreatedAtUtc)
             .ThenByDescending(entry => entry.Id)
-            .Take(request.PaginatedParams.PageSize)
+            .Take(request.PaginatedParams.PageSize + 1) // Retrieve extra record to check if next page exists
             .ToListAsync(cancellationToken);
-        
+
         _logger.LogInformation("Retrieved {EntryCount} entries", entries.Count);
-        
-        var entryResponses = await GetEntryResponses(entries, request.Options, cancellationToken);
 
         Guid? nextCursor = null;
-        if (entries.Count != 0)
+        if (entries.Count > request.PaginatedParams.PageSize)
         {
-            var lastEntry = entries.Last();
-            var hasNextPage = await _context.Entries.AnyAsync(entry =>
-                    entry.CreatedAtUtc < lastEntry.CreatedAtUtc ||
-                    (entry.CreatedAtUtc == lastEntry.CreatedAtUtc && entry.Id < lastEntry.Id),
-                cancellationToken);
-            if (hasNextPage)
-            {
-                nextCursor = lastEntry.Id;
-                _logger.LogInformation("NextCursor set to {CursorId}", nextCursor);
-            }
+            nextCursor = entries[^2].Id;
+            entries = entries.Take(request.PaginatedParams.PageSize).ToList();
+            _logger.LogInformation("NextCursor set to {CursorId}", nextCursor);
         }
+        
+        var entryResponses = await GetEntryResponses(entries, request.Options, cancellationToken);
         
         var pagedResponse = new PaginatedResponse<EntryResponse>()
         {

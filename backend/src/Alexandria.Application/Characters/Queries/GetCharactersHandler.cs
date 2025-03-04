@@ -2,8 +2,10 @@ using Alexandria.Application.Characters.Responses;
 using Alexandria.Application.Common;
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Application.Common.Pagination;
+using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
 using Alexandria.Domain.CharacterAggregate;
+using Alexandria.Domain.Common.Entities.Tag;
 using ErrorOr;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,20 +13,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Alexandria.Application.Characters.Queries;
 
-public record GetCharactersQuery(PaginatedRequest PaginatedParams) : IRequest<ErrorOr<GetCharactersResponse>>;
+public record GetCharactersQuery(PaginatedRequest PaginatedParams, Guid? TagId = null) : IRequest<ErrorOr<GetCharactersResponse>>;
 public record GetCharactersResponse(PaginatedResponse<CharacterResponse> Characters);
 
 public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<GetCharactersResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<GetCharactersHandler> _logger;
-
+    private readonly ITaggingService _taggingService;
+    
     private const int MAX_PAGE_SIZE = 100;
 
-    public GetCharactersHandler(IAppDbContext context, ILogger<GetCharactersHandler> logger)
+    public GetCharactersHandler(IAppDbContext context, ILogger<GetCharactersHandler> logger, ITaggingService taggingService)
     {
         _context = context;
         _logger = logger;
+        _taggingService = taggingService;
     }
 
     public async Task<ErrorOr<GetCharactersResponse>> Handle(GetCharactersQuery request, CancellationToken cancellationToken)
@@ -41,6 +45,21 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
         Character? cursorCharacter;
         IQueryable<Character> query = _context.Characters;
 
+        // Only retrieve entities that have been tagged with specific tag
+        if (request.TagId != null)
+        {
+            _logger.LogInformation("TagId set to: {TagId}", request.TagId);
+
+            var tag = await _context.Tags.FindAsync([request.TagId], cancellationToken);
+            if (tag == null)
+            {
+                _logger.LogInformation("Tag not found with ID {TagID}", request.TagId);
+                return TagErrors.TagNotFound;
+            }
+            var characterIds = await _taggingService.GetEntityIdsWithTag<Character>(tag, cancellationToken);
+            query = query.Where(character => characterIds.Contains(character.Id));
+        }
+        
         if (request.PaginatedParams.CursorId != null)
         {
             _logger.LogInformation("CursorId set to: {CursorId}", request.PaginatedParams.CursorId);
@@ -56,28 +75,21 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
                 .Where(character => character.CreatedAtUtc < cursorCharacter.CreatedAtUtc ||
                                     (character.CreatedAtUtc == cursorCharacter.CreatedAtUtc && character.Id < cursorCharacter.Id));
         }
-
+        
         var characters = await query
             .OrderByDescending(character => character.CreatedAtUtc)
             .ThenByDescending(character => character.Id)
-            .Take(request.PaginatedParams.PageSize)
+            .Take(request.PaginatedParams.PageSize + 1) // Retrieve extra record to check if next page exists
             .ToListAsync(cancellationToken);
         
         _logger.LogInformation("Retrieved {CharacterCount} characters", characters.Count);
 
         Guid? nextCursor = null;
-        if (characters.Count != 0)
+        if (characters.Count > request.PaginatedParams.PageSize)
         {
-            var lastCharacter = characters.Last();
-            var hasNextPage = await _context.Characters.AnyAsync(character =>
-                character.CreatedAtUtc < lastCharacter.CreatedAtUtc ||
-                (character.CreatedAtUtc == lastCharacter.CreatedAtUtc && character.Id < lastCharacter.Id),
-                cancellationToken);
-            if (hasNextPage)
-            {
-                nextCursor = lastCharacter.Id;
-                _logger.LogInformation("NextCursor set to {CursorId}", nextCursor);
-            }
+            nextCursor = characters[^2].Id; // Use last record on page as cursor, not first record on next page
+            characters = characters.Take(request.PaginatedParams.PageSize).ToList();
+            _logger.LogInformation("NextCursor set to {CursorId}", nextCursor);
         }
 
         var characterResponses = (await GetCharacterResponses(characters, cancellationToken)).ToList();
@@ -116,6 +128,8 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
                 user => user,
                 cancellationToken);
 
+        var tags = await _taggingService.GetEntitiesTags(characters, cancellationToken);
+        
         var characterResponses = characters
             .Select(character => new CharacterResponse
             {
@@ -127,9 +141,19 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
                 User = character.UserId != null 
                     ? GetUserResponse((Guid)character.UserId) 
                     : null,
+                Tags = GetTagResponses(character.Id)
             });
 
         return characterResponses;
+
+        List<TagResponse>? GetTagResponses(Guid characterId) =>
+            tags.TryGetValue(characterId, out var characterTags)
+                ? characterTags.Select(tag => new TagResponse
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                }).ToList()
+                : null;
         
         UserResponse? GetUserResponse(Guid userId) =>
             users.TryGetValue(userId, out var user)

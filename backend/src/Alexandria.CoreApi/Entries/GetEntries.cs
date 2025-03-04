@@ -22,7 +22,8 @@ public abstract class GetEntries : EndpointBase, IEndpoint
     private static async Task<IResult> Handle(
         [FromServices] IMediator mediator,
         [FromQuery] string? pageRequest = null,
-        [FromQuery] string? options = null)
+        [FromQuery] string? options = null,
+        [FromQuery] Guid? tagId = null)
     {
         var paginatedRequest = pageRequest == null
             ? new PaginatedRequest()
@@ -32,7 +33,7 @@ public abstract class GetEntries : EndpointBase, IEndpoint
         
         var filterOptions = options?.ParseToEnumFlags<GetEntriesOptions>() ?? default;
         
-        var query = new GetEntriesQuery(paginatedRequest, filterOptions);
+        var query = new GetEntriesQuery(paginatedRequest, filterOptions, tagId);
         var result = await mediator.Send(query);
         if (result.IsError)
         {

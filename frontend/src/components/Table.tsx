@@ -35,7 +35,7 @@ const Table = <T extends TableRow>({ columns, data, onRowClick }: TableProps<T>)
               <tr
                 key={index}
                 onClick={() => onRowClick && onRowClick(item)}
-                className='hover:bg-gray-50'
+                className={`hover:bg-gray-100 ${index % 2 !== 0 ? 'bg-gray-50' : ''}`}
               >
                 {columns.map((col) => (
                   <td key={col.key as string} className='py-4 px-6 text-gray-600'>
