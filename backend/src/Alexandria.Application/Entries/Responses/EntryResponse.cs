@@ -12,7 +12,7 @@ public class EntryResponse
     public DocumentResponse? Document { get; init; }
     public IReadOnlyList<CharacterResponse>? Characters { get; init; }
     public IReadOnlyList<CommentResponse>? Comments { get; init; }
-    public IReadOnlyList<TagResponse>? Tags { get; set; }
+    public IReadOnlyList<TagResponse>? Tags { get; init; }
 
     public UserResponse? CreatedBy { get; init; }
     
