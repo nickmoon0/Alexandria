@@ -32,6 +32,7 @@ export interface Entry extends TableRow {
   deletedAtUtc:Date;
   createdBy:User;
   document:Document;
+  characters:Character[];
   comments:Comment[];
   tags:Tag[];
 };

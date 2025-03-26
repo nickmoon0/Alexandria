@@ -4,9 +4,9 @@ import { PaginatedRequest, PaginatedResponse } from '@/types/pagination';
 
 export enum GetEntriesOptions {
   None = 'None',
-  IncludeThumbnails = 'IncludeThumbnails',
   IncludeTags = 'IncludeTags',
-  IncludeDocument = 'IncludeDocument'
+  IncludeDocument = 'IncludeDocument',
+  IncludeCharacters = 'IncludeCharacters'
 };
 
 export interface GetEntriesProps {

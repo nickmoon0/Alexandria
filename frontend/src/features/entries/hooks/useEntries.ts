@@ -42,7 +42,11 @@ export const useEntries = () => {
       const pageRequest:PaginatedRequest = { PageSize: count, CursorId: cursorId };
       const response = await getEntries({ 
         pageRequest, 
-        options: [ GetEntriesOptions.IncludeDocument, GetEntriesOptions.IncludeTags ],
+        options: [ 
+          GetEntriesOptions.IncludeDocument,
+          GetEntriesOptions.IncludeCharacters,
+          GetEntriesOptions.IncludeTags
+        ],
         tagId
       });
   
