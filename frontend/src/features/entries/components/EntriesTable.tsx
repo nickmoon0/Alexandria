@@ -3,11 +3,14 @@ import { useEntries } from '@/features/entries/hooks/useEntries';
 import Button from '@/components/Buttons/Button';
 import TagList from '@/features/tags/components/TagList';
 import Table, { Column } from '@/components/Table';
-import { Entry, Tag } from '@/types/app';
+import { Character, Entry, Tag } from '@/types/app';
 import DeleteButton from '@/components/Buttons/DeleteButton';
 import { formatDateTime } from '@/lib/helpers';
 import { useAuth } from 'react-oidc-context';
 import { Roles } from '@/config/constants';
+import CharacterList from '@/features/characters/components/CharacterList';
+import { useNavigate } from 'react-router';
+import { paths } from '@/config/paths';
 
 export const EntriesTable = () => {
   const [tagFilter, setTagFilter] = useState<Tag | null>(null);
@@ -26,6 +29,8 @@ export const EntriesTable = () => {
   } = useEntries();
 
   const auth = useAuth();
+  const navigate = useNavigate();
+
   const currentUserId = auth.user?.profile.sub ?? '';
   const roles = auth.user?.profile.roles as string[] || [];
 
@@ -49,6 +54,11 @@ export const EntriesTable = () => {
     return createdByCurrentUser || isAdmin;
   };
 
+  const navigateToCharacter = (character:Character) => {
+    const url = paths.character.getHref(character.id);
+    navigate(url);
+  };
+
   const columns: Column<Entry>[] = [
     {
       key: 'delete',
@@ -64,7 +74,16 @@ export const EntriesTable = () => {
     },
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' },
-    { key: 'tags', label: 'Tags', render: (entry: Entry) => <TagList tags={entry.tags} onClick={setTagFilter} /> },
+    { 
+      key: 'characters',
+      label: 'Characters',
+      render: (entry: Entry) => <CharacterList characters={entry.characters} onClick={navigateToCharacter} />
+    },
+    { 
+      key: 'tags',
+      label: 'Tags',
+      render: (entry: Entry) => <TagList tags={entry.tags} onClick={setTagFilter} /> 
+    },
     {
       key: 'createdBy',
       label: 'Created By',

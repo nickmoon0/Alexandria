@@ -1,9 +1,11 @@
+using Alexandria.Application.Characters.Responses;
 using Alexandria.Application.Common;
 using Alexandria.Application.Common.Interfaces;
 using Alexandria.Application.Common.Pagination;
 using Alexandria.Application.Entries.Responses;
 using Alexandria.Application.Tags.Responses;
 using Alexandria.Application.Users.Responses;
+using Alexandria.Domain.CharacterAggregate;
 using Alexandria.Domain.Common.Entities.Tag;
 using Alexandria.Domain.EntryAggregate;
 using Alexandria.Domain.EntryAggregate.Errors;
@@ -18,9 +20,9 @@ namespace Alexandria.Application.Entries.Queries;
 public enum GetEntriesOptions
 {
     None = 0,
-    IncludeThumbnails = 1 << 0, // TODO: Implement thumbnails
     IncludeTags = 1 << 1,
-    IncludeDocument = 1 << 2
+    IncludeDocument = 1 << 2,
+    IncludeCharacters = 1 << 3,
 }
 
 public record GetEntriesQuery(
@@ -56,11 +58,6 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
                 request.PaginatedParams.PageSize,
                 MAX_PAGE_SIZE);
             return ApplicationErrors.BadQueryError;
-        }
-        if (request.Options.HasFlag(GetEntriesOptions.IncludeThumbnails))
-        {
-            _logger.LogInformation("IncludeThumbnails enabled");
-            throw new NotImplementedException("Thumbnails are not implemented");
         }
         
         Entry? cursorEntry;
@@ -101,6 +98,11 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
         {
             query = query.Include(entry => entry.Document);
         }
+
+        if (request.Options.HasFlag(GetEntriesOptions.IncludeCharacters))
+        {
+            query = query.Include(entry => entry.Characters);
+        }
         
         // Replace the existing query execution and nextCursor block with:
         var entries = await query
@@ -136,13 +138,27 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
         CancellationToken cancellationToken)
     {
         if (entries.Count == 0) return [];
-        
-        var createdByUserIds = entries
-            .Select(x => x.CreatedById)
-            .Distinct();
 
+        // Get distinct user IDs from all entities to retrieve user objects
+        var entryCreatedByUserIds = entries
+            .Select(x => x.CreatedById);
+
+        var characterCreatedByUserIds = entries
+            .SelectMany(entry => entry.Characters.Select(character => character.CreatedById));
+
+        var characterUserIds = entries
+            .SelectMany(entry => entry.Characters
+                .Where(character => character.UserId.HasValue)
+                .Select(character => character.UserId!.Value));
+
+        var userIds = entryCreatedByUserIds
+            .Concat(characterCreatedByUserIds)
+            .Concat(characterUserIds)
+            .Distinct()
+            .ToList();
+        
         var users = await _context.Users
-            .Where(x => createdByUserIds.Contains(x.Id))
+            .Where(x => userIds.Contains(x.Id))
             .ToDictionaryAsync(
                 user => user.Id,
                 user => user,
@@ -169,6 +185,7 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
                     ImagePath = entry.Document!.ImagePath,
                     FileExtension = entry.Document!.FileExtension
                 },
+                Characters = GetCharacterResponses(entry.Characters),
                 CreatedBy = GetUserResponse(entry.CreatedById),
                 CreatedAtUtc = entry.CreatedAtUtc,
                 DeletedAtUtc = entry.DeletedAtUtc
@@ -176,10 +193,23 @@ public class GetEntriesHandler : IRequestHandler<GetEntriesQuery, ErrorOr<GetEnt
             .ToList();
         
         return entryResponses;
-
+        
         UserResponse? GetUserResponse(Guid userId) =>
             users.TryGetValue(userId, out var user)
                 ? new UserResponse { Id = user.Id, Name = user.Name }
+                : null;
+
+        IReadOnlyList<CharacterResponse>? GetCharacterResponses(IEnumerable<Character> characters) =>
+            options.HasFlag(GetEntriesOptions.IncludeCharacters)
+                ? characters.Select(character => new CharacterResponse
+                {
+                    Id = character.Id,
+                    Name = character.Name.ShallowClone(),
+                    Description = character.Description,
+                    User = character.UserId != null ? GetUserResponse((Guid)character.UserId) : null,
+                    CreatedBy = GetUserResponse(character.CreatedById),
+                    CreatedAtUtc = character.CreatedAtUtc
+                }).ToList()
                 : null;
         
         IReadOnlyList<TagResponse>? GetTagResponse(Guid entryId)
