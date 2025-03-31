@@ -4,14 +4,19 @@ import { PaginatedRequest, PaginatedResponse } from '@/types/pagination';
 
 export interface GetCharactersProps {
   pageRequest?: PaginatedRequest;
-  tagId?:string;
+  searchString?: string;
+  tagId?: string;
 };
 
-export const getCharacters = async ({ pageRequest, tagId }:GetCharactersProps) => {
+export const getCharacters = async ({ pageRequest, searchString, tagId }:GetCharactersProps) => {
   let queryString = `pageRequest=${encodeURIComponent(
     JSON.stringify(pageRequest)
   )}`;
   
+  if (searchString) {
+    queryString += `&searchString=${searchString}`;
+  }
+
   if (tagId) {
     queryString += `&tagId=${tagId}`;
   }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alexandria.CoreApi.Characters;
 
-public class GetCharacters : EndpointBase, IEndpoint
+public abstract class GetCharacters : EndpointBase, IEndpoint
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapGet("", Handle)
@@ -22,6 +22,7 @@ public class GetCharacters : EndpointBase, IEndpoint
     private static async Task<IResult> Handle(
         [FromServices] IMediator mediator,
         [FromQuery] Guid? tagId = null,
+        [FromQuery] string? searchString = null,
         [FromQuery] string? pageRequest = null)
     {
         var paginatedRequest = pageRequest == null
@@ -30,7 +31,7 @@ public class GetCharacters : EndpointBase, IEndpoint
         
         if (paginatedRequest == null) return Results.InternalServerError("Error parsing pageRequest");
 
-        var query = new GetCharactersQuery(paginatedRequest, tagId);
+        var query = new GetCharactersQuery(paginatedRequest, searchString, tagId);
         var result = await mediator.Send(query);
         if (result.IsError)
         {

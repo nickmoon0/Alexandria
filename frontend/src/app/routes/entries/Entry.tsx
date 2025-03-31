@@ -15,6 +15,7 @@ import CommentList from '@/features/comments/components/CommentList';
 import EditableField from '@/components/Input/EditableField';
 import { useEntries } from '@/features/entries/hooks/useEntries';
 import TagInput from '@/features/tags/components/TagInput';
+import CharacterInput from '@/features/characters/components/CharacterInput';
 
 const EntryRoute = () => {
   // Hooks/state management
@@ -26,12 +27,14 @@ const EntryRoute = () => {
   const { 
     handleEntryUpdate,
     handleTagEntry,
-    handleRemoveTagEntry
+    handleRemoveTagEntry,
+    handleCharacterEntry,
+    handleRemoveCharacterEntry
   } = useEntries();
 
   // Functions
 
-  const retrieveEntry = async (entryId:string) => {
+  const retrieveEntry = async (entryId: string) => {
     try {
       const entry = await getEntry({
         entryId,
@@ -50,14 +53,15 @@ const EntryRoute = () => {
     }
   };
 
-  const retrieveComments = async (entryId:string) => {
+  const retrieveComments = async (entryId: string) => {
     try {
-      const response = await getComments({entryId});
+      const response = await getComments({ entryId });
       setEntry((prevEntry) => {
         if (!prevEntry) return null;
   
-        return {...prevEntry,
-        comments: response
+        return {
+          ...prevEntry,
+          comments: response
         };
       });
     } catch (error) {
@@ -69,10 +73,10 @@ const EntryRoute = () => {
   const addComment = async () => {
     try {
       if (entryId) {
-        await createComment({ content:commentValue ?? '', entryId });
+        await createComment({ content: commentValue ?? '', entryId });
         retrieveComments(entryId);
         setCommentValue(null);
-      };
+      }
     } catch (error) {
       console.error(error);
       showToast('Failed to add comment', ToastType.Error);
@@ -80,8 +84,8 @@ const EntryRoute = () => {
   };
 
   const textAreaEnterKeyDown = (
-    e:React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
-    callback:() => void | Promise<void>
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    callback: () => void | Promise<void>
   ) => {
     if (e.key.toLowerCase() === 'enter' && !e.shiftKey) {
       e.preventDefault();
@@ -98,16 +102,17 @@ const EntryRoute = () => {
 
   if (!entry) {
     return <div>Loading...</div>;
-  };
+  }
 
   return (
-    <div className='grid grid-cols-2'>
+    <div className="grid grid-cols-2">
       
       <div>
         <EditableField 
           value={entry.name ?? ''}       
           onChange={(value) => handleEntryUpdate({ ...entry, name: value ?? '' })}
-          textClassName='text-2xl font-bold text-gray-800' />
+          textClassName="text-2xl font-bold text-gray-800" 
+        />
       </div>
 
       <div></div>
@@ -116,49 +121,61 @@ const EntryRoute = () => {
         <EditableField
           value={entry.description ?? ''}       
           onChange={(value) => handleEntryUpdate({ ...entry, description: value ?? '' })}
-          textClassName='text-lg text-gray-700'/>
+          textClassName="text-lg text-gray-700"
+        />
       </div>
       
-      <div className='flex items-start'>
+      <div className="flex items-start">
         <p className="text-lg text-gray-700 self-end pb-3">Comments</p>
       </div>
       
-      <div className='pr-4 flex flex-col items-start'>
+      <div className="pr-4 flex flex-col items-start">
         <div>
           <MediaViewer
-            className='max-h-[65vh]'
-            documentId={entry.document.id} />
+            className="max-h-[65vh]"
+            documentId={entry.document.id}
+          />
         </div>
-        <div className='pt-2'>
+        <div className="p-2 my-2 rounded-lg bg-gray-200">
           <TagInput
             initialTags={entry.tags}
             onTag={(tag) => handleTagEntry(entry, tag)}
-            onTagRemove={(tag) => handleRemoveTagEntry(entry, tag)} />
+            onTagRemove={(tag) => handleRemoveTagEntry(entry, tag)}
+          />
+        </div>
+        <div className="bg-gray-200 p-2 rounded-lg">
+          <CharacterInput
+            initialCharacters={entry.characters}
+            onCharacter={(character) => handleCharacterEntry(entry, character)}
+            onCharacterRemove={(character) => handleRemoveCharacterEntry(entry, character)}
+          />
         </div>
         {entry?.createdBy && (
-          <div className='w-full py-2'>
+          <div className="w-full py-2">
             <MetadataTag
               createdBy={entry.createdBy}
               createdAtUtc={entry.createdAtUtc}
-              id={entry.id} />
+              id={entry.id}
+            />
           </div>
         )}
       </div>
 
       <div>
-        <div className='flex gap-2 items-start'>
+        <div className="flex gap-2 items-start">
           <TextArea
-            className='flex-1 resize-none'
+            className="flex-1 resize-none"
             value={commentValue ?? ''}
             onChange={setCommentValue}
             onKeyDown={(e) => textAreaEnterKeyDown(e, addComment)}
           />
-          <Button className='self-start' onClick={addComment}>Post</Button>
+          <Button className="self-start" onClick={addComment}>Post</Button>
         </div>
-        <div className='mt-4'>
+        <div className="mt-4">
           <CommentList
-              className='max-h-[65vh]'
-              comments={entry.comments}/>
+            className="max-h-[65vh]"
+            comments={entry.comments}
+          />
         </div>
       </div>
     </div>

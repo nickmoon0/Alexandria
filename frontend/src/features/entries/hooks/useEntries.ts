@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getEntries, GetEntriesOptions } from '@/features/entries/api/get-entries';
-import { Entry, Tag } from '@/types/app';
+import { Character, Entry, Tag } from '@/types/app';
 import { paths } from '@/config/paths';
 import { useEntriesRefresh } from '@/features/entries/hooks/EntriesContext';
 import { deleteEntry } from '@/features/entries/api/delete-entry';
@@ -10,6 +10,7 @@ import { ToastType } from '@/components/Toast';
 import { updateEntry } from '@/features/entries/api/update-entry';
 import { tagEntry, removeTagEntry } from '@/features/entries/api/tag-entry';
 import { PaginatedRequest } from '@/types/pagination';
+import { addCharacterToEntry, removeCharacterFromEntry } from '@/features/entries/api/character-entry';
 
 export interface FetchEntriesProps {
   cursorId?: string;
@@ -117,6 +118,28 @@ export const useEntries = () => {
     }
   };
 
+  const handleCharacterEntry = async (entry:Entry, character:Character): Promise<boolean> => {
+    try {
+      await addCharacterToEntry({ entryId:entry.id, characterId:character.id });
+      return true;
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to add character to entry', ToastType.Error);
+      return false;
+    }
+  };
+
+  const handleRemoveCharacterEntry = async (entry:Entry, character:Character): Promise<boolean> => {
+    try {
+      await removeCharacterFromEntry({ entryId:entry.id, characterId:character.id });
+      return true;
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to remove character from entry', ToastType.Error);
+      return false;
+    }
+  };
+
   return {
     entries,
     entriesRefresh,
@@ -133,6 +156,8 @@ export const useEntries = () => {
     setNextCursor,
     refreshEntries,
     triggerEntriesRefresh,
-    handleEntryUpdate
+    handleEntryUpdate,
+    handleCharacterEntry,
+    handleRemoveCharacterEntry
   };
 };

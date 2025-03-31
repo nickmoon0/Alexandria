@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Alexandria.Application.Characters.Queries;
 
-public record GetCharactersQuery(PaginatedRequest PaginatedParams, Guid? TagId = null) : IRequest<ErrorOr<GetCharactersResponse>>;
+public record GetCharactersQuery(PaginatedRequest PaginatedParams, string? SearchString = null, Guid? TagId = null) : IRequest<ErrorOr<GetCharactersResponse>>;
 public record GetCharactersResponse(PaginatedResponse<CharacterResponse> Characters);
 
 public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<GetCharactersResponse>>
@@ -45,6 +45,16 @@ public class GetCharactersHandler : IRequestHandler<GetCharactersQuery, ErrorOr<
         Character? cursorCharacter;
         IQueryable<Character> query = _context.Characters;
 
+        if (request.SearchString != null)
+        {
+            _logger.LogInformation("SearchString set to: {SearchString}", request.SearchString);
+            
+            query = query.Where(character => 
+                character.Name.FirstName.Contains(request.SearchString) ||
+                character.Name.LastName.Contains(request.SearchString) ||
+                (character.Name.FirstName + " " + character.Name.LastName).Contains(request.SearchString));
+        }
+        
         // Only retrieve entities that have been tagged with specific tag
         if (request.TagId != null)
         {
